@@ -34,7 +34,7 @@ Space: **O(1)**
 ## LC 27 remove-element
 [LC Link](https://leetcode.com/problems/remove-element/description/)   
 [Cousrse Link](https://programmercarl.com/0027.%E7%A7%BB%E9%99%A4%E5%85%83%E7%B4%A0.html)  
-- ** Two pointers: Slow fast **
+- **Two pointers: Slow fast**
 - Slow: store all the values satisfy requirements
 - Fast: iteration 
 
@@ -58,7 +58,7 @@ Space: **O(1)**
 ## LC 977 squares-of-a-sorted-array
 [LC Link](https://leetcode.com/problems/squares-of-a-sorted-array/description/)   
 [Cousrse Link](https://programmercarl.com/0977.%E6%9C%89%E5%BA%8F%E6%95%B0%E7%BB%84%E7%9A%84%E5%B9%B3%E6%96%B9.html)  
-- ** Two pointers: Opposite direaction **
+- **Two pointers: Opposite direaction**
 - starting at the start and end to look for largest square values
 - Tips: range function in python is [) and we can start backward for non-descending order
 
