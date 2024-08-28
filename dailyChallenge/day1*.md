@@ -1,10 +1,11 @@
-# Day 1 Binary Array
+# Day 1 Two Pointers
 
 ## LC 704 binary-search
 [LC Link](https://leetcode.com/problems/binary-search/description/)   
 [Cousrse Link](https://programmercarl.com/0704.%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE.html)
 
 - **sort and unique array**
+- Binary Search is actually an example of **Two pointers of opposit directions**   
 - Logic chain is:   
 choose range type (right close/open)    
 => can we take the right (last element / null)   
