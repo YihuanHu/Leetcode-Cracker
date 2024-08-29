@@ -23,60 +23,75 @@ def minSubArrayLen(self, target: int, nums: List[int]) -> int:
     return res if res != float('inf') else 0
 
 ```
-Time: **O(n)**   <= each element is used twice (add and subtract). Basically **2n**
+Time: **O(n)**   <= each element is used twice (add and subtract). Basically **2n**   
 Space: **O(1)**
 
 
-## LC 27 remove-element
-[LC Link](https://leetcode.com/problems/remove-element/description/)   
-[Cousrse Link](https://programmercarl.com/0027.%E7%A7%BB%E9%99%A4%E5%85%83%E7%B4%A0.html)  
-- **Two pointers: Slow fast**
-- Slow: store all the values satisfy requirements
-- Fast: iteration 
+## LC 59 spiral-matrix-ii
+[LC Link](https://leetcode.com/problems/spiral-matrix-ii/description/)   
+[Cousrse Link](https://programmercarl.com/0059.%E8%9E%BA%E6%97%8B%E7%9F%A9%E9%98%B5II.html#%E6%80%9D%E8%B7%AF)  
+- follow the same range format: []
 
 ```python
-    def removeElement(self, nums: List[int], val: int) -> int:
-         slow, fast = 0, 0
-         size = len(nums)
-         while fast < size:  # exclude equal since when fast might = size
-            if nums[fast] == val:
-                fast += 1
-            elif nums[fast] != val:
-                nums[slow] = nums[fast]
-                slow += 1
-                fast += 1
-         return slow
+    def generateMatrix(self, n: int) -> List[List[int]]:
+        matrix = [[0]*n for _ in range(n)]
+
+        num = 1
+
+        # []
+        top, bottom, left, right = 0, n-1, 0, n-1
+
+        while left <= right and top <= bottom:
+
+            # from left to right
+            for i in range(left, right+1):
+                matrix[top][i] = num
+                num += 1
+            top += 1
+
+            # from top to bottom
+            for j in range(top, bottom+1):
+                matrix[j][right] = num
+                num += 1
+            right -= 1
+
+            # from right to left
+            for i in range(right, left - 1, -1):
+                matrix[bottom][i] = num
+                num += 1
+            bottom -= 1
+
+            # from bottom to top
+            for j in range(bottom, top - 1, -1):
+                matrix[j][left] = num
+                num += 1
+            left += 1
+
+        return matrix
 ```
-Time: **O(n)**   
-Space: **O(1)**
+Time: **O(n^2)**   
+Space: **O(n^2)**
 
 
-## LC 977 squares-of-a-sorted-array
-[LC Link](https://leetcode.com/problems/squares-of-a-sorted-array/description/)   
-[Cousrse Link](https://programmercarl.com/0977.%E6%9C%89%E5%BA%8F%E6%95%B0%E7%BB%84%E7%9A%84%E5%B9%B3%E6%96%B9.html)  
-- **Two pointers: Opposite direaction**
-- starting at the start and end to look for largest square values
-- Tips: range function in python is [) and we can start backward for non-descending order
+## LC 303 squares-of-a-sorted-array
+[LC Link](https://leetcode.com/problems/range-sum-query-immutable/description/)   
+[Cousrse Link](https://labuladong.online/algo/data-structure/prefix-sum/)  
+- **be careful about index P[i,j] =P[j+1] - P[i] where P[i] is the prefix sum of all the elements < i**
+
 
 ```python
-def sortedSquares(self, nums: List[int]) -> List[int]:
-    n = len(nums)
-    l , r = 0, len(nums) - 1
-    res = [0] * n
+    def __init__(self, nums: List[int]):
+        self.preSum = [0] * (len(nums) + 1)
+        
+        for i in range(1, len(self.preSum)):
+            self.preSum[i] = self.preSum[i - 1] + nums[i - 1]
 
-    for i in range(n-1, -1, -1):
-        if abs(nums[l]) < abs(nums[r]):
-            res[i] = nums[r] * nums[r]
-            r -= 1
-        else:
-            res[i] = nums[l] * nums[l]
-            l += 1
-
-    return res
+    def sumRange(self, left: int, right: int) -> int:
+        return self.preSum[right + 1] - self.preSum[left]
 ```
 Time: **O(n)**   
 Space: **O(n)**
 
 
 ## Adds on
-- [ ] review LC 27 with brute force & 2 pointers
+- [ ] LC 304 range-sum-query-2d-immutable   [LC link](https://leetcode.com/problems/range-sum-query-2d-immutable/description/)
