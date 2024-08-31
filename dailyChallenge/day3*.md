@@ -15,10 +15,12 @@ class ListNode:
 
 ## LC 203 /remove-linked-list-elements
 [LC Link](https://leetcode.com/problems/remove-linked-list-elements/description/)   
-[Cousrse Link]()
+[Cousrse Link](https://programmercarl.com/0203.%E7%A7%BB%E9%99%A4%E9%93%BE%E8%A1%A8%E5%85%83%E7%B4%A0.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)
 
-- brute force: two loops => one for start [i in range(len)], another for end [j in (i, len)]
-- Sliding window is kinda agianst this intuit by **iterating on the end point j**
+- Create an extra **dummy head** ListNode to handle the head edge case
+- Manipulate of LL needs to think one step ahead
+    - That's to say, if you want to update curr.val. You need to stand at curr.prev and delete the link by curr.prev.next
+    - That's why check **curr.next is not null** is important to avoid null pointer
 
 ```python
     def removeElements(self, head: Optional[ListNode], val: int) -> Optional[ListNode]:
@@ -34,7 +36,7 @@ class ListNode:
             
         return dummy.next
 ```
-Time: **O(n)**   <= each element is used twice (add and subtract). Basically **2n**   
+Time: **O(n)**   
 Space: **O(1)**
 
 
