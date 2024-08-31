@@ -40,55 +40,62 @@ Time: **O(n)**
 Space: **O(1)**
 
 
-## LC 59 spiral-matrix-ii
-[LC Link](https://leetcode.com/problems/spiral-matrix-ii/description/)   
+## LC 707 design-linked-list
+[LC Link](https://leetcode.com/problems/design-linked-list/description/)   
 [Cousrse Link](https://programmercarl.com/0059.%E8%9E%BA%E6%97%8B%E7%9F%A9%E9%98%B5II.html#%E6%80%9D%E8%B7%AF)  
-- follow the same range format: []
+- get familiar with LL manipulation
 
 ```python
-    def generateMatrix(self, n: int) -> List[List[int]]:
-        matrix = [[0]*n for _ in range(n)]
+  class MyLinkedList:
 
-        num = 1
+    def __init__(self):
+        self.dummy = ListNode()
+        self.size = 0
+        
 
-        # []
-        top, bottom, left, right = 0, n-1, 0, n-1
+    def get(self, index: int) -> int:
+        if index < 0 or index >= self.size:
+            return -1
+        curr = self.dummy.next 
+        for i in range(index):
+            curr = curr.next
+        return curr.val
 
-        while left <= right and top <= bottom:
+    def addAtHead(self, val: int) -> None:
+        self.dummy.next = ListNode(val, self.dummy.next)
+        self.size += 1
 
-            # from left to right
-            for i in range(left, right+1):
-                matrix[top][i] = num
-                num += 1
-            top += 1
+    def addAtTail(self, val: int) -> None:
+        curr = self.dummy
+        while curr.next:
+            curr= curr.next
+        curr.next = ListNode(val)
+        self.size += 1
 
-            # from top to bottom
-            for j in range(top, bottom+1):
-                matrix[j][right] = num
-                num += 1
-            right -= 1
+    def addAtIndex(self, index: int, val: int) -> None:
+        if index < 0 or index > self.size:
+            return 
+        curr = self.dummy
+        for i in range(index):
+            curr = curr.next
+        curr.next = ListNode(val, next = curr.next)
+        self.size += 1
+        
 
-            # from right to left
-            for i in range(right, left - 1, -1):
-                matrix[bottom][i] = num
-                num += 1
-            bottom -= 1
-
-            # from bottom to top
-            for j in range(bottom, top - 1, -1):
-                matrix[j][left] = num
-                num += 1
-            left += 1
-
-        return matrix
+    def deleteAtIndex(self, index: int) -> None:
+        if index < 0 or index >= self.size:
+            return 
+        curr = self.dummy
+        for i in range(index):
+            curr = curr.next
+        curr.next = curr.next.next
+        self.size -= 1
 ```
-Time: **O(n^2)**   
-Space: **O(n^2)**
 
 
-## LC 303 squares-of-a-sorted-array
-[LC Link](https://leetcode.com/problems/range-sum-query-immutable/description/)   
-[Cousrse Link](https://labuladong.online/algo/data-structure/prefix-sum/)  
+## LC 206 reverse-linked-list
+[LC Link](https://leetcode.com/problems/reverse-linked-list/description/)   
+[Cousrse Link](https://programmercarl.com/0206.%E7%BF%BB%E8%BD%AC%E9%93%BE%E8%A1%A8.html)  
 - **be careful about index P[i,j] =P[j+1] - P[i] where P[i] is the prefix sum of all the elements < i**
 
 
