@@ -96,22 +96,50 @@ Space: **O(1)**
 ## LC 206 reverse-linked-list
 [LC Link](https://leetcode.com/problems/reverse-linked-list/description/)   
 [Cousrse Link](https://programmercarl.com/0206.%E7%BF%BB%E8%BD%AC%E9%93%BE%E8%A1%A8.html)  
-- **be careful about index P[i,j] =P[j+1] - P[i] where P[i] is the prefix sum of all the elements < i**
 
 
+
+- Use iteration:  create a temp node to store the next and then its a 4 circle relationship between temp, next, pre, curr
 ```python
-    def __init__(self, nums: List[int]):
-        self.preSum = [0] * (len(nums) + 1)
-        
-        for i in range(1, len(self.preSum)):
-            self.preSum[i] = self.preSum[i - 1] + nums[i - 1]
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        pre = None
+        curr = head
 
-    def sumRange(self, left: int, right: int) -> int:
-        return self.preSum[right + 1] - self.preSum[left]
+        while curr:
+            temp = curr.next
+            curr.next = pre
+            pre = curr
+            curr = temp
+
+        return pre
 ```
+Time: **O(n)**   
+Space: **O(1)**
+
+- Use recursion : good example of reviewing recursion
+```python
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        ########## recursion
+        # Base case: if the list is empty or has only one element
+        # when head = null, it is the end
+        if not head or not head.next:
+            return head
+
+        # Recursive case: reverse the rest of the list
+        last = self.reverseList(head.next)
+
+        # Adjust the pointers
+        head.next.next = head
+        head.next = None
+
+        # Return the new head of the reversed list
+        return last
+```
+
 Time: **O(n)**   
 Space: **O(n)**
 
 
 ## Adds on
-- [ ] LC 304 range-sum-query-2d-immutable   [LC link](https://leetcode.com/problems/range-sum-query-2d-immutable/description/)
+- [ ] review 206 for recursive solution
+
