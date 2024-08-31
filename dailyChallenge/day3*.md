@@ -21,20 +21,18 @@ class ListNode:
 - Sliding window is kinda agianst this intuit by **iterating on the end point j**
 
 ```python
-def minSubArrayLen(self, target: int, nums: List[int]) -> int:
-    l , sum = 0, 0
-    res = float('inf')
-    for r in range(len(nums)):
-        sum += nums[r]
+    def removeElements(self, head: Optional[ListNode], val: int) -> Optional[ListNode]:
+        # dummy head in case to delete head
+        dummy = ListNode(next = head) 
 
-        while sum >= target:
-            length = r - l + 1
-            res = min(res, length)
-            sum -= nums[l] 
-            l += 1
-
-    return res if res != float('inf') else 0
-
+        curr= dummy
+        while curr.next:
+            if curr.next.val == val:
+                curr.next = curr.next.next
+            else: 
+                curr = curr.next
+            
+        return dummy.next
 ```
 Time: **O(n)**   <= each element is used twice (add and subtract). Basically **2n**   
 Space: **O(1)**
