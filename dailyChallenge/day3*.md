@@ -108,6 +108,7 @@ Space: **O(1)**
         while curr:
             # store the next 
             temp = curr.next
+
             curr.next = pre
             pre = curr
             curr = temp
