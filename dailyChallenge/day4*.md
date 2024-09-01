@@ -75,55 +75,46 @@ Space: **O(1)**
 
         return dummy.next
 ```
-
-
-## LC 206 reverse-linked-list
-[LC Link](https://leetcode.com/problems/reverse-linked-list/description/)   
-[Cousrse Link](https://programmercarl.com/0206.%E7%BF%BB%E8%BD%AC%E9%93%BE%E8%A1%A8.html)  
-
-
-
-- Use iteration:  create a temp node to store the next and then its a 4 circle relationship between temp, next, pre, curr
-```python
-    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        pre = None
-        curr = head
-
-        while curr:
-            temp = curr.next
-            curr.next = pre
-            pre = curr
-            curr = temp
-
-        return pre
-```
 Time: **O(n)**   
 Space: **O(1)**
 
-- Use recursion : good example of reviewing recursion
+
+## LC 160 intersection-of-two-linked-lists
+[LC Link](https://leetcode.com/problems/intersection-of-two-linked-lists/description/)   
+[Cousrse Link](https://labuladong.online/algo/essential-technique/linked-list-skills-summary/)  
+
+- To make sure both pointers reach the interseaction at the same time:
+- Both pointers walks through the nonoverlapping and overlapping(if exists) parts
+    - assume LL1: a + c,  LL2: b + c
+    - If len(LL1) < len(LL1),
+    - => LL1 walks through: a + c + b
+    - => LL2 walks through: b + c + a
 ```python
-    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        ########## recursion
-        # Base case: if the list is empty or has only one element
-        # when head = null, it is the end
-        if not head or not head.next:
-            return head
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
+        p1, p2 = headA, headB
+    
+        while p1 != p2:
+            # p1 takes one step; if it reaches the end of list A, switch to list B
+            if p1 is None:
+                p1 = headB
+            else:
+                p1 = p1.next
+            # p2 takes one step; if it reaches the end of list B, switch to list A
+            if p2 is None:
+                p2 = headA
+            else:
+                p2 = p2.next
+        return p1
 
-        # Recursive case: reverse the rest of the list
-        last = self.reverseList(head.next)
-
-        # Adjust the pointers
-        head.next.next = head
-        head.next = None
-
-        # Return the new head of the reversed list
-        return last
 ```
+Time: **O(n+m)**   
+Space: **O(1)**
 
-Time: **O(n)**   
-Space: **O(n)**
+Another solution: verbose on coding but easy to understand   
+[Cousrse Link](https://programmercarl.com/%E9%9D%A2%E8%AF%95%E9%A2%9802.07.%E9%93%BE%E8%A1%A8%E7%9B%B8%E4%BA%A4.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)  
 
 
 ## Adds on
-- [ ] review LC 24 video
-- [ ] 
+- [ ] review LC 24 video & compare against 206
+- [ ] check problem [Cousrse Link](https://programmercarl.com/0142.%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8II.html)
+- [ ] check LL notes
