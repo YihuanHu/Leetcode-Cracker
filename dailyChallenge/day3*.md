@@ -106,6 +106,7 @@ Space: **O(1)**
         curr = head
 
         while curr:
+            # store the next 
             temp = curr.next
             curr.next = pre
             pre = curr
