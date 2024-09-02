@@ -1,8 +1,19 @@
 # Day6 Hash Table
+# Hash
+- Sacrifice space to get O(1) query time => frequetly used when check the existance of a set
+- Hash function: Maps input data to a fixed-size integer value (hash code) that represents the data, used to index into a hash table
+- Hash Collision: When two different inputs produce the same hash code
+  - Linear probing: Resolving collisions by sequentially searching for the next available slot in the hash table
+  - Chaining: Resolving collisions by maintaining a list of all elements that hash to the same index
+- Common data structures in Python:
+  - `dict`: A mutable mapping of unique keys to values, allowing O(1) average-time complexity for lookups, inserts, and deletions.
+  - `set`: An unordered collection of unique elements that supports O(1) average-time complexity for membership tests, insertions, and deletions.
 
-## LC 24 swap-nodes-in-pairs
-[LC Link](https://leetcode.com/problems/swap-nodes-in-pairs/description/)   
-[Cousrse Link](https://programmercarl.com/0024.%E4%B8%A4%E4%B8%A4%E4%BA%A4%E6%8D%A2%E9%93%BE%E8%A1%A8%E4%B8%AD%E7%9A%84%E8%8A%82%E7%82%B9.html)
+
+
+## LC 242 valid-anagram
+[LC Link](https://leetcode.com/problems/valid-anagram/)   
+[Cousrse Link](https://programmercarl.com/0242.%E6%9C%89%E6%95%88%E7%9A%84%E5%AD%97%E6%AF%8D%E5%BC%82%E4%BD%8D%E8%AF%8D.html)
 
 - Compare with LC 206 revere the LL
     - 206: sawp one node; 1 temp nodes; swap 3 nodes
