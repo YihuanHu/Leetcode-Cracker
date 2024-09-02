@@ -1,4 +1,4 @@
-# Day4 Hash Table
+# Day6 Hash Table
 
 ## LC 24 swap-nodes-in-pairs
 [LC Link](https://leetcode.com/problems/swap-nodes-in-pairs/description/)   
