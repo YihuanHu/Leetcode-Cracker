@@ -7,7 +7,13 @@
   - Chaining: Resolving collisions by maintaining a list of all elements that hash to the same index
 - Common data structures in Python:
   - `dict`: A mutable mapping of unique keys to values, allowing O(1) average-time complexity for lookups, inserts, and deletions.
+    - `for key, value in my_dict.items():`
+    - `for key in my_dict:`
+    - `my_dict.pop('b')`
+    - `my_dict.get('d', 0)`
   - `set`: An unordered collection of unique elements that supports O(1) average-time complexity for membership tests, insertions, and deletions.
+    - `my_set.add(4)`
+    - `my_set.remove(2)`
 
 
 
@@ -15,51 +21,27 @@
 [LC Link](https://leetcode.com/problems/valid-anagram/)   
 [Cousrse Link](https://programmercarl.com/0242.%E6%9C%89%E6%95%88%E7%9A%84%E5%AD%97%E6%AF%8D%E5%BC%82%E4%BD%8D%E8%AF%8D.html)
 
-- Compare with LC 206 revere the LL
-    - 206: sawp one node; 1 temp nodes; swap 3 nodes
-    - 24: swap two consecutive nodes; 2 temp nodes ; swap 4 nodes
 
-
-- Use iteration
 ```python
-    def swapPairs(self, head: ListNode) -> ListNode:
-        dummy_head = ListNode(next=head)
-        current = dummy_head
-        
-        # There must be a next and next-next node for swapping; otherwise, the swapping is complete.
-        while current.next and current.next.next:
-            temp = current.next  # Prevent node modification
-            temp1 = current.next.next.next
-            
-            current.next = current.next.next
-            current.next.next = temp
-            temp.next = temp1
-            current = current.next.next
-        return dummy_head.next
+    def isAnagram(self, s: str, t: str) -> bool:
+        if len(s) != len(t):
+            return False
 
-```
+        dicS, dicT = {} , {}
 
-- Use recursion 
-```python
-    def swapPairs(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        if head is None or head.next is None:
-            return head
-    
-        # The two nodes to be swapped are pre and cur
-        pre = head
-        cur = head.next
-        next = head.next.next
-        
-        cur.next = pre  # swap
-        pre.next = self.swapPairs(next)  # Recursively swap the remaining list starting from next
+        for i in range(len(s)):
+            dicS[s[i]] = 1 + dicS.get(s[i],0)
+            dicT[t[i]] = 1 + dicT.get(t[i],0)
+
+        return dicS == dicT
 
 ```
 Time: **O(n)**   
 Space: **O(1)**
 
 
-## LC 707 remove-nth-node-from-end-of-list
-[LC Link](https://leetcode.com/problems/remove-nth-node-from-end-of-list/description/)   
+## LC 707 intersection-of-two-arrays
+[LC Link](https://leetcode.com/problems/intersection-of-two-arrays/description/)   
 [Cousrse Link](https://programmercarl.com/0019.%E5%88%A0%E9%99%A4%E9%93%BE%E8%A1%A8%E7%9A%84%E5%80%92%E6%95%B0%E7%AC%ACN%E4%B8%AA%E8%8A%82%E7%82%B9.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)  
 - use two pointer: fast & slow
 - Logis is:
