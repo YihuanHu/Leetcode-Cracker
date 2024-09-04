@@ -1,46 +1,33 @@
 # Day7 Hash Table Part 2
 # Hash
-- Sacrifice space to get O(1) query time => frequetly used when check the existance of a set
-- Hash function: Maps input data to a fixed-size integer value (hash code) that represents the data, used to index into a hash table
-- Hash Collision: When two different inputs produce the same hash code
-  - Linear probing: Resolving collisions by sequentially searching for the next available slot in the hash table
-  - Chaining: Resolving collisions by maintaining a list of all elements that hash to the same index
-- Common data structures in Python:
-  - `dict`: A mutable mapping of unique keys to values, allowing O(1) average-time complexity for lookups, inserts, and deletions.
-    - `for key, value in my_dict.items():`
-    - `for key in my_dict:`
-    - `my_dict.pop('b')`
-    - `my_dict.get('d', 0)`
-  - `set`: An unordered collection of unique elements that supports O(1) average-time complexity for membership tests, insertions, and deletions. But running slower than array
-    - `my_set.add(4)`
-    - `my_set.remove(2)`
-  - `array`: can be used for direct addressing when the range of the hash function is known and limited, creating a fixed-length array
-    - `my_array.append(5)` 
-    - `my_array[index]`  
-    - `my_array.pop()`
 
-
-## LC 242 valid-anagram
-[LC Link](https://leetcode.com/problems/valid-anagram/)   
+## LC 454 4sum-ii
+[LC Link](https://leetcode.com/problems/4sum-ii/description/)   
 [Cousrse Link](https://programmercarl.com/0242.%E6%9C%89%E6%95%88%E7%9A%84%E5%AD%97%E6%AF%8D%E5%BC%82%E4%BD%8D%E8%AF%8D.html)
-
+- Different from typical 4 sums. Cannot use one element several times.
+- Use one hash map to store possible sum of 2 arrays and save the time complexity from n^4 to n^2
 
 ```python
-    def isAnagram(self, s: str, t: str) -> bool:
-        if len(s) != len(t):
-            return False
+  def fourSumCount(self, nums1, nums2, nums3, nums4):
+      # Use a dictionary to store the sums of elements from nums1 and nums2
+      hashmap = dict()
+      for n1 in nums1:
+          for n2 in nums2:
+              hashmap[n1+n2] = hashmap.get(n1+n2, 0) + 1
+      
+      # If -(n1+n2) exists in the sums of nums3 and nums4, add to the result
+      count = 0
+      for n3 in nums3:
+          for n4 in nums4:
+              key = -n3 - n4
+              if key in hashmap:
+                  count += hashmap[key]
+      return count
 
-        dicS, dicT = {} , {}
-
-        for i in range(len(s)):
-            dicS[s[i]] = 1 + dicS.get(s[i],0)
-            dicT[t[i]] = 1 + dicT.get(t[i],0)
-
-        return dicS == dicT
 
 ```
-Time: **O(n)**   
-Space: **O(1)**
+Time: **O(n^2)**   
+Space: **O(n^2)**
 
 
 ## LC 202 happy-number
