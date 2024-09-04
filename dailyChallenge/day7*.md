@@ -55,6 +55,9 @@ Space: **O(1)**  - only lower case letter
 [LC Link](https://leetcode.com/problems/3sum/description/)   
 [Cousrse Link](https://programmercarl.com/0015.%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C.html)  
 
+- Callback of LC 1 Two Sun: cannot use two pointers since we need to return index while **two pointers need to sort first**
+
+_Best Solution Award_
 - Iterate while use two pointers to find out possible combinations
 - Use **set** to de-dupelicate otherewise we need to prune to avoid dupes
 ```python
@@ -115,25 +118,45 @@ Space: **O(n)**
 
 
 
-## LC 1 two-sum
-[LC Link](https://leetcode.com/problems/two-sum/)   
-[Cousrse Link](https://programmercarl.com/0001.%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C.html)  
+## [x]LC 18 4sum
+[LC Link](https://leetcode.com/problems/4sum/description/)   
+[Cousrse Link](https://programmercarl.com/0018.%E5%9B%9B%E6%95%B0%E4%B9%8B%E5%92%8C.html)  
 
-- why hash
-- why dict/map
-- what does map stores
-- what is the key/value here
+- Add another layer of for loop: two nested for loops and two pointers
+- This maynot be the best solution with so many de-dupes. We can de-deupe with set while sacrifice space
 ```python
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        seen = {}
-        for i,value in enumerate(nums):
-            remain = target - value
-            if remain in seen:
-                return [seen[remain],i]
-            seen[value] = i
-        return []
+      def fourSum(self, nums: List[int], target: int) -> List[List[int]]:
+        nums.sort()
+        n = len(nums)
+        result = []
+        for i in range(n):
+            if nums[i] > target and nums[i] > 0 and target > 0:# prune
+                break
+            if i > 0 and nums[i] == nums[i-1]:# de-dupe
+                continue
+            for j in range(i+1, n):
+                if nums[i] + nums[j] > target and target > 0: #prune
+                    break
+                if j > i+1 and nums[j] == nums[j-1]: # de-dupe
+                    continue
+                left, right = j+1, n-1
+                while left < right:
+                    s = nums[i] + nums[j] + nums[left] + nums[right]
+                    if s == target:
+                        result.append([nums[i], nums[j], nums[left], nums[right]])
+                        while left < right and nums[left] == nums[left+1]:
+                            left += 1
+                        while left < right and nums[right] == nums[right-1]:
+                            right -= 1
+                        left += 1
+                        right -= 1
+                    elif s < target:
+                        left += 1
+                    else:
+                        right -= 1
+        return result
 ```
-Time: **O(n)**   
+Time: **O(n^3)**   
 Space: **O(1)**
 
 
