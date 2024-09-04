@@ -3,7 +3,7 @@
 
 ## LC 454 4sum-ii
 [LC Link](https://leetcode.com/problems/4sum-ii/description/)   
-[Cousrse Link](https://programmercarl.com/0242.%E6%9C%89%E6%95%88%E7%9A%84%E5%AD%97%E6%AF%8D%E5%BC%82%E4%BD%8D%E8%AF%8D.html)
+[Cousrse Link](https://programmercarl.com/0454.%E5%9B%9B%E6%95%B0%E7%9B%B8%E5%8A%A0II.html)
 - Different from typical 4 sums. Cannot use one element several times.
 - Use one hash map to store possible sum of 2 arrays and save the time complexity from n^4 to n^2
 
@@ -30,34 +30,30 @@ Time: **O(n^2)**
 Space: **O(n^2)**
 
 
-## LC 202 happy-number
-[LC Link](https://leetcode.com/problems/happy-number/description/)   
-[Cousrse Link](https://programmercarl.com/0202.%E5%BF%AB%E4%B9%90%E6%95%B0.html#%E6%80%9D%E8%B7%AF)  
-- Once there is a dupe, it starts an loop
+## LC 383 ransom-note
+[LC Link](https://leetcode.com/problems/ransom-note/description/)   
+[Cousrse Link](https://programmercarl.com/0383.%E8%B5%8E%E9%87%91%E4%BF%A1.html)  
+- Like LC 242 Valid Anagram, but 242 need reordered strA = str B. 383 only needs strB can be found in strA.
 
 ```python
-    def isHappy(self, n: int) -> bool:
-        record = set()
-        while n not in record:
-            record.add(n)
-            new_num = 0
-
-            n_str = str(n)
-            for i in n_str:
-                new_num += int(i)**2
-            if new_num == 1: return True
-            print(new_num)
-            n = new_num
-
-        return False
+        count = defaultdict(int)
+        for char in magazine:
+            count[char] += 1
+            
+        for s in ransomNote:
+            if  count[s] == 0:
+                return False
+            count[s] -= 1
+       
+        return True
 ```
 Time: **O(n)**   
-Space: **O(n)**
+Space: **O(1)**  - only lower case letter
 
 
 ## LC 160 intersection-of-two-linked-lists
 [LC Link](https://leetcode.com/problems/intersection-of-two-linked-lists/description/)   
-[Cousrse Link](https://programmercarl.com/0202.%E5%BF%AB%E4%B9%90%E6%95%B0.html)  
+[Cousrse Link](https://programmercarl.com/0015.%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C.html)  
 
 - Comparision why use array/set/dict
 ```python
