@@ -51,17 +51,68 @@ Time: **O(n)**
 Space: **O(1)**  - only lower case letter
 
 
-## LC 160 intersection-of-two-linked-lists
-[LC Link](https://leetcode.com/problems/intersection-of-two-linked-lists/description/)   
+## LC 15 3sum
+[LC Link](https://leetcode.com/problems/3sum/description/)   
 [Cousrse Link](https://programmercarl.com/0015.%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C.html)  
 
-- Comparision why use array/set/dict
+- Iterate while use two pointers to find out possible combinations
+- Use **set** to de-dupelicate otherewise we need to prune to avoid dupes
 ```python
-    def intersection(self, nums1: List[int], nums2: List[int]) -> List[int]:
-        return list(set(nums1) & set(nums2))
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        nums = sorted(nums)
+        result = set()
+        for i in range(len(nums)):
+            l = i + 1
+            r = len(nums) - 1
+            target = 0 - nums[i]
+            while l < r:
+                if nums[l] + nums[r] == target:
+                    result.add((nums[i], nums[l], nums[r]))
+                    l += 1
+                    r -= 1
+                elif nums[l] + nums[r] < target:
+                    l += 1
+                else:
+                    r -= 1
+        return list(result)
 ```
-Time: **O(n+m)**   
-Space: **O(1)**
+Time: **O(n^2)**   
+Space: **O(n)**
+
+
+- Iterate and use Hash to save time 
+- Be careful about pruning:
+   - when num[i]>0
+   - when check dupes for a, b
+```python
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        result = []
+        nums.sort()
+        # Find combinations where a + b + c = 0
+        # a = nums[i], b = nums[j], c = -(a + b)
+        for i in range(len(nums)):
+            # After sorting, if the first element is greater than zero, it's impossible to find a valid triplet
+            if nums[i] > 0:
+                break
+            if i > 0 and nums[i] == nums[i - 1]:  # Remove duplicate element a in the triplet
+                continue
+            d = {}
+            for j in range(i + 1, len(nums)):
+                if j > i + 2 and nums[j] == nums[j-1] == nums[j-2]:  # Remove duplicate element b in the triplet
+                    continue
+                c = 0 - (nums[i] + nums[j])
+                if c in d:
+                    result.append([nums[i], nums[j], c])
+                    d.pop(c)  # Remove duplicate element c in the triplet
+                else:
+                    d[nums[j]] = j
+        return result
+
+```
+Time: **O(n^2)**   
+Space: **O(n)**
+
 
 
 ## LC 1 two-sum
