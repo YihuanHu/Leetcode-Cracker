@@ -1,149 +1,74 @@
 # Day9 Hash Table Part 2
-# Hash
 
 ## LC 151 reverse-words-in-a-string
 [LC Link](https://leetcode.com/problems/reverse-words-in-a-string/description/)   
 [Cousrse Link](https://programmercarl.com/0151.%E7%BF%BB%E8%BD%AC%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%87%8C%E7%9A%84%E5%8D%95%E8%AF%8D.html)
 - Split can covert a string to list seperated by space
-
+- String is **IMMUTABLE** in Python
+- Several solutions:
+    - split in words and reverse
+    - reverse the whole string and split and then rever word by word
+  
 ```python
     def reverseWords(self, s):
         words = s.split() #type(words) --- list
         words = words[::-1] # reverse list
         return ' '.join(words) #convert list to string
 ```
-Time: **O(n)**   
-Space: **O(n)**
-
-
-## LC 383 ransom-note
-[LC Link](https://leetcode.com/problems/ransom-note/description/)   
-[Cousrse Link](https://programmercarl.com/0383.%E8%B5%8E%E9%87%91%E4%BF%A1.html)  
-- Like LC 242 Valid Anagram, but 242 need reordered strA = str B. 383 only needs strB can be found in strA.
-
 ```python
-        count = defaultdict(int)
-        for char in magazine:
-            count[char] += 1
-            
-        for s in ransomNote:
-            if  count[s] == 0:
-                return False
-            count[s] -= 1
-       
-        return True
+    def reverseWords(self, s: str) -> str:
+        # Reverse the entire string
+        s = s[::-1]
+        # Split the string into words and reverse each word
+        s = ' '.join(word[::-1] for word in s.split())
+        return s
 ```
 Time: **O(n)**   
-Space: **O(1)**  - only lower case letter
-
-
-## LC 15 3sum
-[LC Link](https://leetcode.com/problems/3sum/description/)   
-[Cousrse Link](https://programmercarl.com/0015.%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C.html)  
-
-- Callback of LC 1 Two Sun: cannot use two pointers since we need to return index while **two pointers need to sort first**
-
-_Best Solution Award_
-- Iterate while use two pointers to find out possible combinations
-- Use **set** to de-dupelicate otherewise we need to prune to avoid dupes
-```python
-    def threeSum(self, nums: List[int]) -> List[List[int]]:
-        nums = sorted(nums)
-        result = set()
-        for i in range(len(nums)):
-            l = i + 1
-            r = len(nums) - 1
-            target = 0 - nums[i]
-            while l < r:
-                if nums[l] + nums[r] == target:
-                    result.add((nums[i], nums[l], nums[r]))
-                    l += 1
-                    r -= 1
-                elif nums[l] + nums[r] < target:
-                    l += 1
-                else:
-                    r -= 1
-        return list(result)
-```
-Time: **O(n^2)**   
 Space: **O(n)**
 
 
-- Iterate and use Hash to save time 
-- Be careful about pruning:
-   - when num[i]>0
-   - when check dupes for a, b
+## LC 28 find-the-index-of-the-first-occurrence-in-a-string (did not get it :(
+[LC Link](https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/description/)   
+[Cousrse Link with Iteration](https://programmercarl.com/0028.%E5%AE%9E%E7%8E%B0strStr.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)  
+[Cousrse Link with DP](https://mp.weixin.qq.com/s/r9pbkMyFyMAvmkf4QnL-1g)  
+- Why use KMP algo?
+- What is prefix/next table?
+- How to find out next table?
+- How to use this table ?
+
 ```python
-class Solution:
-    def threeSum(self, nums: List[int]) -> List[List[int]]:
-        result = []
-        nums.sort()
-        # Find combinations where a + b + c = 0
-        # a = nums[i], b = nums[j], c = -(a + b)
-        for i in range(len(nums)):
-            # After sorting, if the first element is greater than zero, it's impossible to find a valid triplet
-            if nums[i] > 0:
-                break
-            if i > 0 and nums[i] == nums[i - 1]:  # Remove duplicate element a in the triplet
-                continue
-            d = {}
-            for j in range(i + 1, len(nums)):
-                if j > i + 2 and nums[j] == nums[j-1] == nums[j-2]:  # Remove duplicate element b in the triplet
-                    continue
-                c = 0 - (nums[i] + nums[j])
-                if c in d:
-                    result.append([nums[i], nums[j], c])
-                    d.pop(c)  # Remove duplicate element c in the triplet
-                else:
-                    d[nums[j]] = j
-        return result
-
+    def getNext(self, next: List[int], s: str) -> None:
+        j = 0
+        next[0] = 0
+        for i in range(1, len(s)):
+            while j > 0 and s[i] != s[j]:
+                j = next[j - 1]
+            if s[i] == s[j]:
+                j += 1
+            next[i] = j
+    
+    def strStr(self, haystack: str, needle: str) -> int:
+        if len(needle) == 0:
+            return 0
+        next = [0] * len(needle)
+        self.getNext(next, needle)
+        j = 0
+        for i in range(len(haystack)):
+            while j > 0 and haystack[i] != needle[j]:
+                j = next[j - 1]
+            if haystack[i] == needle[j]:
+                j += 1
+            if j == len(needle):
+                return i - len(needle) + 1
+        return -1
 ```
-Time: **O(n^2)**   
-Space: **O(n)**
+Time: **O(m+n)**   
+Space: **O(n)**  - prefix/next table
 
-
-
-## [x]LC 18 4sum
-[LC Link](https://leetcode.com/problems/4sum/description/)   
-[Cousrse Link](https://programmercarl.com/0018.%E5%9B%9B%E6%95%B0%E4%B9%8B%E5%92%8C.html)  
-
-- Add another layer of for loop: two nested for loops and two pointers
-- This maynot be the best solution with so many de-dupes. We can de-deupe with set while sacrifice space
-```python
-      def fourSum(self, nums: List[int], target: int) -> List[List[int]]:
-        nums.sort()
-        n = len(nums)
-        result = []
-        for i in range(n):
-            if nums[i] > target and nums[i] > 0 and target > 0:# prune
-                break
-            if i > 0 and nums[i] == nums[i-1]:# de-dupe
-                continue
-            for j in range(i+1, n):
-                if nums[i] + nums[j] > target and target > 0: #prune
-                    break
-                if j > i+1 and nums[j] == nums[j-1]: # de-dupe
-                    continue
-                left, right = j+1, n-1
-                while left < right:
-                    s = nums[i] + nums[j] + nums[left] + nums[right]
-                    if s == target:
-                        result.append([nums[i], nums[j], nums[left], nums[right]])
-                        while left < right and nums[left] == nums[left+1]:
-                            left += 1
-                        while left < right and nums[right] == nums[right-1]:
-                            right -= 1
-                        left += 1
-                        right -= 1
-                    elif s < target:
-                        left += 1
-                    else:
-                        right -= 1
-        return result
-```
-Time: **O(n^3)**   
-Space: **O(1)**
 
 
 ## Adds on
+- [ ] KMP practice: [Link](https://programmercarl.com/0459.%E9%87%8D%E5%A4%8D%E7%9A%84%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2.html)
+
+- String Summary :[Link](https://programmercarl.com/%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%80%BB%E7%BB%93.html#%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%97%E7%AC%A6%E4%B8%B2)
+- 2 pointers Summary: [Link](https://programmercarl.com/%E5%8F%8C%E6%8C%87%E9%92%88%E6%80%BB%E7%BB%93.html#%E6%95%B0%E7%BB%84%E7%AF%87)
