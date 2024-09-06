@@ -4,30 +4,16 @@
 ## LC 151 reverse-words-in-a-string
 [LC Link](https://leetcode.com/problems/reverse-words-in-a-string/description/)   
 [Cousrse Link](https://programmercarl.com/0151.%E7%BF%BB%E8%BD%AC%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%87%8C%E7%9A%84%E5%8D%95%E8%AF%8D.html)
-- Different from typical 4 sums. Cannot use one element several times.
-- Use one hash map to store possible sum of 2 arrays and save the time complexity from n^4 to n^2
+- Split can covert a string to list seperated by space
 
 ```python
-  def fourSumCount(self, nums1, nums2, nums3, nums4):
-      # Use a dictionary to store the sums of elements from nums1 and nums2
-      hashmap = dict()
-      for n1 in nums1:
-          for n2 in nums2:
-              hashmap[n1+n2] = hashmap.get(n1+n2, 0) + 1
-      
-      # If -(n1+n2) exists in the sums of nums3 and nums4, add to the result
-      count = 0
-      for n3 in nums3:
-          for n4 in nums4:
-              key = -n3 - n4
-              if key in hashmap:
-                  count += hashmap[key]
-      return count
-
-
+    def reverseWords(self, s):
+        words = s.split() #type(words) --- list
+        words = words[::-1] # reverse list
+        return ' '.join(words) #convert list to string
 ```
-Time: **O(n^2)**   
-Space: **O(n^2)**
+Time: **O(n)**   
+Space: **O(n)**
 
 
 ## LC 383 ransom-note
