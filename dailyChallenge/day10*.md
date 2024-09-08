@@ -1,5 +1,8 @@
 # Day10 Stack and Queue
 
+- Both are container adapter: can use diff containers(vector, dequeue, list)
+- Both are push/pop/top for O(1)
+
 ## LC 151 reverse-words-in-a-string
 [LC Link](https://leetcode.com/problems/reverse-words-in-a-string/description/)   
 [Cousrse Link](https://programmercarl.com/0151.%E7%BF%BB%E8%BD%AC%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%87%8C%E7%9A%84%E5%8D%95%E8%AF%8D.html)
