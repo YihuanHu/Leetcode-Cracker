@@ -32,12 +32,11 @@ Time: **O(n)**
 Space: **O(n)** 
 
 
-## LC 225 implement-stack-using-queues
-[LC Link](https://leetcode.com/problems/implement-stack-using-queues/description/)   
-[Cousrse Link](https://programmercarl.com/0225.%E7%94%A8%E9%98%9F%E5%88%97%E5%AE%9E%E7%8E%B0%E6%A0%88.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)  
+## LC 239 sliding-window-maximum
+[LC Link](https://leetcode.com/problems/sliding-window-maximum/description/)   
+[Cousrse Link](https://programmercarl.com/0239.%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E6%9C%80%E5%A4%A7%E5%80%BC.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)  
 
-- Pop only needs to find the topelement and remain all the elements in the same order by re-join the whole queue except the last two one
-- Not use Python list since it takes O(n) to pop(0)
+- Priority Queue
 
 ```python
 from collections import deque
