@@ -1,5 +1,4 @@
 # Day7 Hash Table Part 2
-# Hash
 
 ## LC 454 4sum-ii
 [LC Link](https://leetcode.com/problems/4sum-ii/description/)   
