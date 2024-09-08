@@ -2,60 +2,34 @@
 
 ## LC 150 evaluate-reverse-polish-notation
 [LC Link](https://leetcode.com/problems/evaluate-reverse-polish-notation/description/)   
-[Cousrse Link](https://programmercarl.com/0232.%E7%94%A8%E6%A0%88%E5%AE%9E%E7%8E%B0%E9%98%9F%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
-- Use two stacks:
-    - one for input: append when push
-    - one for output: reverse the order when pop and only add new element if output is empty to keep the order
-- **Copy one stack into another reverse the order while queue doesn't**
+[Cousrse Link](https://programmercarl.com/0150.%E9%80%86%E6%B3%A2%E5%85%B0%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC.html#%E6%80%9D%E8%B7%AF)
+-  when should we do one division? see operand
+-  what should we calculate?  store in a stack and pop the last two
+-  Be careful about - and / since it has order
   
 ```python
-class MyQueue:
+   def evalRPN(self, tokens: List[str]) -> int:
+        res = []
 
-    def __init__(self):
-        self.s1 = []
-        self.s2 = []
+        for i in tokens:
+            if i == "+":
+                res.append(res.pop() + res.pop())
+            elif i == "-":
+                a, b = res.pop(), res.pop()
+                res.append(b - a)
+            elif i == "*":
+                res.append(res.pop() * res.pop())
+            elif i == "/":
+                a, b = res.pop(), res.pop()
+                res.append(int(b / a))
+            else:
+                res.append(int(i))
 
-    """
-    Add an element to the end of the queue.
-    """
-    def push(self, x: int) -> None:
-        self.s1.append(x)
-
-    """
-    Remove and return the element at the front of the queue.
-    """
-    def pop(self) -> int:
-        # Call peek first to ensure s2 is not empty.
-        self.peek()
-        return self.s2.pop()
-
-    """
-    Return the element at the front of the queue.
-    """
-    def peek(self) -> int:
-        if not self.s2:
-            # Move elements from s1 to s2.
-            while self.s1:
-                self.s2.append(self.s1.pop())
-        return self.s2[-1]
-
-    """
-    Check if the queue is empty.
-    """
-    def empty(self) -> bool:
-        return not self.s1 and not self.s2
-
-
-# Your MyQueue object will be instantiated and called as such:
-# obj = MyQueue()
-# obj.push(x)
-# param_2 = obj.pop()
-# param_3 = obj.peek()
-# param_4 = obj.empty()
+        return res[0]
 
 ```
-Time: **O(n)** for peek and pop     **O(1)** for push and empty 
-Space: **O(n)** for push and **O(1)** for all other
+Time: **O(n)** 
+Space: **O(n)** 
 
 
 ## LC 225 implement-stack-using-queues
