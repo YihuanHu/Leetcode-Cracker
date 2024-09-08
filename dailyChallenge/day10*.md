@@ -1,5 +1,5 @@
 # Day10 Stack and Queue
-
+# Stack and Queue
 - Both are container adapter: can use diff containers(vector, dequeue, list)
 - Both are push/pop/top for O(1)
 
