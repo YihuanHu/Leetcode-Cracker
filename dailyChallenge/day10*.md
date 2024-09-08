@@ -150,8 +150,23 @@ Space: **O(n)** for push and **O(1)** for all other
 Time: **O(n)** 
 Space: **O(1)** 
 
-## Adds on
-- [ ] KMP practice: [Link](https://programmercarl.com/0459.%E9%87%8D%E5%A4%8D%E7%9A%84%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2.html)
 
-- String Summary :[Link](https://programmercarl.com/%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%80%BB%E7%BB%93.html#%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%97%E7%AC%A6%E4%B8%B2)
-- 2 pointers Summary: [Link](https://programmercarl.com/%E5%8F%8C%E6%8C%87%E9%92%88%E6%80%BB%E7%BB%93.html#%E6%95%B0%E7%BB%84%E7%AF%87)
+## LC 1047 remove-all-adjacent-duplicates-in-string
+[LC Link](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/description/)   
+[Cousrse Link](https://programmercarl.com/0020.%E6%9C%89%E6%95%88%E7%9A%84%E6%8B%AC%E5%8F%B7.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)  
+
+```python
+    def removeDuplicates(self, s: str) -> str:
+        stack = []
+        for i in s:
+            if stack and stack[-1] == i:
+                stack.pop()
+            else:
+                stack.append(i)
+
+        return "".join(stack) 
+```
+Time: **O(n)** 
+Space: **O(n)** 
+
+## Adds on
