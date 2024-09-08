@@ -58,46 +58,62 @@ class MyQueue:
 
 ```
 Time: **O(n)** for peek and pop     **O(1)** for push and empty 
-Space: **O(1)**
+Space: **O(n)** for push and **O(1)** for all other
 
 
 ## LC 225 implement-stack-using-queues
 [LC Link](https://leetcode.com/problems/implement-stack-using-queues/description/)   
-[Cousrse Link with Iteration](https://programmercarl.com/0028.%E5%AE%9E%E7%8E%B0strStr.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)  
-[Cousrse Link with DP](https://mp.weixin.qq.com/s/r9pbkMyFyMAvmkf4QnL-1g)  
-- Why use KMP algo?
-- What is prefix/next table?
-- How to find out next table?
-- How to use this table ?
+[Cousrse Link](https://programmercarl.com/0225.%E7%94%A8%E9%98%9F%E5%88%97%E5%AE%9E%E7%8E%B0%E6%A0%88.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)  
+
+- Pop only needs to find the topelement and remain all the elements in the same order by re-join the whole queue except the last two one
+- Not use Python list since it takes O(n) to pop(0)
 
 ```python
-    def getNext(self, next: List[int], s: str) -> None:
-        j = 0
-        next[0] = 0
-        for i in range(1, len(s)):
-            while j > 0 and s[i] != s[j]:
-                j = next[j - 1]
-            if s[i] == s[j]:
-                j += 1
-            next[i] = j
-    
-    def strStr(self, haystack: str, needle: str) -> int:
-        if len(needle) == 0:
-            return 0
-        next = [0] * len(needle)
-        self.getNext(next, needle)
-        j = 0
-        for i in range(len(haystack)):
-            while j > 0 and haystack[i] != needle[j]:
-                j = next[j - 1]
-            if haystack[i] == needle[j]:
-                j += 1
-            if j == len(needle):
-                return i - len(needle) + 1
-        return -1
+from collections import deque
+
+class MyStack:
+    def __init__(self):
+        self.q = deque()
+        self.top_elem = 0
+
+    """
+    Add an element to the top of the stack.
+    """
+    def push(self, x: int) -> None:
+        # x is added to the back of the queue but is the top of the stack.
+        self.q.append(x)
+        self.top_elem = x
+
+    """
+    Return the top element of the stack.
+    """
+    def top(self) -> int:
+        return self.top_elem
+
+    """
+    Remove and return the top element of the stack.
+    """
+    def pop(self) -> int:
+        size = len(self.q)
+        # Leave the last 2 elements in the queue
+        while size > 2:
+            self.q.append(self.q.popleft())
+            size -= 1
+        # Record the new top element
+        self.top_elem = self.q[0]
+        self.q.append(self.q.popleft())
+        # Remove the previous top element
+        return self.q.popleft()
+
+    """
+    Check if the stack is empty.
+    """
+    def empty(self) -> bool:
+        return len(self.q) == 0
+
 ```
-Time: **O(m+n)**   
-Space: **O(n)**  - prefix/next table
+Time: **O(n)** for pop    **O(1)** for all other
+Space: **O(n)** for push and **O(1)** for all other
 
 
 
