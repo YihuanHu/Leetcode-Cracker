@@ -117,6 +117,39 @@ Space: **O(n)** for push and **O(1)** for all other
 
 
 
+## LC 20 valid-parentheses
+[LC Link](https://leetcode.com/problems/valid-parentheses/description/)   
+[Cousrse Link](https://programmercarl.com/0020.%E6%9C%89%E6%95%88%E7%9A%84%E6%8B%AC%E5%8F%B7.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)  
+
+-  Use stack(save more space) or Queue
+-  Consider three cases:
+    - unmatch parenthsis
+    - extra parenthesis
+    - miss parenthesis
+
+```python
+    def isValid(self, s: str) -> bool:
+
+        mapping = {
+            '(': ')',
+            '[': ']',
+            '{': '}'
+        }
+        stack = []
+
+        for i in s:
+            if i in mapping.keys():
+                stack.append(mapping[i])
+            elif not stack or i != stack[-1]:
+                return False
+            else:
+                stack.pop()
+        
+        return not stack
+```
+Time: **O(n)** 
+Space: **O(1)** 
+
 ## Adds on
 - [ ] KMP practice: [Link](https://programmercarl.com/0459.%E9%87%8D%E5%A4%8D%E7%9A%84%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2.html)
 
