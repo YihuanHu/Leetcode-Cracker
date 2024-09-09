@@ -1,4 +1,12 @@
 # Day11 Stack and Queue Part2
+- Priority Queue:
+  - min heap: from smallest to max. pop the smallest
+  - max heap: reverse
+  - functions:
+      - `import heapq`
+      - pop: `heapq.heappush(pq, (2, 'task2'))` => log(n)
+      - push: `heapq.heappop(pq)` => log(n)
+      - convert to heap: `heapq.heapify(nums)`
 
 ## LC 150 evaluate-reverse-polish-notation
 [LC Link](https://leetcode.com/problems/evaluate-reverse-polish-notation/description/)   
@@ -88,56 +96,42 @@ Time: **O(n)**
 Space: **O(k)** for maintianing the window
 
 
-## LC 20 valid-parentheses
-[LC Link](https://leetcode.com/problems/valid-parentheses/description/)   
-[Cousrse Link](https://programmercarl.com/0020.%E6%9C%89%E6%95%88%E7%9A%84%E6%8B%AC%E5%8F%B7.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)  
+## LC 347 top-k-frequent-elements
+[LC Link](https://leetcode.com/problems/top-k-frequent-elements/description/)   
+[Cousrse Link](https://programmercarl.com/0347.%E5%89%8DK%E4%B8%AA%E9%AB%98%E9%A2%91%E5%85%83%E7%B4%A0.html)  
 
--  Use stack(save more space) or Queue
--  Consider three cases:
-    - unmatch parenthsis
-    - extra parenthesis
-    - miss parenthesis
+- Use min-heap to pop the smallest and keep the more frequent nums
+
 
 ```python
-    def isValid(self, s: str) -> bool:
+ import heapq
 
-        mapping = {
-            '(': ')',
-            '[': ']',
-            '{': '}'
-        }
-        stack = []
-
-        for i in s:
-            if i in mapping.keys():
-                stack.append(mapping[i])
-            elif not stack or i != stack[-1]:
-                return False
-            else:
-                stack.pop()
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        # Step 1: Count the frequency of each element in nums
+        frequency_map = {}  # This will store the count of each element in nums
+        for i in range(len(nums)):
+            frequency_map[nums[i]] = frequency_map.get(nums[i], 0) + 1
         
-        return not stack
+        # Step 2: Use a min-heap to keep track of the top k most frequent elements
+        min_heap = []  # Initialize a min-heap of size k
+
+        # Step 3: Add elements to the heap based on their frequency
+        for key, freq in frequency_map.items():
+            heapq.heappush(min_heap, (freq, key))  # Push (frequency, element) into the heap
+            if len(min_heap) > k:  # If the heap size exceeds k, remove the smallest element
+                heapq.heappop(min_heap)
+        
+        # Step 4: Extract the top k most frequent elements from the heap
+        result = [0] * k  # Initialize the result array
+        for i in range(k - 1, -1, -1):
+            result[i] = heapq.heappop(min_heap)[1]  # Pop the element with the highest frequency
+        return result
+
 ```
-Time: **O(n)** 
-Space: **O(1)** 
-
-
-## LC 1047 remove-all-adjacent-duplicates-in-string
-[LC Link](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/description/)   
-[Cousrse Link](https://programmercarl.com/0020.%E6%9C%89%E6%95%88%E7%9A%84%E6%8B%AC%E5%8F%B7.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)  
-
-```python
-    def removeDuplicates(self, s: str) -> str:
-        stack = []
-        for i in s:
-            if stack and stack[-1] == i:
-                stack.pop()
-            else:
-                stack.append(i)
-
-        return "".join(stack) 
-```
-Time: **O(n)** 
+Time: **O(nlogn)** 
 Space: **O(n)** 
 
+
 ## Adds on
+- [ ] Stack & Queue Review [Link](https://programmercarl.com/%E6%A0%88%E4%B8%8E%E9%98%9F%E5%88%97%E6%80%BB%E7%BB%93.html#%E6%A0%88%E7%BB%8F%E5%85%B8%E9%A2%98%E7%9B%AE)
