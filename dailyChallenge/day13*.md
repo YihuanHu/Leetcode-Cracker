@@ -1,4 +1,4 @@
-# Day12 Binary Tree
+# Day13 Binary Tree
 - Priority Queue:
   - min heap: from smallest to max. pop the smallest
   - max heap: reverse
