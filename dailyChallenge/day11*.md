@@ -36,55 +36,56 @@ Space: **O(n)**
 [LC Link](https://leetcode.com/problems/sliding-window-maximum/description/)   
 [Cousrse Link](https://programmercarl.com/0239.%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E6%9C%80%E5%A4%A7%E5%80%BC.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)  
 
-- Priority Queue
+- Only maintain the max values
+- Monotonic stack: monotonic increase/decrease
+  - push: delete all the prev elements smaller than the curr
+  - pop: only pop if this is curr max since all the other smaller has already been deleted when push
+  - top: the max element is at the front
 
 ```python
 from collections import deque
 
-class MyStack:
+class MyQueue:
+    # Monotonic queue (decreasing order)
     def __init__(self):
-        self.q = deque()
-        self.top_elem = 0
+        self.queue = deque()  # Use deque for efficient pop from both ends
+    
+    def pop(self, value):
+        # Pop from the front if it matches the value being removed from the window
+        if self.queue and value == self.queue[0]:
+            self.queue.popleft()
+    
+    def push(self, value):
+        # Maintain decreasing order in the queue by popping smaller elements from the back
+        while self.queue and value > self.queue[-1]:
+            self.queue.pop()
+        self.queue.append(value)
+    
+    def front(self):
+        # The front of the queue is always the maximum value
+        return self.queue[0]
 
-    """
-    Add an element to the top of the stack.
-    """
-    def push(self, x: int) -> None:
-        # x is added to the back of the queue but is the top of the stack.
-        self.q.append(x)
-        self.top_elem = x
-
-    """
-    Return the top element of the stack.
-    """
-    def top(self) -> int:
-        return self.top_elem
-
-    """
-    Remove and return the top element of the stack.
-    """
-    def pop(self) -> int:
-        size = len(self.q)
-        # Leave the last 2 elements in the queue
-        while size > 2:
-            self.q.append(self.q.popleft())
-            size -= 1
-        # Record the new top element
-        self.top_elem = self.q[0]
-        self.q.append(self.q.popleft())
-        # Remove the previous top element
-        return self.q.popleft()
-
-    """
-    Check if the stack is empty.
-    """
-    def empty(self) -> bool:
-        return len(self.q) == 0
+class Solution:
+    def maxSlidingWindow(self, nums, k):
+        que = MyQueue()  # Initialize the monotonic queue
+        result = []
+        
+        # Populate the first k elements
+        for i in range(k):
+            que.push(nums[i])
+        result.append(que.front())  # Add the maximum of the first window
+        
+        # Process the remaining elements
+        for i in range(k, len(nums)):
+            que.pop(nums[i - k])  # Remove the element that is sliding out of the window
+            que.push(nums[i])      # Add the new element to the window
+            result.append(que.front())  # Append the current max to the result
+        
+        return result
 
 ```
-Time: **O(n)** for pop    **O(1)** for all other
-Space: **O(n)** for push and **O(1)** for all other
-
+Time: **O(n)** 
+Space: **O(k)** for maintianing the window
 
 
 ## LC 20 valid-parentheses
