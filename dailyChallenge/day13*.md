@@ -1,12 +1,48 @@
 # Day13 Binary Tree
-- Priority Queue:
-  - min heap: from smallest to max. pop the smallest
-  - max heap: reverse
-  - functions:
-      - `import heapq`
-      - pop: `heapq.heappush(pq, (2, 'task2'))` => log(n)
-      - push: `heapq.heappop(pq)` => log(n)
-      - convert to heap: `heapq.heapify(nums)`
+# Binary Tree
+- Binary Tree Kinds
+  - Full Binary Tree (Strictly Binary Tree): every node has either 0 or 2 children, which means no node has exactly one child. 2^k -1 nodes in total.
+```python
+      1
+     / \
+    2   3
+   / \   \
+  4   5   6
+```
+  - Complete Binary Tree: all levels are completely filled except possibly the last, and the last level is filled from the left.
+```python
+       1
+      / \
+     2   3
+    / \  /
+   4   5 6
+```
+  - Binary Search Tree: for every node, the nodes in the left subtree have values less than the node’s value, and the nodes in the right subtree have values greater
+```python
+       5
+      / \
+     3   8
+    / \ / \
+   2  4 7  9
+```
+
+  - Balanced Binary Tree: the height of the left and right subtrees of every node differ by at most one e.g AVL tree and red black tree
+```python
+# AVL tree
+       3
+      / \
+     2   4
+    /
+   1
+
+# red black
+      B5
+     /  \
+   R3    R7
+  /  \   / \
+ B2  B4 B6  B8
+```
+
 
 ## LC 150 evaluate-reverse-polish-notation
 [LC Link](https://leetcode.com/problems/evaluate-reverse-polish-notation/description/)   
