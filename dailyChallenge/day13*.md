@@ -1,7 +1,7 @@
 # Day13 Binary Tree
 # Binary Tree
-- Binary Tree Kinds
-  - Full Binary Tree (Strictly Binary Tree): every node has either 0 or 2 children, which means no node has exactly one child. 2^k -1 nodes in total.
+## Binary Tree Kinds
+- Full Binary Tree (Strictly Binary Tree): every node has either 0 or 2 children, which means no node has exactly one child. 2^k -1 nodes in total.
 ```python
       1
      / \
@@ -42,7 +42,17 @@
   /  \   / \
  B2  B4 B6  B8
 ```
+## Storage
+- Consecutive: array 
+- Nonconsecutive: pointer
 
+## Iteration
+- Depth-First Traversal
+    - Pre-order Traversal (recursive method, iterative method) (root, left, right)
+    - In-order Traversal (recursive method, iterative method) (left, root, right)
+    - Post-order Traversal (recursive method, iterative method) (left, right, root)
+- Breadth-First Traversal
+    - Level-order Traversal (iterative method)
 
 ## LC 150 evaluate-reverse-polish-notation
 [LC Link](https://leetcode.com/problems/evaluate-reverse-polish-notation/description/)   
