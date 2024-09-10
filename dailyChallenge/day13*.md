@@ -47,11 +47,11 @@
 - Nonconsecutive: pointer
 
 ## Iteration
-- Depth-First Traversal
+- Depth-First Traversal **Stack**
     - Pre-order Traversal (recursive method, iterative method) (root, left, right)
     - In-order Traversal (recursive method, iterative method) (left, root, right)
     - Post-order Traversal (recursive method, iterative method) (left, right, root)
-- Breadth-First Traversal
+- Breadth-First Traversal **Queue**
     - Level-order Traversal (iterative method)
 
 ##  recursive traversal
