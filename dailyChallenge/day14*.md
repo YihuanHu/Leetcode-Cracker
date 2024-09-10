@@ -1,61 +1,8 @@
 # Day14 Binary Tree Part2
-# Binary Tree
-## Binary Tree Kinds
-- Full Binary Tree (Strictly Binary Tree): every node has either 0 or 2 children, which means no node has exactly one child. 2^k -1 nodes in total.
-```python
-      1
-     / \
-    2   3
-   / \   \
-  4   5   6
-```
-  - Complete Binary Tree: all levels are completely filled except possibly the last, and the last level is filled from the left.
-```python
-       1
-      / \
-     2   3
-    / \  /
-   4   5 6
-```
-  - Binary Search Tree: for every node, the nodes in the left subtree have values less than the node’s value, and the nodes in the right subtree have values greater
-```python
-       5
-      / \
-     3   8
-    / \ / \
-   2  4 7  9
-```
 
-  - Balanced Binary Tree: the height of the left and right subtrees of every node differ by at most one e.g AVL tree and red black tree
-```python
-# AVL tree
-       3
-      / \
-     2   4
-    /
-   1
-
-# red black
-      B5
-     /  \
-   R3    R7
-  /  \   / \
- B2  B4 B6  B8
-```
-## Storage
-- Consecutive: array 
-- Nonconsecutive: pointer
-
-## Iteration
-- Depth-First Traversal
-    - Pre-order Traversal (recursive method, iterative method) (root, left, right)
-    - In-order Traversal (recursive method, iterative method) (left, root, right)
-    - Post-order Traversal (recursive method, iterative method) (left, right, root)
-- Breadth-First Traversal
-    - Level-order Traversal (iterative method)
-
-##  recursive traversal
-[Cousrse Link](https://programmercarl.com/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E9%80%92%E5%BD%92%E9%81%8D%E5%8E%86.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)
+## LC 226 invert-binary-tree 
+[Link](https://leetcode.com/problems/invert-binary-tree/description/)
+[Cousrse Link](https://programmercarl.com/0226.%E7%BF%BB%E8%BD%AC%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
 -  Preorder
 ```python
 class Solution:
@@ -89,6 +36,23 @@ class Solution:
         return res
 ```
 - Postorder
+```python
+class Solution:
+    def postorderTraversal(self, root: TreeNode) -> List[int]:
+        res = []
+        
+        def dfs(node):
+            if node is None:
+                return
+            
+            dfs(node.left)
+            dfs(node.right)
+            res.append(node.val)
+
+        dfs(root)
+        return res
+```
+- Levelorder
 ```python
 class Solution:
     def postorderTraversal(self, root: TreeNode) -> List[int]:
