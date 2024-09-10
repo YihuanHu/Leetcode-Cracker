@@ -54,92 +54,130 @@
 - Breadth-First Traversal
     - Level-order Traversal (iterative method)
 
-## LC 150 evaluate-reverse-polish-notation
-[LC Link](https://leetcode.com/problems/evaluate-reverse-polish-notation/description/)   
-[Cousrse Link](https://programmercarl.com/0150.%E9%80%86%E6%B3%A2%E5%85%B0%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC.html#%E6%80%9D%E8%B7%AF)
--  when should we do one division? see operand
--  what should we calculate?  store in a stack and pop the last two
--  Be careful about - and / since it has order
-  
+##  recursive traversal
+[Cousrse Link](https://programmercarl.com/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E9%80%92%E5%BD%92%E9%81%8D%E5%8E%86.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)
+-  Preorder
 ```python
-   def evalRPN(self, tokens: List[str]) -> int:
-        res = []
-
-        for i in tokens:
-            if i == "+":
-                res.append(res.pop() + res.pop())
-            elif i == "-":
-                a, b = res.pop(), res.pop()
-                res.append(b - a)
-            elif i == "*":
-                res.append(res.pop() * res.pop())
-            elif i == "/":
-                a, b = res.pop(), res.pop()
-                res.append(int(b / a))
-            else:
-                res.append(int(i))
-
-        return res[0]
-
-```
-Time: **O(n)** 
-Space: **O(n)** 
-
-
-## LC 239 sliding-window-maximum
-[LC Link](https://leetcode.com/problems/sliding-window-maximum/description/)   
-[Cousrse Link](https://programmercarl.com/0239.%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E6%9C%80%E5%A4%A7%E5%80%BC.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)  
-
-- Only maintain the max values and make sure all the values are in order inside the queue
-- Monotonic queue: monotonic increase/decrease
-  - push: delete all the prev elements smaller than the curr
-  - pop: only pop if this is curr max since all the other smaller has already been deleted when push
-  - top: the max element is at the front
-
-```python
-from collections import deque
-
-class MyQueue:
-    # Monotonic queue (decreasing order)
-    def __init__(self):
-        self.queue = deque()  # Use deque for efficient pop from both ends
-    
-    def pop(self, value):
-        # Pop from the front if it matches the value being removed from the window
-        if self.queue and value == self.queue[0]:
-            self.queue.popleft()
-    
-    def push(self, value):
-        # Maintain decreasing order in the queue by popping smaller elements from the back
-        while self.queue and value > self.queue[-1]:
-            self.queue.pop()
-        self.queue.append(value)
-    
-    def front(self):
-        # The front of the queue is always the maximum value
-        return self.queue[0]
-
 class Solution:
-    def maxSlidingWindow(self, nums, k):
-        que = MyQueue()  # Initialize the monotonic queue
-        result = []
+    def preorderTraversal(self, root: TreeNode) -> List[int]:
+        res = []
         
-        # Populate the first k elements
-        for i in range(k):
-            que.push(nums[i])
-        result.append(que.front())  # Add the maximum of the first window
-        
-        # Process the remaining elements
-        for i in range(k, len(nums)):
-            que.pop(nums[i - k])  # Remove the element that is sliding out of the window
-            que.push(nums[i])      # Add the new element to the window
-            result.append(que.front())  # Append the current max to the result
-        
-        return result
-
+        def dfs(node):
+            if node is None:
+                return
+            
+            res.append(node.val)
+            dfs(node.left)
+            dfs(node.right)
+        dfs(root)
+        return res
 ```
-Time: **O(n)** 
-Space: **O(k)** for maintianing the window
+-  Inorder
+```python
+class Solution:
+    def inorderTraversal(self, root: TreeNode) -> List[int]:
+        res = []
+        
+        def dfs(node):
+            if node is None:
+                return
+            
+            dfs(node.left)
+            res.append(node.val)
+            dfs(node.right)
+        dfs(root)
+        return res
+```
+- Postorder
+```python
+class Solution:
+    def postorderTraversal(self, root: TreeNode) -> List[int]:
+        res = []
+        
+        def dfs(node):
+            if node is None:
+                return
+            
+            dfs(node.left)
+            dfs(node.right)
+            res.append(node.val)
+
+        dfs(root)
+        return res
+```
+
+
+##  iterative traversal
+[Cousrse Link](https://programmercarl.com/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E8%BF%AD%E4%BB%A3%E9%81%8D%E5%8E%86.html)
+-  Preorder
+```python
+class Solution:
+    def preorderTraversal(self, root: TreeNode) -> List[int]:
+        result = []
+        st= []
+        if root:
+            st.append(root)
+        while st:
+            node = st.pop()
+            if node != None:
+                if node.right: #右
+                    st.append(node.right)
+                if node.left: #左
+                    st.append(node.left)
+                st.append(node) #中
+                st.append(None)
+            else:
+                node = st.pop()
+                result.append(node.val)
+        return result
+```
+-  Inorder
+```python
+class Solution:
+    def inorderTraversal(self, root: TreeNode) -> List[int]:
+        result = []
+        st = []
+        if root:
+            st.append(root)
+        while st:
+            node = st.pop()
+            if node != None:
+                if node.right: #添加右节点（空节点不入栈）
+                    st.append(node.right)
+                
+                st.append(node) #添加中节点
+                st.append(None) #中节点访问过，但是还没有处理，加入空节点做为标记。
+                
+                if node.left: #添加左节点（空节点不入栈）
+                    st.append(node.left)
+            else: #只有遇到空节点的时候，才将下一个节点放进结果集
+                node = st.pop() #重新取出栈中元素
+                result.append(node.val) #加入到结果集
+        return result
+```
+- Postorder
+```python
+class Solution:
+    def postorderTraversal(self, root: TreeNode) -> List[int]:
+        result = []
+        st = []
+        if root:
+            st.append(root)
+        while st:
+            node = st.pop()
+            if node != None:
+                st.append(node) #中
+                st.append(None)
+                
+                if node.right: #右
+                    st.append(node.right)
+                if node.left: #左
+                    st.append(node.left)
+            else:
+                node = st.pop()
+                result.append(node.val)
+        return result
+```
 
 
 ## LC 347 top-k-frequent-elements
