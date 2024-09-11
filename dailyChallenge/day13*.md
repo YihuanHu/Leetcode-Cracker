@@ -110,7 +110,7 @@ class Solution:
 ##  iterative traversal
 [Cousrse Link](https://programmercarl.com/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E8%BF%AD%E4%BB%A3%E9%81%8D%E5%8E%86.html)
 [Unified Format](https://programmercarl.com/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E7%BB%9F%E4%B8%80%E8%BF%AD%E4%BB%A3%E6%B3%95.html)
--  Preorder
+-  Preorder: since this is stack, we need to reverse the order
 ```python
 class Solution:
     def preorderTraversal(self, root: TreeNode) -> List[int]:
