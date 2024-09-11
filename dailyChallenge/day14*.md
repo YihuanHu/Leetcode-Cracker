@@ -1,5 +1,9 @@
 
 # Day14 Binary Tree Part2
+# recursive 3 steps
+1. Determine the parameters and return value of the recursive function.
+2. Define the base (termination) condition.
+3.Establish the logic for a single layer of recursion.
 
 ## LC 226 invert-binary-tree 
 [Link](https://leetcode.com/problems/invert-binary-tree/description/)
