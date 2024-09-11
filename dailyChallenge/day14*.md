@@ -1,3 +1,4 @@
+
 # Day14 Binary Tree Part2
 
 ## LC 226 invert-binary-tree 
@@ -6,68 +7,82 @@
 -  Preorder
 ```python
 class Solution:
-    def preorderTraversal(self, root: TreeNode) -> List[int]:
-        res = []
-        
-        def dfs(node):
-            if node is None:
-                return
-            
-            res.append(node.val)
-            dfs(node.left)
-            dfs(node.right)
-        dfs(root)
-        return res
+    def invertTree(self, root: TreeNode) -> TreeNode:
+        if not root:
+            return None
+        root.left, root.right = root.right, root.left
+        self.invertTree(root.left)
+        self.invertTree(root.right)
+        return root
+
+
+class Solution:
+    def invertTree(self, root: TreeNode) -> TreeNode:
+        if not root:
+            return None      
+        stack = [root]        
+        while stack:
+            node = stack.pop()   
+            node.left, node.right = node.right, node.left                   
+            if node.left:
+                stack.append(node.left)
+            if node.right:
+                stack.append(node.right)  
+        return root
 ```
+
 -  Inorder
 ```python
 class Solution:
-    def inorderTraversal(self, root: TreeNode) -> List[int]:
-        res = []
-        
-        def dfs(node):
-            if node is None:
-                return
-            
-            dfs(node.left)
-            res.append(node.val)
-            dfs(node.right)
-        dfs(root)
-        return res
+    def invertTree(self, root: TreeNode) -> TreeNode:
+        if not root:
+            return None
+        self.invertTree(root.left)
+        root.left, root.right = root.right, root.left
+        self.invertTree(root.left) // since it already being inverted
+        return root
+
+
+class Solution:
+    def invertTree(self, root: TreeNode) -> TreeNode:
+        if not root:
+            return None      
+        stack = [root]        
+        while stack:
+            node = stack.pop()                   
+            if node.left:
+                stack.append(node.left)
+            node.left, node.right = node.right, node.left               
+            if node.left:
+                stack.append(node.left)       
+        return root
 ```
+
 - Postorder
 ```python
 class Solution:
-    def postorderTraversal(self, root: TreeNode) -> List[int]:
-        res = []
-        
-        def dfs(node):
-            if node is None:
-                return
-            
-            dfs(node.left)
-            dfs(node.right)
-            res.append(node.val)
+    def invertTree(self, root: TreeNode) -> TreeNode:
+        if not root:
+            return None
+        self.invertTree(root.left)
+        self.invertTree(root.right)
+        root.left, root.right = root.right, root.left
+        return root
 
-        dfs(root)
-        return res
-```
-- Levelorder
-```python
 class Solution:
-    def postorderTraversal(self, root: TreeNode) -> List[int]:
-        res = []
-        
-        def dfs(node):
-            if node is None:
-                return
-            
-            dfs(node.left)
-            dfs(node.right)
-            res.append(node.val)
-
-        dfs(root)
-        return res
+    def invertTree(self, root: TreeNode) -> TreeNode:
+        if not root:
+            return None      
+        stack = [root]        
+        while stack:
+            node = stack.pop()                   
+            if node.left:
+                stack.append(node.left)
+            if node.right:
+                stack.append(node.right)  
+            node.left, node.right = node.right, node.left               
+     
+        return root
 ```
 
 
