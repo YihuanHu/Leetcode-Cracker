@@ -90,125 +90,168 @@ class Solution:
 ```
 
 
-##  iterative traversal
-[Cousrse Link](https://programmercarl.com/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E8%BF%AD%E4%BB%A3%E9%81%8D%E5%8E%86.html)
-[Unified Format](https://programmercarl.com/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E7%BB%9F%E4%B8%80%E8%BF%AD%E4%BB%A3%E6%B3%95.html)
--  Preorder
+##  LC 101 symmetric-tree
+[Link](https://leetcode.com/problems/symmetric-tree/description/)   
+[Cousrse Link](https://programmercarl.com/0101.%E5%AF%B9%E7%A7%B0%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E6%80%9D%E8%B7%AF)
+
+-  Postorder
 ```python
 class Solution:
-    def preorderTraversal(self, root: TreeNode) -> List[int]:
-        result = []
-        st= []
-        if root:
-            st.append(root)
-        while st:
-            node = st.pop()
-            if node != None:
-                if node.right: #右
-                    st.append(node.right)
-                if node.left: #左
-                    st.append(node.left)
-                st.append(node) #中
-                st.append(None)
-            else:
-                node = st.pop()
-                result.append(node.val)
-        return result
+    def isSymmetric(self, root: TreeNode) -> bool:
+        if not root:
+            return True
+        return self.compare(root.left, root.right)
+        
+    def compare(self, left, right):
+        #首先排除空节点的情况
+        if left == None and right != None: return False
+        elif left != None and right == None: return False
+        elif left == None and right == None: return True
+        #排除了空节点，再排除数值不相同的情况
+        elif left.val != right.val: return False
+        
+        #此时就是：左右节点都不为空，且数值相同的情况
+        #此时才做递归，做下一层的判断
+        outside = self.compare(left.left, right.right) #左子树：左、 右子树：右
+        inside = self.compare(left.right, right.left) #左子树：右、 右子树：左
+        isSame = outside and inside #左子树：中、 右子树：中 （逻辑处理）
+        return isSame
 ```
--  Inorder
+-  Level order: the level value is symmetric
 ```python
 class Solution:
-    def inorderTraversal(self, root: TreeNode) -> List[int]:
-        result = []
-        st = []
-        if root:
-            st.append(root)
-        while st:
-            node = st.pop()
-            if node != None:
-                if node.right: #添加右节点（空节点不入栈）
-                    st.append(node.right)
-                
-                st.append(node) #添加中节点
-                st.append(None) #中节点访问过，但是还没有处理，加入空节点做为标记。
-                
-                if node.left: #添加左节点（空节点不入栈）
-                    st.append(node.left)
-            else: #只有遇到空节点的时候，才将下一个节点放进结果集
-                node = st.pop() #重新取出栈中元素
-                result.append(node.val) #加入到结果集
-        return result
+    def isSymmetric(self, root: TreeNode) -> bool:
+        if not root:
+            return True
+        
+        queue = collections.deque([root.left, root.right])
+        
+        while queue:
+            level_size = len(queue)
+            
+            if level_size % 2 != 0:
+                return False
+            
+            level_vals = []
+            for i in range(level_size):
+                node = queue.popleft()
+                if node:
+                    level_vals.append(node.val)
+                    queue.append(node.left)
+                    queue.append(node.right)
+                else:
+                    level_vals.append(None)
+                    
+            if level_vals != level_vals[::-1]:
+                return False
+            
+        return True
 ```
-- Postorder
+- Iterative with Stack
 ```python
 class Solution:
-    def postorderTraversal(self, root: TreeNode) -> List[int]:
-        result = []
-        st = []
-        if root:
-            st.append(root)
+    def isSymmetric(self, root: TreeNode) -> bool:
+        if not root:
+            return True
+        st = [] #这里改成了栈
+        st.append(root.left)
+        st.append(root.right)
         while st:
-            node = st.pop()
-            if node != None:
-                st.append(node) #中
-                st.append(None)
-                
-                if node.right: #右
-                    st.append(node.right)
-                if node.left: #左
-                    st.append(node.left)
-            else:
-                node = st.pop()
-                result.append(node.val)
-        return result
+            rightNode = st.pop()
+            leftNode = st.pop()
+            if not leftNode and not rightNode:
+                continue
+            if not leftNode or not rightNode or leftNode.val != rightNode.val:
+                return False
+            st.append(leftNode.left)
+            st.append(rightNode.right)
+            st.append(leftNode.right)
+            st.append(rightNode.left)
+        return True
 ```
 
 
-##  level order traversal
+## LC 104 maximum-depth-of-binary-tree
+[Link](https://leetcode.com/problems/maximum-depth-of-binary-tree/description/)
 [Cousrse Link](https://programmercarl.com/0102.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86.html#_102-%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86)
 -  Use Queue
 -  Iterative:
 ```python
 class Solution:
-    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+    def maxDepth(self, root: TreeNode) -> int:
         if not root:
-            return []
+            return 0
+        
+        depth = 0
         queue = collections.deque([root])
-        result = []
+        
         while queue:
-            level = []
+            depth += 1
             for _ in range(len(queue)):
-                cur = queue.popleft()
-                level.append(cur.val)
-                if cur.left:
-                    queue.append(cur.left)
-                if cur.right:
-                    queue.append(cur.right)
-            result.append(level)
-        return result
+                node = queue.popleft()
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+        
+        return depth
 ```
--  Recursive*:
+-  Recursive:
 ```python
 class Solution:
-    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+    def maxdepth(self, root: treenode) -> int:
+        return self.getdepth(root)
+        
+    def getdepth(self, node):
+        if not node:
+            return 0
+        leftheight = self.getdepth(node.left) #左
+        rightheight = self.getdepth(node.right) #右
+        height = 1 + max(leftheight, rightheight) #中
+        return height
+
+```
+
+## LC 104 maximum-depth-of-binary-tree
+[Link](https://leetcode.com/problems/maximum-depth-of-binary-tree/description/)
+[Cousrse Link](https://programmercarl.com/0102.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86.html#_102-%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86)
+-  Use Queue
+-  Iterative:
+```python
+class Solution:
+    def maxDepth(self, root: TreeNode) -> int:
         if not root:
-            return []
+            return 0
+        
+        depth = 0
+        queue = collections.deque([root])
+        
+        while queue:
+            depth += 1
+            for _ in range(len(queue)):
+                node = queue.popleft()
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+        
+        return depth
+```
+-  Recursive:
+```python
+class Solution:
+    def maxdepth(self, root: treenode) -> int:
+        return self.getdepth(root)
+        
+    def getdepth(self, node):
+        if not node:
+            return 0
+        leftheight = self.getdepth(node.left) #左
+        rightheight = self.getdepth(node.right) #右
+        height = 1 + max(leftheight, rightheight) #中
+        return height
 
-        levels = []
-
-        def traverse(node, level):
-            if not node:
-                return
-
-            if len(levels) == level:
-                levels.append([])
-
-            levels[level].append(node.val)
-            traverse(node.left, level + 1)
-            traverse(node.right, level + 1)
-
-        traverse(root, 0)
-        return levels
 ```
 ## Adds on
-- [ ] 10 level order practice [Link](https://programmercarl.com/0102.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86.html#_429-n%E5%8F%89%E6%A0%91%E7%9A%84%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86)
+- [ ] LC 100 & 572 for symmetry tree
+- [ ] LC 559 for findig depth
