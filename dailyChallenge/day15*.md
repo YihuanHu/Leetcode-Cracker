@@ -1,38 +1,34 @@
 
 # Day15 Binary Tree Part3
-# recursive 3 steps
-1. Determine the parameters and return value of the recursive function.
-2. Define the base (termination) condition.
-3.Establish the logic for a single layer of recursion.
+- 因为求深度可以从上到下去查 所以需要前序遍历（中左右），而高度只能从下到上去查，所以只能后序遍历（左右中）
 
-## LC 226 invert-binary-tree 
-[Link](https://leetcode.com/problems/invert-binary-tree/description/)
-[Cousrse Link](https://programmercarl.com/0226.%E7%BF%BB%E8%BD%AC%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
--  Preorder
+## LC 110 balanced-binary-tree
+[Link](https://leetcode.com/problems/balanced-binary-tree/description/)
+[Cousrse Link](https://programmercarl.com/0110.%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E9%A2%98%E5%A4%96%E8%AF%9D)
+-  Postorder: we need to find the diff of height
 ```python
 class Solution:
-    def invertTree(self, root: TreeNode) -> TreeNode:
-        if not root:
-            return None
-        root.left, root.right = root.right, root.left
-        self.invertTree(root.left)
-        self.invertTree(root.right)
-        return root
+    def isBalanced(self, root: TreeNode) -> bool:
+        if self.get_height(root) != -1:
+            return True
+        else:
+            return False
 
-
-class Solution:
-    def invertTree(self, root: TreeNode) -> TreeNode:
+    def get_height(self, root: TreeNode) -> int:
+        # Base Case
         if not root:
-            return None      
-        stack = [root]        
-        while stack:
-            node = stack.pop()   
-            node.left, node.right = node.right, node.left                   
-            if node.left:
-                stack.append(node.left)
-            if node.right:
-                stack.append(node.right)  
-        return root
+            return 0
+        # 左
+        if (left_height := self.get_height(root.left)) == -1:
+            return -1
+        # 右
+        if (right_height := self.get_height(root.right)) == -1:
+            return -1
+        # 中
+        if abs(left_height - right_height) > 1:
+            return -1
+        else:
+            return 1 + max(left_height, right_height)
 ```
 
 -  Inorder
