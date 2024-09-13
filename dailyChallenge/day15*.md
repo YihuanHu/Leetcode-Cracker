@@ -79,53 +79,31 @@ class Solution:
 
 
 
-## LC 104 maximum-depth-of-binary-tree
-[Link](https://leetcode.com/problems/maximum-depth-of-binary-tree/description/)
-[Cousrse Link](https://programmercarl.com/0102.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86.html#_102-%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%B1%82%E5%BA%8F%E9%81%8D%E5%8E%86)
-- **Preorder traversal can be used to calculate the depth of a binary tree node.**
-    - Depth refers to how far a node is from the root.
-    - As you traverse from the root to any node, you're essentially following the path from the root downward, keeping track of the levels as you go
-- **Postorder traversal can be used to calculate the height of a binary tree node.**
-    - Height refers to how far a node is from the leaf nodes
-    - By the time the traversal reaches the parent node, it has already calculated the height of its children, allowing the parent node to determine its own height as "1 + the maximum height of its children."
-- The height of leaf node is the max depth
+## LC 404 sum-of-left-leaves
+[Link](https://leetcode.com/problems/sum-of-left-leaves/description/)
+[Cousrse Link](https://programmercarl.com/0404.%E5%B7%A6%E5%8F%B6%E5%AD%90%E4%B9%8B%E5%92%8C.html#%E6%80%9D%E8%B7%AF)
+- Standing at the parent node to judge if the left child node is leaf
 
--  Iterative:
+-  Postorder
+-  ?? how to calculation goes on
 ```python
 class Solution:
-    def maxDepth(self, root: TreeNode) -> int:
-        if not root:
+    def sumOfLeftLeaves(self, root):
+        if root is None:
+            return 0
+        if root.left is None and root.right is None: # skip leaf node since cannot decide if this is the left
             return 0
         
-        depth = 0
-        queue = collections.deque([root])
-        
-        while queue:
-            depth += 1
-            for _ in range(len(queue)):
-                node = queue.popleft()
-                if node.left:
-                    queue.append(node.left)
-                if node.right:
-                    queue.append(node.right)
-        
-        return depth
-```
--  Recursive:
-```python
-class Solution:
-    def maxdepth(self, root: treenode) -> int:
-        return self.getdepth(root)
-        
-    def getdepth(self, node):
-        if not node:
-            return 0
-        leftheight = self.getdepth(node.left) #左
-        rightheight = self.getdepth(node.right) #右
-        height = 1 + max(leftheight, rightheight) #中
-        return height
+        leftValue = self.sumOfLeftLeaves(root.left)  # 左
+        if root.left and not root.left.left and not root.left.right:  # 左子树是左叶子的情况
+            leftValue = root.left.val
+            
+        rightValue = self.sumOfLeftLeaves(root.right)  # 右
 
+        sum_val = leftValue + rightValue  # 中
+        return sum_val
 ```
+
 
 ## LC 111 minimum-depth-of-binary-tree
 [Link](https://leetcode.com/problems/minimum-depth-of-binary-tree/description/)
