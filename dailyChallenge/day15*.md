@@ -1,6 +1,20 @@
 
 # Day15 Binary Tree Part3
 - 因为求深度可以从上到下去查 所以需要前序遍历（中左右），而高度只能从下到上去查，所以只能后序遍历（左右中）
+- back tracking: recursion + prune
+    - Backtracking and recursion should correspond one-to-one
+    - e.g ` self.traversal(cur.left, path, result) #recursion`
+            `path.pop()  # backtrack`
+
+- when to use paremeter VS return values
+    - Use Parameters When:
+        - **Shared State**: You need to track or modify a shared state (like a path or solution) across recursive calls, especially in backtracking.
+        - **In-Place Modification**: You can modify an object in place (e.g., appending/removing elements from a list) to avoid creating new copies at each recursion step.
+        - **Efficiency**: Passing mutable objects (like lists) avoids the overhead of returning and copying new instances.
+    - Use Return Values When:
+        - **Combining Results**: Each recursive call returns a value that needs to be combined with others (e.g., summing, boolean checks, merging results from subtrees).
+        - **Immutable Data**: You're working with immutable structures or prefer not to mutate the input data.
+        - **Pure Computation**: The recursion is focused on building up results rather than maintaining intermediate states (e.g., calculating Fibonacci numbers or collecting results).
 
 ## LC 110 balanced-binary-tree
 [Link](https://leetcode.com/problems/balanced-binary-tree/description/)
@@ -31,140 +45,38 @@ class Solution:
             return 1 + max(left_height, right_height)
 ```
 
--  Inorder
+
+##  LC 257 binary-tree-paths
+[Link](https://leetcode.com/problems/binary-tree-paths/description/)   
+[Cousrse Link](https://programmercarl.com/0257.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%89%80%E6%9C%89%E8%B7%AF%E5%BE%84.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)
+
+- backtracking 
+
+-  Preorder
 ```python
 class Solution:
-    def invertTree(self, root: TreeNode) -> TreeNode:
-        if not root:
-            return None
-        self.invertTree(root.left)
-        root.left, root.right = root.right, root.left
-        self.invertTree(root.left) // since it already being inverted
-        return root
+    def traversal(self, cur, path, result):
+        path.append(cur.val)  # 中
+        if not cur.left and not cur.right:  # 到达叶子节点
+            sPath = '->'.join(map(str, path))
+            result.append(sPath)
+            return
+        if cur.left:  # 左
+            self.traversal(cur.left, path, result)
+            path.pop()  # 回溯
+        if cur.right:  # 右
+            self.traversal(cur.right, path, result)
+            path.pop()  # 回溯
 
-
-class Solution:
-    def invertTree(self, root: TreeNode) -> TreeNode:
+    def binaryTreePaths(self, root):
+        result = []
+        path = []
         if not root:
-            return None      
-        stack = [root]        
-        while stack:
-            node = stack.pop()                   
-            if node.left:
-                stack.append(node.left)
-            node.left, node.right = node.right, node.left               
-            if node.left:
-                stack.append(node.left)       
-        return root
+            return result
+        self.traversal(root, path, result)
+        return result
 ```
 
-- Postorder
-```python
-class Solution:
-    def invertTree(self, root: TreeNode) -> TreeNode:
-        if not root:
-            return None
-        self.invertTree(root.left)
-        self.invertTree(root.right)
-        root.left, root.right = root.right, root.left
-        return root
-
-class Solution:
-    def invertTree(self, root: TreeNode) -> TreeNode:
-        if not root:
-            return None      
-        stack = [root]        
-        while stack:
-            node = stack.pop()                   
-            if node.left:
-                stack.append(node.left)
-            if node.right:
-                stack.append(node.right)  
-            node.left, node.right = node.right, node.left               
-     
-        return root
-```
-
-
-##  LC 101 symmetric-tree
-[Link](https://leetcode.com/problems/symmetric-tree/description/)   
-[Cousrse Link](https://programmercarl.com/0101.%E5%AF%B9%E7%A7%B0%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E6%80%9D%E8%B7%AF)
-
--  Postorder
-```python
-class Solution:
-    def isSymmetric(self, root: TreeNode) -> bool:
-        if not root:
-            return True
-        return self.compare(root.left, root.right)
-        
-    def compare(self, left, right):
-        #首先排除空节点的情况
-        if left == None and right != None: return False
-        elif left != None and right == None: return False
-        elif left == None and right == None: return True
-        #排除了空节点，再排除数值不相同的情况
-        elif left.val != right.val: return False
-        
-        #此时就是：左右节点都不为空，且数值相同的情况
-        #此时才做递归，做下一层的判断
-        outside = self.compare(left.left, right.right) #左子树：左、 右子树：右
-        inside = self.compare(left.right, right.left) #左子树：右、 右子树：左
-        isSame = outside and inside #左子树：中、 右子树：中 （逻辑处理）
-        return isSame
-```
--  Level order: the level value is symmetric
-```python
-class Solution:
-    def isSymmetric(self, root: TreeNode) -> bool:
-        if not root:
-            return True
-        
-        queue = collections.deque([root.left, root.right])
-        
-        while queue:
-            level_size = len(queue)
-            
-            if level_size % 2 != 0:
-                return False
-            
-            level_vals = []
-            for i in range(level_size):
-                node = queue.popleft()
-                if node:
-                    level_vals.append(node.val)
-                    queue.append(node.left)
-                    queue.append(node.right)
-                else:
-                    level_vals.append(None)
-                    
-            if level_vals != level_vals[::-1]:
-                return False
-            
-        return True
-```
-- Iterative with Stack
-```python
-class Solution:
-    def isSymmetric(self, root: TreeNode) -> bool:
-        if not root:
-            return True
-        st = [] #这里改成了栈
-        st.append(root.left)
-        st.append(root.right)
-        while st:
-            rightNode = st.pop()
-            leftNode = st.pop()
-            if not leftNode and not rightNode:
-                continue
-            if not leftNode or not rightNode or leftNode.val != rightNode.val:
-                return False
-            st.append(leftNode.left)
-            st.append(rightNode.right)
-            st.append(leftNode.right)
-            st.append(rightNode.left)
-        return True
-```
 
 
 ## LC 104 maximum-depth-of-binary-tree
