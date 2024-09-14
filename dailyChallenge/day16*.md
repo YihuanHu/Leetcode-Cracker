@@ -3,7 +3,7 @@
 
 
 ## LC 513 find-bottom-left-tree-value
-[Link](https://leetcode.com/problems/find-bottom-left-tree-value/description/)
+[Link](https://leetcode.com/problems/find-bottom-left-tree-value/description/)   
 [Cousrse Link](https://programmercarl.com/0513.%E6%89%BE%E6%A0%91%E5%B7%A6%E4%B8%8B%E8%A7%92%E7%9A%84%E5%80%BC.html)    
 - Need to go the last layer and then left
 - **backtracking**: used when try to find the optimal solution by avoid nonsense solution (prune)
