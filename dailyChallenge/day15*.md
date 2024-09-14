@@ -80,12 +80,11 @@ class Solution:
 
 
 ## LC 404 sum-of-left-leaves
-[Link](https://leetcode.com/problems/sum-of-left-leaves/description/)
+[Link](https://leetcode.com/problems/sum-of-left-leaves/description/)           
 [Cousrse Link](https://programmercarl.com/0404.%E5%B7%A6%E5%8F%B6%E5%AD%90%E4%B9%8B%E5%92%8C.html#%E6%80%9D%E8%B7%AF)
 - Standing at the parent node to judge if the left child node is leaf
 
 -  Postorder
--  ?? how to calculation goes on
 ```python
 class Solution:
     def sumOfLeftLeaves(self, root):
@@ -105,59 +104,65 @@ class Solution:
 ```
 
 
-## LC 111 minimum-depth-of-binary-tree
-[Link](https://leetcode.com/problems/minimum-depth-of-binary-tree/description/)
-[Cousrse Link](https://programmercarl.com/0111.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E5%B0%8F%E6%B7%B1%E5%BA%A6.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
-- ??? What is diff of using post order and pre order?
-  
--  Post order
-```python
-class Solution:
-    def getDepth(self, node):
-        if node is None:
-            return 0
-        leftDepth = self.getDepth(node.left)  # 左
-        rightDepth = self.getDepth(node.right)  # 右
-        
-        # 当一个左子树为空，右不为空，这时并不是最低点
-        if node.left is None and node.right is not None:
-            return 1 + rightDepth
-        
-        # 当一个右子树为空，左不为空，这时并不是最低点
-        if node.left is not None and node.right is None:
-            return 1 + leftDepth
-        
-        result = 1 + min(leftDepth, rightDepth)
-        return result
+## LC 222 count-complete-tree-nodes
+[Link](https://leetcode.com/problems/count-complete-tree-nodes/description/)
+[Cousrse Link](https://programmercarl.com/0222.%E5%AE%8C%E5%85%A8%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E8%8A%82%E7%82%B9%E4%B8%AA%E6%95%B0.html)
 
-    def minDepth(self, root):
-        return self.getDepth(root)
-```
--  Level order: once it finds a leaf node then return
+-  Postorder:
 ```python
 class Solution:
-    def minDepth(self, root: TreeNode) -> int:
+    def countNodes(self, root: TreeNode) -> int:
+        return self.getNodesNum(root)
+        
+    def getNodesNum(self, cur):
+        if not cur:
+            return 0
+        leftNum = self.getNodesNum(cur.left) #左
+        rightNum = self.getNodesNum(cur.right) #右
+        treeNum = leftNum + rightNum + 1 #中
+        return treeNum
+```
+
+
+-  Based on the characteristics of complete tree:
+    - subtree of the complete tree is a full tree
+    - the total number of nodes of a full tree is 2^^depth -1
+```python
+class Solution:
+    def countNodes(self, root: TreeNode) -> int:
         if not root:
             return 0
-        depth = 0
-        queue = collections.deque([root])
-        
+        left = root.left
+        right = root.right
+        leftDepth = 0 #这里初始为0是有目的的，为了下面求指数方便
+        rightDepth = 0
+        while left: #求左子树深度
+            left = left.left
+            leftDepth += 1
+        while right: #求右子树深度
+            right = right.right
+            rightDepth += 1
+        if leftDepth == rightDepth:
+            return (2 << leftDepth) - 1 #注意(2<<1) 相当于2^2，所以leftDepth初始为0
+        return self.countNodes(root.left) + self.countNodes(root.right) + 1
+```
+-  iterative queue
+```python
+import collections
+class Solution:
+    def countNodes(self, root: TreeNode) -> int:
+        queue = collections.deque()
+        if root:
+            queue.append(root)
+        result = 0
         while queue:
-            depth += 1 
-            for _ in range(len(queue)):
+            size = len(queue)
+            for i in range(size):
                 node = queue.popleft()
-                
-                if not node.left and not node.right:
-                    return depth
-            
+                result += 1 #记录节点数量
                 if node.left:
                     queue.append(node.left)
-                    
                 if node.right:
                     queue.append(node.right)
-
-        return depth
+        return result
 ```
-## Adds on
-- [ ] LC 100 & 572 for symmetry tree
-- [ ] LC 559 for findig depth
