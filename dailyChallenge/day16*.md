@@ -1,50 +1,61 @@
 
 # Day16 Binary Tree Part4
-- 因为求深度可以从上到下去查 所以需要前序遍历（中左右），而高度只能从下到上去查，所以只能后序遍历（左右中）
-- back tracking: recursion + prune
-    - Backtracking and recursion should correspond one-to-one
-    - e.g ` self.traversal(cur.left, path, result) #recursion`
-            `path.pop()  # backtrack`
 
-- when to use paremeter VS return values
-    - Use Parameters When:
-        - **Shared State**: You need to track or modify a shared state (like a path or solution) across recursive calls, especially in backtracking.
-        - **In-Place Modification**: You can modify an object in place (e.g., appending/removing elements from a list) to avoid creating new copies at each recursion step.
-        - **Efficiency**: Passing mutable objects (like lists) avoids the overhead of returning and copying new instances.
-    - Use Return Values When:
-        - **Combining Results**: Each recursive call returns a value that needs to be combined with others (e.g., summing, boolean checks, merging results from subtrees).
-        - **Immutable Data**: You're working with immutable structures or prefer not to mutate the input data.
-        - **Pure Computation**: The recursion is focused on building up results rather than maintaining intermediate states (e.g., calculating Fibonacci numbers or collecting results).
 
-## LC 110 balanced-binary-tree
-[Link](https://leetcode.com/problems/balanced-binary-tree/description/)
-[Cousrse Link](https://programmercarl.com/0110.%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E9%A2%98%E5%A4%96%E8%AF%9D)
--  Postorder: we need to find the diff of height
+## LC 513 find-bottom-left-tree-value
+[Link](https://leetcode.com/problems/find-bottom-left-tree-value/description/)
+[Cousrse Link](https://programmercarl.com/0513.%E6%89%BE%E6%A0%91%E5%B7%A6%E4%B8%8B%E8%A7%92%E7%9A%84%E5%80%BC.html)    
+- Need to go the last layer and then left
+- **backtracking**: used when try to find the optimal solution by avoid nonsense solution (prune)
+
+-  Postorder/Backtracking
 ```python
 class Solution:
-    def isBalanced(self, root: TreeNode) -> bool:
-        if self.get_height(root) != -1:
-            return True
-        else:
-            return False
-
-    def get_height(self, root: TreeNode) -> int:
-        # Base Case
-        if not root:
-            return 0
-        # 左
-        if (left_height := self.get_height(root.left)) == -1:
-            return -1
-        # 右
-        if (right_height := self.get_height(root.right)) == -1:
-            return -1
-        # 中
-        if abs(left_height - right_height) > 1:
-            return -1
-        else:
-            return 1 + max(left_height, right_height)
+    def findBottomLeftValue(self, root: TreeNode) -> int:
+        self.max_depth = float('-inf')
+        self.result = None
+        self.traversal(root, 0)
+        return self.result
+    
+    def traversal(self, node, depth):
+        if not node.left and not node.right: # check at the leaf node
+            if depth > self.max_depth:
+                self.max_depth = depth
+                self.result = node.val
+            return
+        
+        if node.left:
+            depth += 1
+            self.traversal(node.left, depth)
+            depth -= 1
+        if node.right:
+            depth += 1
+            self.traversal(node.right, depth)
+            depth -= 1
 ```
 
+- level order/iterative queue
+```python
+from collections import deque
+class Solution:
+    def findBottomLeftValue(self, root):
+        if root is None:
+            return 0
+        queue = deque()
+        queue.append(root)
+        result = 0
+        while queue:
+            size = len(queue)
+            for i in range(size):
+                node = queue.popleft()
+                if i == 0:
+                    result = node.val #naturally it would be the left values
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+        return result
+```
 
 ##  LC 257 binary-tree-paths
 [Link](https://leetcode.com/problems/binary-tree-paths/description/)   
