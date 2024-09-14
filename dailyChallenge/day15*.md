@@ -17,7 +17,7 @@
         - **Pure Computation**: The recursion is focused on building up results rather than maintaining intermediate states (e.g., calculating Fibonacci numbers or collecting results).
 
 ## LC 110 balanced-binary-tree
-[Link](https://leetcode.com/problems/balanced-binary-tree/description/)
+[Link](https://leetcode.com/problems/balanced-binary-tree/description/)   
 [Cousrse Link](https://programmercarl.com/0110.%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E9%A2%98%E5%A4%96%E8%AF%9D)
 -  Postorder: we need to find the diff of height
 ```python
@@ -105,7 +105,7 @@ class Solution:
 
 
 ## LC 222 count-complete-tree-nodes
-[Link](https://leetcode.com/problems/count-complete-tree-nodes/description/)
+[Link](https://leetcode.com/problems/count-complete-tree-nodes/description/)   
 [Cousrse Link](https://programmercarl.com/0222.%E5%AE%8C%E5%85%A8%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E8%8A%82%E7%82%B9%E4%B8%AA%E6%95%B0.html)
 
 -  Postorder:
