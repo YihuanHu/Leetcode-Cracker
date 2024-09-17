@@ -2,97 +2,59 @@
 # Day17 Binary Tree Part5
 
 
-## LC 513 find-bottom-left-tree-value
-[Link](https://leetcode.com/problems/find-bottom-left-tree-value/description/)   
+## LC 654 maximum-binary-tree
+[Link](https://leetcode.com/problems/maximum-binary-tree/description/)   
 [Cousrse Link](https://programmercarl.com/0513.%E6%89%BE%E6%A0%91%E5%B7%A6%E4%B8%8B%E8%A7%92%E7%9A%84%E5%80%BC.html)    
-- Need to go the last layer and then left
-- **backtracking**: used when try to find the optimal solution by avoid nonsense solution (prune)
+- 
 
--  Postorder/Backtracking
+-  Preorder: usually used to construct a binary tree
 ```python
 class Solution:
-    def findBottomLeftValue(self, root: TreeNode) -> int:
-        self.max_depth = float('-inf')
-        self.result = None
-        self.traversal(root, 0)
-        return self.result
-    
-    def traversal(self, node, depth):
-        if not node.left and not node.right: # check at the leaf node
-            if depth > self.max_depth:
-                self.max_depth = depth
-                self.result = node.val
-            return
-        
-        if node.left:
-            depth += 1
-            self.traversal(node.left, depth)
-            depth -= 1
-        if node.right:
-            depth += 1
-            self.traversal(node.right, depth)
-            depth -= 1
+    def constructMaximumBinaryTree(self, nums: List[int]) -> TreeNode:
+        if len(nums) == 1:
+            return TreeNode(nums[0])
+        node = TreeNode(0)
+        # 找到数组中最大的值和对应的下标
+        maxValue = 0
+        maxValueIndex = 0
+        for i in range(len(nums)):
+            if nums[i] > maxValue:
+                maxValue = nums[i]
+                maxValueIndex = i
+        node.val = maxValue
+        # 最大值所在的下标左区间 构造左子树
+        if maxValueIndex > 0:
+            new_list = nums[:maxValueIndex]
+            node.left = self.constructMaximumBinaryTree(new_list)
+        # 最大值所在的下标右区间 构造右子树
+        if maxValueIndex < len(nums) - 1:
+            new_list = nums[maxValueIndex+1:]
+            node.right = self.constructMaximumBinaryTree(new_list)
+        return node
 ```
 
-- level order/iterative queue
-```python
-from collections import deque
-class Solution:
-    def findBottomLeftValue(self, root):
-        if root is None:
-            return 0
-        queue = deque()
-        queue.append(root)
-        result = 0
-        while queue:
-            size = len(queue)
-            for i in range(size):
-                node = queue.popleft()
-                if i == 0:
-                    result = node.val #naturally it would be the left values
-                if node.left:
-                    queue.append(node.left)
-                if node.right:
-                    queue.append(node.right)
-        return result
-```
+##  LC 617 merge-two-binary-trees
+[Link](https://leetcode.com/problems/merge-two-binary-trees/description/)   
+[Cousrse Link](https://programmercarl.com/0617.%E5%90%88%E5%B9%B6%E4%BA%8C%E5%8F%89%E6%A0%91.html)
 
-##  LC 112 path-sum
-[Link](https://leetcode.com/problems/path-sum/description/)   
-[Cousrse Link](https://programmercarl.com/0257.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%89%80%E6%9C%89%E8%B7%AF%E5%BE%84.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)
-
-- backtracking 
-- when should return values:
-    - 如果需要搜索整棵二叉树且不用处理递归返回值，递归函数就不要返回值。（这种情况就是本文下半部分介绍的113.路径总和ii）
-    - 如果需要搜索整棵二叉树且需要处理递归返回值，递归函数就需要返回值。 （这种情况我们在236. 二叉树的最近公共祖先中介绍）
-    - 如果要搜索其中一条符合条件的路径，那么递归一定需要返回值，因为遇到符合条件的路径了就要及时返回。（本题的情况）
--  recursive
+- 
+-  preorder (all the orders are fine)
 ```python
 class Solution:
-    def traversal(self, cur: TreeNode, count: int) -> bool:
-        if not cur.left and not cur.right and count == 0: # 遇到叶子节点，并且计数为0
-            return True
-        if not cur.left and not cur.right: # 遇到叶子节点直接返回
-            return False
+    def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
+        # 递归终止条件: 
+        #  但凡有一个节点为空, 就立刻返回另外一个. 如果另外一个也为None就直接返回None. 
+        if not root1: 
+            return root2
+        if not root2: 
+            return root1
+        # 上面的递归终止条件保证了代码执行到这里root1, root2都非空. 
+        root1.val += root2.val # 中
+        root1.left = self.mergeTrees(root1.left, root2.left) #左
+        root1.right = self.mergeTrees(root1.right, root2.right) # 右
         
-        if cur.left: # 左
-            count -= cur.left.val
-            if self.traversal(cur.left, count): # 递归，处理节点
-                return True
-            count += cur.left.val # 回溯，撤销处理结果
-            
-        if cur.right: # 右
-            count -= cur.right.val
-            if self.traversal(cur.right, count): # 递归，处理节点
-                return True
-            count += cur.right.val # 回溯，撤销处理结果
-            
-        return False
-    
-    def hasPathSum(self, root: TreeNode, sum: int) -> bool:
-        if root is None:
-            return False
-        return self.traversal(root, sum - root.val)   
+        return root1 # ⚠️ 注意: 本题我们重复使用了题目给出的节点而不是创建新节点. 节省时间, 空间. 
+ 
 ```
 
 
