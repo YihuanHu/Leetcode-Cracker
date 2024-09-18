@@ -65,180 +65,49 @@ class Solution:
         return result
 ```
 
-##  LC 236 lowest-common-ancestor-of-a-binary-tree
+##  * LC 236 lowest-common-ancestor-of-a-binary-tree
 [Link](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description/)   
 [Cousrse Link](https://programmercarl.com/0236.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html)
 
-
-- inorder
-- two pointers
-- why we use set: consider there might be several modes 
+- **Postorder is kinda of backtracking**
+- Diff in search in an edge VS the entire tree
+1.  Searching an Edge:
 ```python
-class Solution:
-    def __init__(self):
-        self.maxCount = 0  # 最大频率
-        self.count = 0  # 统计频率
-        self.pre = None
-        self.result = []
-
-    def searchBST(self, cur):
-        if cur is None:
-            return
-
-        self.searchBST(cur.left)  # 左
-        # 中
-        if self.pre is None:  # 第一个节点
-            self.count = 1
-        elif self.pre.val == cur.val:  # 与前一个节点数值相同
-            self.count += 1
-        else:  # 与前一个节点数值不同
-            self.count = 1
-        self.pre = cur  # 更新上一个节点
-
-        if self.count == self.maxCount:  # 如果与最大值频率相同，放进result中
-            self.result.append(cur.val)
-
-        if self.count > self.maxCount:  # 如果计数大于最大值频率
-            self.maxCount = self.count  # 更新最大频率
-            self.result = [cur.val]  # 很关键的一步，不要忘记清空result，之前result里的元素都失效了
-
-        self.searchBST(cur.right)  # 右
-        return
-
-    def findMode(self, root):
-        self.count = 0
-        self.maxCount = 0
-        self.pre = None  # 记录前一个节点
-        self.result = []
-
-        self.searchBST(root)
-        return self.result
+if recursive_function(root.left):
+    return
+if recursive_function(root.right):
+    return
 ```
+2. Search the entire tree
 
-- queue / level order
-- same logic 
+   
+```python
+left = recursive_function(root.left)   # Left
+right = recursive_function(root.right) # Right
+# Process logic involving left and right results (Center)
+```   
+
+- postorder : To find the lowest common ancestor, we need to traverse the tree from the bottom up, which can only be achieved using postorder traversal (i.e., backtracking)
+- During backtracking, the entire tree must be traversed, even if the result is found, because the return values (e.g., left and right) are used for logical decisions
 ```python
 class Solution:
-    def findMode(self, root):
-        st = []
-        cur = root
-        pre = None
-        maxCount = 0  # 最大频率
-        count = 0  # 统计频率
-        result = []
-
-        while cur is not None or st:
-            if cur is not None:  # 指针来访问节点，访问到最底层
-                st.append(cur)  # 将访问的节点放进栈
-                cur = cur.left  # 左
-            else:
-                cur = st.pop()
-                if pre is None:  # 第一个节点
-                    count = 1
-                elif pre.val == cur.val:  # 与前一个节点数值相同
-                    count += 1
-                else:  # 与前一个节点数值不同
-                    count = 1
-
-                if count == maxCount:  # 如果和最大值相同，放进result中
-                    result.append(cur.val)
-
-                if count > maxCount:  # 如果计数大于最大值频率
-                    maxCount = count  # 更新最大频率
-                    result = [cur.val]  # 很关键的一步，不要忘记清空result，之前result里的元素都失效了
-
-                pre = cur
-                cur = cur.right  # 右
-
-        return result
-```
-
-
-
-## *LC 700 search-in-a-binary-search-tree
-[Link](https://leetcode.com/problems/search-in-a-binary-search-tree/description/)           
-[Cousrse Link](https://programmercarl.com/0106.%E4%BB%8E%E4%B8%AD%E5%BA%8F%E4%B8%8E%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86%E5%BA%8F%E5%88%97%E6%9E%84%E9%80%A0%E4%BA%8C%E5%8F%89%E6%A0%91.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
-- **Binary Search Tree:**
-    -  If the left subtree is not empty, all node values in the left subtree are less than the root's value
-    -  If the right subtree is not empty, all node values in the right subtree are greater than the root's value
-    -  Both the left and right subtrees are also binary search trees
-
--  recursive
-```python
-class Solution:
-    def searchBST(self, root: TreeNode, val: int) -> TreeNode:
-        # 为什么要有返回值: 
-        #   因为搜索到目标节点就要立即return，
-        #   这样才是找到节点就返回（搜索某一条边），如果不加return，就是遍历整棵树了。
-
-        if not root or root.val == val: 
+    def lowestCommonAncestor(self, root, p, q):
+        if root == q or root == p or root is None:
             return root
 
-        if root.val > val: 
-            return self.searchBST(root.left, val)
+        left = self.lowestCommonAncestor(root.left, p, q)
+        right = self.lowestCommonAncestor(root.right, p, q)
 
-        if root.val < val: 
-            return self.searchBST(root.right, val)
+        if left is not None and right is not None:
+            return root
+
+        if left is None and right is not None:
+            return right
+        elif left is not None and right is None:
+            return left
+        else: 
+            return None
 ```
 
-- iterative/BFS: NO need to backtracking since BTS already has a order that we can follow along the way
-```python
-class Solution:
-    def searchBST(self, root: TreeNode, val: int) -> TreeNode:
-        while root:
-            if val < root.val: root = root.left
-            elif val > root.val: root = root.right
-            else: return root
-        return None
-```
 
-## LC 98 validate-binary-search-tree
-[Link](https://leetcode.com/problems/validate-binary-search-tree/description/)           
-[Cousrse Link](https://programmercarl.com/0098.%E9%AA%8C%E8%AF%81%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)
-- **Binary Search Tree:**
-    -  If the left subtree is not empty, all node values in the left subtree are less than the root's value
-    -  If the right subtree is not empty, all node values in the right subtree are greater than the root's value
-    -  Both the left and right subtrees are also binary search trees
 
--  **Inorder is special for BST**: convert BST to vector and check if this is mononic increasing
-```python
-class Solution:
-    def __init__(self):
-        self.vec = []
-
-    def traversal(self, root):
-        if root is None:
-            return
-        self.traversal(root.left)
-        self.vec.append(root.val)  # 将二叉搜索树转换为有序数组
-        self.traversal(root.right)
-
-    def isValidBST(self, root):
-        self.vec = []  # 清空数组
-        self.traversal(root)
-        for i in range(1, len(self.vec)):
-            # 注意要小于等于，搜索树里不能有相同元素
-            if self.vec[i] <= self.vec[i - 1]:
-                return False
-        return True
-```
-
-- Simplified version: use pre
-```python
-class Solution:
-    def __init__(self):
-        self.pre = None  # 用来记录前一个节点
-
-    def isValidBST(self, root):
-        if root is None:
-            return True
-
-        left = self.isValidBST(root.left)
-
-        if self.pre is not None and self.pre.val >= root.val:
-            return False
-        self.pre = root  # 记录前一个节点
-
-        right = self.isValidBST(root.right)
-        return left and right
-```
