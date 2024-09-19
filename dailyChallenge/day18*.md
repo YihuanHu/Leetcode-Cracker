@@ -31,6 +31,80 @@ class Solution:
 - iterative / queue
 ```python
 class Solution:
+    def getMinimumDifference(self, root):
+        stack = []
+        cur = root
+        pre = None
+        result = float('inf')
+
+        while cur is not None or len(stack) > 0:
+            if cur is not None:
+                stack.append(cur)  # 将访问的节点放进栈
+                cur = cur.left  # 左
+            else:
+                cur = stack.pop()
+                if pre is not None:  # 中
+                    result = min(result, cur.val - pre.val)
+                pre = cur
+                cur = cur.right  # 右
+
+        return result
+```
+
+##  LC 501 find-mode-in-binary-search-tree
+[Link](https://leetcode.com/problems/find-mode-in-binary-search-tree/description/)   
+[Cousrse Link](https://programmercarl.com/0501.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E4%B8%AD%E7%9A%84%E4%BC%97%E6%95%B0.html#%E6%80%9D%E8%B7%AF)
+
+
+- inorder
+- two pointers
+- why we use set: consider there might be several modes 
+```python
+class Solution:
+    def __init__(self):
+        self.maxCount = 0  # 最大频率
+        self.count = 0  # 统计频率
+        self.pre = None
+        self.result = []
+
+    def searchBST(self, cur):
+        if cur is None:
+            return
+
+        self.searchBST(cur.left)  # 左
+        # 中
+        if self.pre is None:  # 第一个节点
+            self.count = 1
+        elif self.pre.val == cur.val:  # 与前一个节点数值相同
+            self.count += 1
+        else:  # 与前一个节点数值不同
+            self.count = 1
+        self.pre = cur  # 更新上一个节点
+
+        if self.count == self.maxCount:  # 如果与最大值频率相同，放进result中
+            self.result.append(cur.val)
+
+        if self.count > self.maxCount:  # 如果计数大于最大值频率
+            self.maxCount = self.count  # 更新最大频率
+            self.result = [cur.val]  # 很关键的一步，不要忘记清空result，之前result里的元素都失效了
+
+        self.searchBST(cur.right)  # 右
+        return
+
+    def findMode(self, root):
+        self.count = 0
+        self.maxCount = 0
+        self.pre = None  # 记录前一个节点
+        self.result = []
+
+        self.searchBST(root)
+        return self.result
+```
+
+- queue / level order
+- same logic 
+```python
+class Solution:
     def findMode(self, root):
         st = []
         cur = root
