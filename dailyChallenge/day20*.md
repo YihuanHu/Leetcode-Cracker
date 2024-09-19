@@ -12,8 +12,7 @@
     -  Since this is BST, the ancestor must be [p,q]
     -  when we recursively traverse from top to bottom, the first time we encounter the cur node whose value is within the range [q, p], then cur is the lowest common ancestor of q and p
 - why we need p&q as parameter here: for comparisons. Global variables also works but not flexible enough
-- 
-  
+
 
 - recursive (order does not matter)
 ```python
@@ -111,3 +110,25 @@ class Solution:
         return root
 ```
 
+##  LC 450 delete-node-in-a-bst
+[Link](https://leetcode.com/problems/delete-node-in-a-bst/description/)   
+[Cousrse Link](https://programmercarl.com/0450.%E5%88%A0%E9%99%A4%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E4%B8%AD%E7%9A%84%E8%8A%82%E7%82%B9.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
+
+- 5 cases to consider:
+- 
+  
+- recursive: no need for root so order doesn't matter
+```python
+class Solution:
+    def insertIntoBST(self, root, val):
+        if root is None:
+            node = TreeNode(val)
+            return node
+
+        if root.val > val:
+            root.left = self.insertIntoBST(root.left, val) # assign the parent-child relationship for the newly added node
+        if root.val < val:
+            root.right = self.insertIntoBST(root.right, val) # same
+
+        return root
+```
