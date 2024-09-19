@@ -7,10 +7,12 @@
 [Cousrse Link](https://programmercarl.com/0235.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html#%E6%80%9D%E8%B7%AF)    
 
 - Similar to 236
+    - But 235 is searching on an edge since again it's BST
 - Logic:
     -  Since this is BST, the ancestor must be [p,q]
     -  when we recursively traverse from top to bottom, the first time we encounter the cur node whose value is within the range [q, p], then cur is the lowest common ancestor of q and p
 - why we need p&q as parameter here: for comparisons. Global variables also works but not flexible enough
+- 
   
 
 - recursive (order does not matter)
@@ -61,46 +63,51 @@ class Solution:
         return None
 ```
 
-##  * LC 236 lowest-common-ancestor-of-a-binary-tree
-[Link](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description/)   
-[Cousrse Link](https://programmercarl.com/0236.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html)
+##  LC 701 insert-into-a-binary-search-tree
+[Link](https://leetcode.com/problems/insert-into-a-binary-search-tree/description/)   
+[Cousrse Link](https://programmercarl.com/0701.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E4%B8%AD%E7%9A%84%E6%8F%92%E5%85%A5%E6%93%8D%E4%BD%9C.html#%E6%80%9D%E8%B7%AF)
 
-- **Postorder is kinda of backtracking**
-- Diff in search in an edge VS the entire tree
-1.  Searching an Edge:
-```python
-if recursive_function(root.left):
-    return
-if recursive_function(root.right):
-    return
-```
-2. Search the entire tree
-
-   
-```python
-left = recursive_function(root.left)   # Left
-right = recursive_function(root.right) # Right
-# Process logic involving left and right results (Center)
-```   
-
-- postorder : To find the lowest common ancestor, we need to traverse the tree from the bottom up, which can only be achieved using postorder traversal (i.e., backtracking)
-- During backtracking, the entire tree must be traversed, even if the result is found, because the return values (e.g., left and right) are used for logical decisions
+- **It's a shame to traverse the whole BST with a target**
+  
+- recursive: no need for root so order doesn't matter
 ```python
 class Solution:
-    def lowestCommonAncestor(self, root, p, q):
-        if root == q or root == p or root is None:
-            return root
+    def insertIntoBST(self, root, val):
+        if root is None:
+            node = TreeNode(val)
+            return node
 
-        left = self.lowestCommonAncestor(root.left, p, q)
-        right = self.lowestCommonAncestor(root.right, p, q)
+        if root.val > val:
+            root.left = self.insertIntoBST(root.left, val) # assign the parent-child relationship for the newly added node
+        if root.val < val:
+            root.right = self.insertIntoBST(root.right, val) # same
 
-        if left is not None and right is not None:
-            return root
-
-        if left is None and right is not None:
-            return right
-        elif left is not None and right is None:
-            return left
-        else: 
-            return None
+        return root
 ```
+
+- level order + two pointers for assign a new node
+```python
+class Solution:
+    def insertIntoBST(self, root, val):
+        if root is None:  # 如果根节点为空，创建新节点作为根节点并返回
+            node = TreeNode(val)
+            return node
+
+        cur = root
+        parent = root  # 记录上一个节点，用于连接新节点
+        while cur is not None:
+            parent = cur
+            if cur.val > val:
+                cur = cur.left
+            else:
+                cur = cur.right
+
+        node = TreeNode(val)
+        if val < parent.val:
+            parent.left = node  # 将新节点连接到父节点的左子树
+        else:
+            parent.right = node  # 将新节点连接到父节点的右子树
+
+        return root
+```
+
