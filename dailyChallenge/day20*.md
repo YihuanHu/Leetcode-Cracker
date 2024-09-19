@@ -1,68 +1,64 @@
 # Day20 Binary Tree Part7
 
 
-## LC 530 minimum-absolute-difference-in-bst
+## LC 235 lowest-common-ancestor-of-a-binary-search-tree
 
-[Link](https://leetcode.com/problems/minimum-absolute-difference-in-bst/description/)   
-[Cousrse Link](https://programmercarl.com/0530.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E7%9A%84%E6%9C%80%E5%B0%8F%E7%BB%9D%E5%AF%B9%E5%B7%AE.html)    
+[Link](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/description/)   
+[Cousrse Link](https://programmercarl.com/0235.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88.html#%E6%80%9D%E8%B7%AF)    
 
--  inorder: which is aligned with BST increasing trend
--  two pointers
+- Similar to 236
+- Logic:
+    -  Since this is BST, the ancestor must be [p,q]
+    -  when we recursively traverse from top to bottom, the first time we encounter the cur node whose value is within the range [q, p], then cur is the lowest common ancestor of q and p
+- why we need p&q as parameter here: for comparisons. Global variables also works but not flexible enough
+  
+
+- recursive (order does not matter)
 ```python
 class Solution:
-    def __init__(self):
-        self.result = float('inf')
-        self.pre = None
-
-    def traversal(self, cur):
+    def traversal(self, cur, p, q):
         if cur is None:
-            return
-        self.traversal(cur.left)  # 左
-        if self.pre is not None:  # 中
-            self.result = min(self.result, cur.val - self.pre.val)
-        self.pre = cur  # 记录前一个
-        self.traversal(cur.right)  # 右
+            return cur
+                                                        # 中
+        if cur.val > p.val and cur.val > q.val:           # 左
+            left = self.traversal(cur.left, p, q)
+            if left is not None:
+                return left
 
-    def getMinimumDifference(self, root):
-        self.traversal(root)
-        return self.result
+        if cur.val < p.val and cur.val < q.val:           # 右
+            right = self.traversal(cur.right, p, q)
+            if right is not None:
+                return right
+
+        return cur
+
+    def lowestCommonAncestor(self, root, p, q):
+        return self.traversal(root, p, q)
+
+## simplified version
+class Solution:
+    def lowestCommonAncestor(self, root, p, q):
+        if root.val > p.val and root.val > q.val:
+            return self.lowestCommonAncestor(root.left, p, q)
+        elif root.val < p.val and root.val < q.val:
+            return self.lowestCommonAncestor(root.right, p, q)
+        else:
+            return root
 ```
 
-- iterative / queue
+
+- iterative: simple for BST since it has an order 
 ```python
 class Solution:
-    def findMode(self, root):
-        st = []
-        cur = root
-        pre = None
-        maxCount = 0  # 最大频率
-        count = 0  # 统计频率
-        result = []
-
-        while cur is not None or st:
-            if cur is not None:  # 指针来访问节点，访问到最底层
-                st.append(cur)  # 将访问的节点放进栈
-                cur = cur.left  # 左
+    def lowestCommonAncestor(self, root, p, q):
+        while root:
+            if root.val > p.val and root.val > q.val:
+                root = root.left
+            elif root.val < p.val and root.val < q.val:
+                root = root.right
             else:
-                cur = st.pop()
-                if pre is None:  # 第一个节点
-                    count = 1
-                elif pre.val == cur.val:  # 与前一个节点数值相同
-                    count += 1
-                else:  # 与前一个节点数值不同
-                    count = 1
-
-                if count == maxCount:  # 如果和最大值相同，放进result中
-                    result.append(cur.val)
-
-                if count > maxCount:  # 如果计数大于最大值频率
-                    maxCount = count  # 更新最大频率
-                    result = [cur.val]  # 很关键的一步，不要忘记清空result，之前result里的元素都失效了
-
-                pre = cur
-                cur = cur.right  # 右
-
-        return result
+                return root
+        return None
 ```
 
 ##  * LC 236 lowest-common-ancestor-of-a-binary-tree
