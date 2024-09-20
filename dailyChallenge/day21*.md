@@ -90,25 +90,57 @@ class Solution:
         return root
 ```
 
-##  LC 450 delete-node-in-a-bst
-[Link](https://leetcode.com/problems/delete-node-in-a-bst/description/)   
-[Cousrse Link](https://programmercarl.com/0450.%E5%88%A0%E9%99%A4%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E4%B8%AD%E7%9A%84%E8%8A%82%E7%82%B9.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
-
-- 5 cases to consider:
-- 
+##  LC 538 convert-bst-to-greater-tree
+[Link](https://leetcode.com/problems/convert-bst-to-greater-tree/description/)   
+[Cousrse Link](https://programmercarl.com/0538.%E6%8A%8A%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E8%BD%AC%E6%8D%A2%E4%B8%BA%E7%B4%AF%E5%8A%A0%E6%A0%91.html)
   
-- recursive: no need for root so order doesn't matter
+- recursive: Reverse inorder RVL
 ```python
 class Solution:
-    def insertIntoBST(self, root, val):
-        if root is None:
-            node = TreeNode(val)
-            return node
+    def convertBST(self, root: TreeNode) -> TreeNode:
+        self.pre = 0  # 记录前一个节点的数值
+        self.traversal(root)
+        return root
+    def traversal(self, cur):
+        if cur is None:
+            return        
+        self.traversal(cur.right)
+        cur.val += self.pre
+        self.pre = cur.val
+        self.traversal(cur.left)
+```
 
-        if root.val > val:
-            root.left = self.insertIntoBST(root.left, val) # assign the parent-child relationship for the newly added node
-        if root.val < val:
-            root.right = self.insertIntoBST(root.right, val) # same
 
+- typical iterative w/ queue 
+```python
+class Solution:
+    def __init__(self):
+        self.pre = 0  # 记录前一个节点的数值
+    
+    def traversal(self, root):
+        stack = []
+        cur = root
+        while cur or stack:
+            if cur:
+                stack.append(cur)
+                cur = cur.right  # 右
+            else:
+                cur = stack.pop()  # 中
+                cur.val += self.pre
+                self.pre = cur.val
+                cur = cur.left  # 左
+    
+    def convertBST(self, root):
+        self.pre = 0
+        self.traversal(root)
         return root
 ```
+
+
+##  Adds on
+- Summary:
+    - 涉及到二叉树的构造，无论普通二叉树还是二叉搜索树一定前序，都是先构造中节点。
+    - 求普通二叉树的属性，一般是后序，一般要通过递归函数的返回值做计算。
+    - 求二叉搜索树的属性，一定是中序了，要不白瞎了有序性了。
+- [ ] binary tree summary [Link](https://programmercarl.com/%E4%BA%8C%E5%8F%89%E6%A0%91%E6%80%BB%E7%BB%93%E7%AF%87.html#%E6%9C%80%E5%90%8E%E6%80%BB%E7%BB%93)
+- [ ] viz summary [Link](https://github.com/YihuanHu/Leetcode-Cracker/blob/main/image/binary_tree_viz.png)
