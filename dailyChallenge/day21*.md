@@ -27,50 +27,65 @@ class Solution:
         return root
 ```
 
-##  LC 701 insert-into-a-binary-search-tree
-[Link](https://leetcode.com/problems/insert-into-a-binary-search-tree/description/)   
-[Cousrse Link](https://programmercarl.com/0701.%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E4%B8%AD%E7%9A%84%E6%8F%92%E5%85%A5%E6%93%8D%E4%BD%9C.html#%E6%80%9D%E8%B7%AF)
-
-- **It's a shame to traverse the whole BST with a target**
+##  LC 108 convert-sorted-array-to-binary-search-tree
+[Link](https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/description/)   
+[Cousrse Link](https://programmercarl.com/0108.%E5%B0%86%E6%9C%89%E5%BA%8F%E6%95%B0%E7%BB%84%E8%BD%AC%E6%8D%A2%E4%B8%BA%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91.html#%E6%80%9D%E8%B7%AF)
   
-- recursive: no need for root so order doesn't matter
+- recursive + [] + avoid to pass array but use left right pointers
 ```python
 class Solution:
-    def insertIntoBST(self, root, val):
-        if root is None:
-            node = TreeNode(val)
-            return node
-
-        if root.val > val:
-            root.left = self.insertIntoBST(root.left, val) # assign the parent-child relationship for the newly added node
-        if root.val < val:
-            root.right = self.insertIntoBST(root.right, val) # same
-
+    def traversal(self, nums: List[int], left: int, right: int) -> TreeNode:
+        if left > right:
+            return None
+        
+        mid = left + (right - left) // 2
+        root = TreeNode(nums[mid])
+        root.left = self.traversal(nums, left, mid - 1)
+        root.right = self.traversal(nums, mid + 1, right)
+        return root
+    
+    def sortedArrayToBST(self, nums: List[int]) -> TreeNode:
+        root = self.traversal(nums, 0, len(nums) - 1)
         return root
 ```
 
-- level order + two pointers for assign a new node
+- level order w/ 3 queues (iteration / Left / Right)
 ```python
+from collections import deque
+
 class Solution:
-    def insertIntoBST(self, root, val):
-        if root is None:  # 如果根节点为空，创建新节点作为根节点并返回
-            node = TreeNode(val)
-            return node
+    def sortedArrayToBST(self, nums: List[int]) -> TreeNode:
+        if len(nums) == 0:
+            return None
+        
+        root = TreeNode(0)  # 初始根节点
+        nodeQue = deque()   # 放遍历的节点
+        leftQue = deque()   # 保存左区间下标
+        rightQue = deque()  # 保存右区间下标
+        
+        nodeQue.append(root)               # 根节点入队列
+        leftQue.append(0)                  # 0为左区间下标初始位置
+        rightQue.append(len(nums) - 1)     # len(nums) - 1为右区间下标初始位置
 
-        cur = root
-        parent = root  # 记录上一个节点，用于连接新节点
-        while cur is not None:
-            parent = cur
-            if cur.val > val:
-                cur = cur.left
-            else:
-                cur = cur.right
+        while nodeQue:
+            curNode = nodeQue.popleft()
+            left = leftQue.popleft()
+            right = rightQue.popleft()
+            mid = left + (right - left) // 2
 
-        node = TreeNode(val)
-        if val < parent.val:
-            parent.left = node  # 将新节点连接到父节点的左子树
-        else:
-            parent.right = node  # 将新节点连接到父节点的右子树
+            curNode.val = nums[mid]  # 将mid对应的元素给中间节点
+
+            if left <= mid - 1:  # 处理左区间
+                curNode.left = TreeNode(0)
+                nodeQue.append(curNode.left)
+                leftQue.append(left)
+                rightQue.append(mid - 1)
+
+            if right >= mid + 1:  # 处理右区间
+                curNode.right = TreeNode(0)
+                nodeQue.append(curNode.right)
+                leftQue.append(mid + 1)
+                rightQue.append(right)
 
         return root
 ```
