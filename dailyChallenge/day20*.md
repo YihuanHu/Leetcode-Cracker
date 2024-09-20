@@ -115,20 +115,52 @@ class Solution:
 [Cousrse Link](https://programmercarl.com/0450.%E5%88%A0%E9%99%A4%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E4%B8%AD%E7%9A%84%E8%8A%82%E7%82%B9.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
 
 - 5 cases to consider:
-- 
+  1. If the node to delete is not found, traverse to a null node and return.
+  2. If both children are null (leaf node), delete the node and return NULL as the root.
+  3. If the left child is null and the right child is not, delete the node and replace it with the right child, returning the right child as the root.
+  4. If the right child is null and the left child is not, delete the node and replace it with the left child, returning the left child as the root.
+  5.* If both children are not null, replace the deleted node with the **left child** and place it as the **left child of the leftmost node in the right subtree**. Return the right child as the new root.
   
-- recursive: no need for root so order doesn't matter
+- BST recursive
 ```python
 class Solution:
-    def insertIntoBST(self, root, val):
+    def deleteNode(self, root, key):
         if root is None:
-            node = TreeNode(val)
-            return node
+            return root
+        if root.val == key:
+            if root.left is None and root.right is None:
+                return None
+            elif root.left is None:
+                return root.right
+            elif root.right is None:
+                return root.left
+            else:
+                cur = root.right
+                while cur.left is not None:
+                    cur = cur.left
+                cur.left = root.left
+                return root.right
+        if root.val > key:
+            root.left = self.deleteNode(root.left, key)
+        if root.val < key:
+            root.right = self.deleteNode(root.right, key)
+        return root
+```
 
-        if root.val > val:
-            root.left = self.insertIntoBST(root.left, val) # assign the parent-child relationship for the newly added node
-        if root.val < val:
-            root.right = self.insertIntoBST(root.right, val) # same
-
+- (ignored)General cases for binary tree with recursive
+```python
+class Solution:
+    def deleteNode(self, root, key):
+        if root is None:  # 如果根节点为空，直接返回
+            return root
+        if root.val == key:  # 找到要删除的节点
+            if root.right is None:  # 如果右子树为空，直接返回左子树作为新的根节点
+                return root.left
+            cur = root.right
+            while cur.left:  # 找到右子树中的最左节点
+                cur = cur.left
+            root.val, cur.val = cur.val, root.val  # 将要删除的节点值与最左节点值交换
+        root.left = self.deleteNode(root.left, key)  # 在左子树中递归删除目标节点
+        root.right = self.deleteNode(root.right, key)  # 在右子树中递归删除目标节点
         return root
 ```
