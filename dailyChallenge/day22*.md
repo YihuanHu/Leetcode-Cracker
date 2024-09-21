@@ -1,5 +1,39 @@
 # Day22 Backtracking Part1
 
+## Backtracking 
+- **Backtracking is a byproduct of recursion**; whenever there is recursion, backtracking will be present
+- Backtracking fundamentally involves **exhaustive search**, exploring all possibilities to find the desired solution. While pruning techniques can enhance efficiency
+- Problems solved by backtracking can all be abstracted into a tree structure.
+    - This is because backtracking involves recursively searching for subsets within a set.
+    - **The size of the set determines the width of the tree**
+    - **The depth of the recursion defines the depth of the tree**
+- Sample
+    - Returning & Parameter: usually return null & flexible parameters
+    - End condition: not sure
+    - Process:
+        - A for loop can be understood as a horizontal traversal
+        - backtracking (recursion) represents a vertical traversal.
+        - Leaf node would be one solution
+```pyrhon
+void backtracking(参数) {
+    if (终止条件) {
+        存放结果;
+        return;
+    }
+
+    for (选择：本层集合中元素（树中节点孩子的数量就是集合的大小）) {
+        处理节点;
+        backtracking(路径，选择列表); // 递归
+        回溯，撤销处理结果
+    }
+}
+```
+- Common questions since we don't have other choices:
+    - Combination Problem: Finding a set of k numbers from N numbers based on certain rules.
+    - Cutting Problem: Determining the number of ways to cut a string according to specific rules.
+    - Subset Problem: Finding how many subsets of a set of N numbers meet certain conditions.
+    = Permutation Problem: Finding the number of arrangements of N numbers according to specific rules.
+    - Chessboard Problem: Problems like the N-Queens problem or solving Sudoku.
 
 ## LC 669 trim-a-binary-search-tree
 
