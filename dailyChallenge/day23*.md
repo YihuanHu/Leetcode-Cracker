@@ -1,30 +1,66 @@
 # Day23 Backtracking Part2
 
 
-## LC 77 combinations
-[Link](https://leetcode.com/problems/combinations/description/)   
-[Cousrse Link](https://programmercarl.com/0077.%E7%BB%84%E5%90%88.html)    
+## LC 39 combination-sum
+[Link](https://leetcode.com/problems/combination-sum/description/)   
+[Cousrse Link](https://programmercarl.com/0039.%E7%BB%84%E5%90%88%E6%80%BB%E5%92%8C.html)    
 
-- Backtracking / recursion here is like flexible for loop that only stops when meet the return condition
-
-- **parameter here works same as global variable for recursion for updating state**
+- When do we need startIndex for combination problems?
+    - when finding combinations from a single set, startIndex is necessary, like LC 77. Combinations and LC 216. Combination Sum III.
+    - if the combinations are taken from multiple sets that do not affect each other, then startIndex is not needed like LC 17. Letter Combinations of a Phone Number
+- !!How to dupe the values:
+    - passing the same i in recursion
+- How to prune?
+    -  firstly, sort the candidates and then check currrent sum > target 
 ```python
 class Solution:
-    def combine(self, n: int, k: int) -> List[List[int]]:
-        result = []  # 存放结果集
-        self.backtracking(n, k, 1, [], result)
-        return result
-    def backtracking(self, n, k, startIndex, path, result):
-        if len(path) == k:
+
+    def backtracking(self, candidates, target, total, startIndex, path, result):
+        if total > target:
+            return
+        if total == target:
             result.append(path[:])
             return
-        for i in range(startIndex, n + 1):  # can prune: for i in range(startIndex, n - (k - len(path)) + 2):
-            path.append(i)  # 处理节点
-            self.backtracking(n, k, i + 1, path, result)
-            path.pop()  # 回溯，撤销处理的节点
+
+        for i in range(startIndex, len(candidates)):
+            total += candidates[i]
+            path.append(candidates[i])
+            self.backtracking(candidates, target, total, i, path, result)  # 不用i+1了，表示可以重复读取当前的数
+            total -= candidates[i]
+            path.pop()
+
+    def combinationSum(self, candidates, target):
+        result = []
+        self.backtracking(candidates, target, 0, 0, [], result)
+        return result
+
+
+# pruned version
+class Solution:
+
+    def backtracking(self, candidates, target, total, startIndex, path, result):
+        if total == target:
+            result.append(path[:])
+            return
+
+        for i in range(startIndex, len(candidates)):
+            if total + candidates[i] > target:
+                break
+            total += candidates[i]
+            path.append(candidates[i])
+            self.backtracking(candidates, target, total, i, path, result)
+            total -= candidates[i]
+            path.pop()
+
+    def combinationSum(self, candidates, target):
+        result = []
+        candidates.sort()  # 需要排序
+        self.backtracking(candidates, target, 0, 0, [], result)
+        return result
+
 ```
 Time: **O(n * 2^n)** more like creating subset from n elemets
-Space: **O(n)** 
+Space: **O(target)** 
 
 ##  LC 216 combination-sum-iii
 [Link](https://leetcode.com/problems/combination-sum-iii/description/)   
