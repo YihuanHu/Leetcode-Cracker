@@ -32,13 +32,12 @@ void backtracking(参数) {
     - Combination Problem: Finding a set of k numbers from N numbers based on certain rules.
     - Cutting Problem: Determining the number of ways to cut a string according to specific rules.
     - Subset Problem: Finding how many subsets of a set of N numbers meet certain conditions.
-    = Permutation Problem: Finding the number of arrangements of N numbers according to specific rules.
+    - Permutation Problem: Finding the number of arrangements of N numbers according to specific rules.
     - Chessboard Problem: Problems like the N-Queens problem or solving Sudoku.
 
-## LC 669 trim-a-binary-search-tree
-
-[Link](https://leetcode.com/problems/trim-a-binary-search-tree/submissions/1396124674/)   
-[Cousrse Link](https://programmercarl.com/0669.%E4%BF%AE%E5%89%AA%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91.html)    
+## LC 77 combinations
+[Link](https://leetcode.com/problems/combinations/description/)   
+[Cousrse Link](https://programmercarl.com/0077.%E7%BB%84%E5%90%88.html)    
 
 - If the node is within the range, return the node
 - If the node is out of range, return its right/left
@@ -60,6 +59,8 @@ class Solution:
         root.right = self.trimBST(root.right, low, high)  # root.right 接入符合条件的右孩子
         return root
 ```
+Time: **O(n)** for pop    **O(1)** for all other      
+Space: **O(n)** for push and **O(1)** for all other
 
 ##  LC 108 convert-sorted-array-to-binary-search-tree
 [Link](https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/description/)   
