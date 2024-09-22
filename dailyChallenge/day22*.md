@@ -3,6 +3,7 @@
 ## Backtracking 
 - **Backtracking is a byproduct of recursion**; whenever there is recursion, backtracking will be present
 - Backtracking fundamentally involves **exhaustive search**, exploring all possibilities to find the desired solution. While pruning techniques can enhance efficiency
+    - Go vertically using recursion till hit the leaf and then backtrack pop,  go vertially using for loop
 - Problems solved by backtracking can all be abstracted into a tree structure.
     - This is because backtracking involves recursively searching for subsets within a set.
     - **The size of the set determines the width of the tree**
@@ -60,68 +61,37 @@ class Solution:
 Time: **O(n * 2^n)** more like creating subset from n elemets
 Space: **O(n)** 
 
-##  LC 108 convert-sorted-array-to-binary-search-tree
-[Link](https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/description/)   
-[Cousrse Link](https://programmercarl.com/0108.%E5%B0%86%E6%9C%89%E5%BA%8F%E6%95%B0%E7%BB%84%E8%BD%AC%E6%8D%A2%E4%B8%BA%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91.html#%E6%80%9D%E8%B7%AF)
+##  LC 216 combination-sum-iii
+[Link](https://leetcode.com/problems/combination-sum-iii/description/)   
+[Cousrse Link](https://programmercarl.com/0216.%E7%BB%84%E5%90%88%E6%80%BB%E5%92%8CIII.html)
   
-- recursive + [] + avoid to pass array and use left right pointers
+- preety much like 77 but checking the sum
+- remember to backtracking!
 ```python
 class Solution:
-    def traversal(self, nums: List[int], left: int, right: int) -> TreeNode:
-        if left > right:
-            return None
-        
-        mid = left + (right - left) // 2
-        root = TreeNode(nums[mid])
-        root.left = self.traversal(nums, left, mid - 1)
-        root.right = self.traversal(nums, mid + 1, right)
-        return root
-    
-    def sortedArrayToBST(self, nums: List[int]) -> TreeNode:
-        root = self.traversal(nums, 0, len(nums) - 1)
-        return root
+    def combinationSum3(self, k: int, n: int) -> List[List[int]]:
+        result = []  # 存放结果集
+        self.backtracking(n, k, 0, 1, [], result)
+        return result
+
+    def backtracking(self, targetSum, k, currentSum, startIndex, path, result):
+        if currentSum > targetSum:  # 剪枝操作
+            return  # 如果path的长度等于k但currentSum不等于targetSum，则直接返回
+        if len(path) == k:
+            if currentSum == targetSum:
+                result.append(path[:])
+            return
+        for i in range(startIndex, 9 - (k - len(path)) + 2):  # 剪枝
+            currentSum += i  # 处理
+            path.append(i)  # 处理
+            self.backtracking(targetSum, k, currentSum, i + 1, path, result)  # 注意i+1调整startIndex
+            currentSum -= i  # 回溯
+            path.pop()  # 回溯
 ```
 
-- level order w/ 3 queues (iteration / Left / Right)
-```python
-from collections import deque
+Time: **O(n * 2^n)** more like creating subset from n elemets
+Space: **O(n)** 
 
-class Solution:
-    def sortedArrayToBST(self, nums: List[int]) -> TreeNode:
-        if len(nums) == 0:
-            return None
-        
-        root = TreeNode(0)  # 初始根节点
-        nodeQue = deque()   # 放遍历的节点
-        leftQue = deque()   # 保存左区间下标
-        rightQue = deque()  # 保存右区间下标
-        
-        nodeQue.append(root)               # 根节点入队列
-        leftQue.append(0)                  # 0为左区间下标初始位置
-        rightQue.append(len(nums) - 1)     # len(nums) - 1为右区间下标初始位置
-
-        while nodeQue:
-            curNode = nodeQue.popleft()
-            left = leftQue.popleft()
-            right = rightQue.popleft()
-            mid = left + (right - left) // 2
-
-            curNode.val = nums[mid]  # 将mid对应的元素给中间节点
-
-            if left <= mid - 1:  # 处理左区间
-                curNode.left = TreeNode(0)
-                nodeQue.append(curNode.left)
-                leftQue.append(left)
-                rightQue.append(mid - 1)
-
-            if right >= mid + 1:  # 处理右区间
-                curNode.right = TreeNode(0)
-                nodeQue.append(curNode.right)
-                leftQue.append(mid + 1)
-                rightQue.append(right)
-
-        return root
-```
 
 ##  LC 538 convert-bst-to-greater-tree
 [Link](https://leetcode.com/problems/convert-bst-to-greater-tree/description/)   
