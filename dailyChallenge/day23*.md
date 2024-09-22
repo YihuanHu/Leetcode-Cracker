@@ -139,44 +139,52 @@ Time: **O(n * 2^n)**
 Space: **O(n)** 
 
 
-##  LC 17 letter-combinations-of-a-phone-number
-[Link](https://leetcode.com/problems/letter-combinations-of-a-phone-number/description/)   
-[Cousrse Link](https://programmercarl.com/0017.%E7%94%B5%E8%AF%9D%E5%8F%B7%E7%A0%81%E7%9A%84%E5%AD%97%E6%AF%8D%E7%BB%84%E5%90%88.html)
-  
-- think about edge cases of handling "0"
-- how to handle when the set is diff
+##  *LC 131 palindrome-partitioning
+[Link](https://leetcode.com/problems/palindrome-partitioning/description/)   
+[Cousrse Link](https://programmercarl.com/0131.%E5%88%86%E5%89%B2%E5%9B%9E%E6%96%87%E4%B8%B2.html)
+- Key points:  
+    - Cutting problems can be abstracted as combination problems.
+    - How to simulate those cut lines => startIndex
+    - How to terminate recursion in cutting problems => startIndex >= len(s)
+    - How to extract substrings in the recursive loop => self.is_palindrome(s, start_index, i)
+    - How to check for palindromes => two pointers / dp
 ```python
 class Solution:
-    def __init__(self):
-        self.letterMap = [
-            "",     # 0
-            "",     # 1
-            "abc",  # 2
-            "def",  # 3
-            "ghi",  # 4
-            "jkl",  # 5
-            "mno",  # 6
-            "pqrs", # 7
-            "tuv",  # 8
-            "wxyz"  # 9
-        ]
-        self.result = []
-        self.s = ""
-    
-    def backtracking(self, digits, index):
-        if index == len(digits):
-            self.result.append(self.s)
+
+    def partition(self, s: str) -> List[List[str]]:
+        '''
+        递归用于纵向遍历
+        for循环用于横向遍历
+        当切割线迭代至字符串末尾，说明找到一种方法
+        类似组合问题，为了不重复切割同一位置，需要start_index来做标记下一轮递归的起始位置(切割线)
+        '''
+        result = []
+        self.backtracking(s, 0, [], result)
+        return result
+
+    def backtracking(self, s, start_index, path, result ):
+        # Base Case
+        if start_index == len(s):
+            result.append(path[:])
             return
-        digit = int(digits[index])    # 将索引处的数字转换为整数
-        letters = self.letterMap[digit]    # 获取对应的字符集
-        for i in range(len(letters)):
-            self.s += letters[i]    # 处理字符
-            self.backtracking(digits, index + 1)    # 递归调用，注意索引加1，处理下一个数字
-            self.s = self.s[:-1]    # 回溯，删除最后添加的字符
-    
-    def letterCombinations(self, digits):
-        if len(digits) == 0:
-            return self.result
-        self.backtracking(digits, 0)
-        return self.result
+        
+        # 单层递归逻辑
+        for i in range(start_index, len(s)):
+            # 此次比其他组合题目多了一步判断：
+            # 判断被截取的这一段子串([start_index, i])是否为回文串
+            if self.is_palindrome(s, start_index, i):
+                path.append(s[start_index:i+1])
+                self.backtracking(s, i+1, path, result)   # 递归纵向遍历：从下一处进行切割，判断其余是否仍为回文串
+                path.pop()             # 回溯
+
+
+    def is_palindrome(self, s: str, start: int, end: int) -> bool:
+        i: int = start        
+        j: int = end
+        while i < j:
+            if s[i] != s[j]:
+                return False
+            i += 1
+            j -= 1
+        return True 
 ```
