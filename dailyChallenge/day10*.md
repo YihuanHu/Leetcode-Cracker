@@ -112,8 +112,8 @@ class MyStack:
         return len(self.q) == 0
 
 ```
-Time: **O(n * 2^n)** more like creating subset from n elemets
-Space: **O(n)** 
+Time: **O(n)** for pop    **O(1)** for all other          
+Space: **O(n)** for push and **O(1)** for all other     
 
 
 
