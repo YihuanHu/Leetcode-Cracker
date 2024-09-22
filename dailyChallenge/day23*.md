@@ -59,7 +59,7 @@ class Solution:
         return result
 
 ```
-Time: **O(n * 2^n)** more like creating subset from n elemets
+Time: **O(n * 2^n)**     
 Space: **O(target)** 
 
 ##  LC 216 combination-sum-iii
