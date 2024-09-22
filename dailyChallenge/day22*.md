@@ -93,57 +93,44 @@ Time: **O(n * 2^n)** more like creating subset from n elemets
 Space: **O(n)** 
 
 
-##  LC 538 convert-bst-to-greater-tree
-[Link](https://leetcode.com/problems/convert-bst-to-greater-tree/description/)   
-[Cousrse Link](https://programmercarl.com/0538.%E6%8A%8A%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E8%BD%AC%E6%8D%A2%E4%B8%BA%E7%B4%AF%E5%8A%A0%E6%A0%91.html)
+##  LC 17 letter-combinations-of-a-phone-number
+[Link](https://leetcode.com/problems/letter-combinations-of-a-phone-number/description/)   
+[Cousrse Link](https://programmercarl.com/0017.%E7%94%B5%E8%AF%9D%E5%8F%B7%E7%A0%81%E7%9A%84%E5%AD%97%E6%AF%8D%E7%BB%84%E5%90%88.html)
   
-- recursive: Reverse inorder RVL
-```python
-class Solution:
-    def convertBST(self, root: TreeNode) -> TreeNode:
-        self.pre = 0  # 记录前一个节点的数值
-        self.traversal(root)
-        return root
-    def traversal(self, cur):
-        if cur is None:
-            return        
-        self.traversal(cur.right)
-        cur.val += self.pre
-        self.pre = cur.val
-        self.traversal(cur.left)
-```
-
-
-- typical iterative w/ queue 
+- think about edge cases of handling "0"
+- how to handle when the set is diff
 ```python
 class Solution:
     def __init__(self):
-        self.pre = 0  # 记录前一个节点的数值
+        self.letterMap = [
+            "",     # 0
+            "",     # 1
+            "abc",  # 2
+            "def",  # 3
+            "ghi",  # 4
+            "jkl",  # 5
+            "mno",  # 6
+            "pqrs", # 7
+            "tuv",  # 8
+            "wxyz"  # 9
+        ]
+        self.result = []
+        self.s = ""
     
-    def traversal(self, root):
-        stack = []
-        cur = root
-        while cur or stack:
-            if cur:
-                stack.append(cur)
-                cur = cur.right  # 右
-            else:
-                cur = stack.pop()  # 中
-                cur.val += self.pre
-                self.pre = cur.val
-                cur = cur.left  # 左
+    def backtracking(self, digits, index):
+        if index == len(digits):
+            self.result.append(self.s)
+            return
+        digit = int(digits[index])    # 将索引处的数字转换为整数
+        letters = self.letterMap[digit]    # 获取对应的字符集
+        for i in range(len(letters)):
+            self.s += letters[i]    # 处理字符
+            self.backtracking(digits, index + 1)    # 递归调用，注意索引加1，处理下一个数字
+            self.s = self.s[:-1]    # 回溯，删除最后添加的字符
     
-    def convertBST(self, root):
-        self.pre = 0
-        self.traversal(root)
-        return root
+    def letterCombinations(self, digits):
+        if len(digits) == 0:
+            return self.result
+        self.backtracking(digits, 0)
+        return self.result
 ```
-
-
-##  Adds on
-- Summary:
-    - 涉及到二叉树的构造，无论普通二叉树还是二叉搜索树一定前序，都是先构造中节点。
-    - 求普通二叉树的属性，一般是后序，一般要通过递归函数的返回值做计算。
-    - 求二叉搜索树的属性，一定是中序了，要不白瞎了有序性了。
-- [ ] binary tree summary [Link](https://programmercarl.com/%E4%BA%8C%E5%8F%89%E6%A0%91%E6%80%BB%E7%BB%93%E7%AF%87.html#%E6%9C%80%E5%90%8E%E6%80%BB%E7%BB%93)
-- [ ] viz summary [Link](https://github.com/YihuanHu/Leetcode-Cracker/blob/main/image/binary_tree_viz.png)
