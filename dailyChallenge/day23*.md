@@ -9,7 +9,7 @@
     - when finding combinations from a single set, startIndex is necessary, like LC 77. Combinations and LC 216. Combination Sum III.
     - if the combinations are taken from multiple sets that do not affect each other, then startIndex is not needed like LC 17. Letter Combinations of a Phone Number
 - !!How to dupe the values:
-    - passing the same i in recursion
+    - passing the same i in recursion as startIndex
 - How to prune?
     -  firstly, sort the candidates and then check currrent sum > target 
 ```python
@@ -62,35 +62,80 @@ class Solution:
 Time: **O(n * 2^n)**     
 Space: **O(target)** 
 
-##  LC 216 combination-sum-iii
-[Link](https://leetcode.com/problems/combination-sum-iii/description/)   
-[Cousrse Link](https://programmercarl.com/0216.%E7%BB%84%E5%90%88%E6%80%BB%E5%92%8CIII.html)
+##  LC 40 combination-sum-ii
+[Link](https://leetcode.com/problems/combination-sum-ii/description/)   
+[Cousrse Link](https://programmercarl.com/0040.%E7%BB%84%E5%90%88%E6%80%BB%E5%92%8CII.html)
   
-- preety much like 77 but checking the sum
-- remember to backtracking!
+- Tricky part is:
+    - have dupes in candidates but cannot return dupe results
+    - elements can be repeated within the same combination but two combinations cannot be identical
+- Understand what is Used and avoid dupes
+    -  one is 'used' on the same branch(recursion), and the other is 'used' on the same level (for loop)
+    -  **eliminate duplicates at the same level of the tree**
 ```python
 class Solution:
-    def combinationSum3(self, k: int, n: int) -> List[List[int]]:
-        result = []  # 存放结果集
-        self.backtracking(n, k, 0, 1, [], result)
-        return result
 
-    def backtracking(self, targetSum, k, currentSum, startIndex, path, result):
-        if currentSum > targetSum:  # 剪枝操作
-            return  # 如果path的长度等于k但currentSum不等于targetSum，则直接返回
-        if len(path) == k:
-            if currentSum == targetSum:
-                result.append(path[:])
+
+    def backtracking(self, candidates, target, total, startIndex, path, result):
+        if total == target:
+            result.append(path[:])
             return
-        for i in range(startIndex, 9 - (k - len(path)) + 2):  # 剪枝
-            currentSum += i  # 处理
-            path.append(i)  # 处理
-            self.backtracking(targetSum, k, currentSum, i + 1, path, result)  # 注意i+1调整startIndex
-            currentSum -= i  # 回溯
-            path.pop()  # 回溯
-```
 
-Time: **O(n * 2^n)** more like creating subset from n elemets
+        for i in range(startIndex, len(candidates)):
+            if i > startIndex and candidates[i] == candidates[i - 1]: # de-dupe 
+                continue
+
+            if total + candidates[i] > target:
+                break
+
+            total += candidates[i]
+            path.append(candidates[i])
+            self.backtracking(candidates, target, total, i + 1, path, result)
+            total -= candidates[i]
+            path.pop()
+
+    def combinationSum2(self, candidates, target):
+        result = []
+        candidates.sort()
+        self.backtracking(candidates, target, 0, 0, [], result)
+        return result
+```
+- Just another undestanding is using bool array called used
+    - When used[i - 1] == true, it indicates that candidates[i - 1] has been used on the same branch.
+    - When used[i - 1] == false, it indicates that candidates[i - 1] has been used on the same level <= the current candidate candidates[i] is being taken as a result of backtracking from candidates[i - 1]
+```python
+class Solution:
+
+
+    def backtracking(self, candidates, target, total, startIndex, used, path, result):
+        if total == target:
+            result.append(path[:])
+            return
+
+        for i in range(startIndex, len(candidates)):
+            # 对于相同的数字，只选择第一个未被使用的数字，跳过其他相同数字
+            if i > startIndex and candidates[i] == candidates[i - 1] and not used[i - 1]:
+                continue
+
+            if total + candidates[i] > target:
+                break
+
+            total += candidates[i]
+            path.append(candidates[i])
+            used[i] = True
+            self.backtracking(candidates, target, total, i + 1, used, path, result)
+            used[i] = False
+            total -= candidates[i]
+            path.pop()
+
+    def combinationSum2(self, candidates, target):
+        used = [False] * len(candidates)
+        result = []
+        candidates.sort()
+        self.backtracking(candidates, target, 0, 0, used, [], result)
+        return result
+```
+Time: **O(n * 2^n)**     
 Space: **O(n)** 
 
 
