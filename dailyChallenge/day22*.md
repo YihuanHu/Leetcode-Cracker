@@ -39,28 +39,26 @@ void backtracking(参数) {
 [Link](https://leetcode.com/problems/combinations/description/)   
 [Cousrse Link](https://programmercarl.com/0077.%E7%BB%84%E5%90%88.html)    
 
-- If the node is within the range, return the node
-- If the node is out of range, return its right/left
+- Backtracking / recursion here is like flexible for loop that only stops when meet the return condition
 
-
-- recursive
+- **parameter here works same as global variable for recursion for updating state**
 ```python
 class Solution:
-    def trimBST(self, root: TreeNode, low: int, high: int) -> TreeNode:
-        if root is None:
-            return None
-        if root.val < low:
-            # 寻找符合区间 [low, high] 的节点
-            return self.trimBST(root.right, low, high)
-        if root.val > high:
-            # 寻找符合区间 [low, high] 的节点
-            return self.trimBST(root.left, low, high)
-        root.left = self.trimBST(root.left, low, high)  # root.left 接入符合条件的左孩子
-        root.right = self.trimBST(root.right, low, high)  # root.right 接入符合条件的右孩子
-        return root
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        result = []  # 存放结果集
+        self.backtracking(n, k, 1, [], result)
+        return result
+    def backtracking(self, n, k, startIndex, path, result):
+        if len(path) == k:
+            result.append(path[:])
+            return
+        for i in range(startIndex, n + 1):  # can prune: for i in range(startIndex, n - (k - len(path)) + 2):
+            path.append(i)  # 处理节点
+            self.backtracking(n, k, i + 1, path, result)
+            path.pop()  # 回溯，撤销处理的节点
 ```
-Time: **O(n)** for pop    **O(1)** for all other      
-Space: **O(n)** for push and **O(1)** for all other
+Time: **O(n * 2^n)** more like creating subset from n elemets
+Space: **O(n)** 
 
 ##  LC 108 convert-sorted-array-to-binary-search-tree
 [Link](https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/description/)   
