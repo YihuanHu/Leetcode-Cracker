@@ -1,6 +1,5 @@
 # Day25 Backtracking Part4
 
-
 ## LC 491 non-decreasing-subsequences
 [Link](https://leetcode.com/problems/non-decreasing-subsequences/description/)   
 [Cousrse Link](https://github.com/YihuanHu/Leetcode-Cracker/blob/main/dailyChallenge/day25*.md)    
@@ -34,80 +33,71 @@ class Solution:
 Time: **O(n * 2^n)**     
 Space: **O(target)** 
 
-##  LC 78 subsets
-[Link](https://leetcode.com/problems/subsets/description/)   
-[Cousrse Link](https://programmercarl.com/0078.%E5%AD%90%E9%9B%86.html)
+##  LC 46 permutations
+[Link](https://leetcode.com/problems/permutations/)   
+[Cousrse Link](https://programmercarl.com/0046.%E5%85%A8%E6%8E%92%E5%88%97.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
   
-- Collecting all the results for each node
-- While combination / splitting only collects the leaf node
+- Each level starts searching from 0 instead of startIndex since order matters 
+- We need a used array to keep track of which elements are already included in the path.
 ```python
 class Solution:
-    def subsets(self, nums):
+    def permute(self, nums):
         result = []
-        path = []
-        self.backtracking(nums, 0, path, result)
+        self.backtracking(nums, [], [False] * len(nums), result)
         return result
 
-    def backtracking(self, nums, startIndex, path, result):
-        result.append(path[:])  # 收集子集，要放在终止添加的上面，否则会漏掉自己
-        # if startIndex >= len(nums):  # 终止条件可以不加
-        #     return
-        for i in range(startIndex, len(nums)):
+    def backtracking(self, nums, path, used, result):
+        if len(path) == len(nums):
+            result.append(path[:])
+            return
+        for i in range(len(nums)):
+            if used[i]:
+                continue
+            used[i] = True
             path.append(nums[i])
-            self.backtracking(nums, i + 1, path, result)
+            self.backtracking(nums, path, used, result)
             path.pop()
+            used[i] = False
 ```
-
-Time: **O(n * 2^n)**     
+Time: **O(n!)**     
 Space: **O(n)** 
 
 
-##  LC 90 subsets-ii
-[Link](https://leetcode.com/problems/subsets-ii/)   
-[Cousrse Link](https://programmercarl.com/0090.%E5%AD%90%E9%9B%86II.html)
-- Similar to 78 but it has dupes
-- **nums need to be sorted for de-dupe**
+##  LC 47 permutations-ii
+[Link](https://leetcode.cn/problems/permutations-ii/)   
+[Cousrse Link](https://programmercarl.com/0047.%E5%85%A8%E6%8E%92%E5%88%97II.html)    
+- **combination and permutation problems collect results at the leaf nodes of a tree structure, while the subset problem gathers results from all nodes on the tree.**
+- Both used[i - 1] == true/false can be used
 ```python
-# use startIndex for de-dupe
 class Solution:
-    def subsetsWithDup(self, nums):
+    def permuteUnique(self, nums):
+        nums.sort()  # 排序
         result = []
-        path = []
-        nums.sort()  # 去重需要排序
-        self.backtracking(nums, 0, path, result)
+        self.backtracking(nums, [], [False] * len(nums), result)
         return result
 
-    def backtracking(self, nums, startIndex, path, result):
-        result.append(path[:])  # 收集子集
-        for i in range(startIndex, len(nums)):
-            # 而我们要对同一树层使用过的元素进行跳过
-            if i > startIndex and nums[i] == nums[i - 1]:
+    def backtracking(self, nums, path, used, result):
+        if len(path) == len(nums):
+            result.append(path[:])
+            return
+        for i in range(len(nums)):
+            // used[i - 1] == true，说明同一树枝nums[i - 1]使用过
+            // used[i - 1] == false，说明同一树层nums[i - 1]使用过 more effecient
+            // 如果同一树层nums[i - 1]使用过则直接跳过
+            if (i > 0 and nums[i] == nums[i - 1] and not used[i - 1]) or used[i]:  # de-dupe
                 continue
-            path.append(nums[i])
-            self.backtracking(nums, i + 1, path, result)
-            path.pop()
-
-# use USED bool for de-dupe
-class Solution:
-    def subsetsWithDup(self, nums):
-        result = []
-        path = []
-        used = [False] * len(nums)
-        nums.sort()  # 去重需要排序
-        self.backtracking(nums, 0, used, path, result)
-        return result
-
-    def backtracking(self, nums, startIndex, used, path, result):
-        result.append(path[:])  # 收集子集
-        for i in range(startIndex, len(nums)):
-            # used[i - 1] == True，说明同一树枝 nums[i - 1] 使用过
-            # used[i - 1] == False，说明同一树层 nums[i - 1] 使用过
-            # 而我们要对同一树层使用过的元素进行跳过
-            if i > 0 and nums[i] == nums[i - 1] and not used[i - 1]:
-                continue
-            path.append(nums[i])
             used[i] = True
-            self.backtracking(nums, i + 1, used, path, result)
-            used[i] = False
+            path.append(nums[i])
+            self.backtracking(nums, path, used, result)
             path.pop()
+            used[i] = False
+
 ```
+Time: **O(n! * n )**     
+Space: **O(n)** 
+
+## Adds on
+- [ ] 332, 51 , 37 for harder backtracking problems
+- summary [Link](https://programmercarl.com/%E5%9B%9E%E6%BA%AF%E6%80%BB%E7%BB%93.html#%E7%BB%84%E5%90%88%E9%97%AE%E9%A2%98)
+    - the power of backtracking: using recursion to control the number of nested for loops
+
