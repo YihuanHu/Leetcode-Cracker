@@ -1,37 +1,43 @@
 # Day27 Greedy Algo Part1
+## Greedy
+- The essence of greedy algorithms is to choose the local optimal solution at each stage to achieve a global optimal solution.
+- Greedy on't follow a specific pattern; fundamentally, they rely on common sense reasoning and counterexamples
 
-## LC 491 non-decreasing-subsequences
-[Link](https://leetcode.com/problems/non-decreasing-subsequences/description/)   
-[Cousrse Link](https://github.com/YihuanHu/Leetcode-Cracker/blob/main/dailyChallenge/day25*.md)    
 
-- Different de-dupe logic:
-    - Since the order is fixed we cannot sort and use startIndex to de-dupe
-    - Use set for used numbers 
+## LC 455 assign-cookies
+[Link](https://leetcode.com/problems/assign-cookies/description/)   
+[Cousrse Link](https://programmercarl.com/0455.%E5%88%86%E5%8F%91%E9%A5%BC%E5%B9%B2.html)    
+- Use index to save one for loop
+- Two logics
+    - Use cookies as loop from large to small: large cookis can satisfy needs large greed
+    - Use greed as loop from small to large: small greed can be satisfied by small cookies
 ```python
+# solution 1
 class Solution:
-    def findSubsequences(self, nums):
-        result = []
-        path = []
-        self.backtracking(nums, 0, path, result)
+    def findContentChildren(self, g, s):
+        g.sort()  # 将孩子的贪心因子排序
+        s.sort()  # 将饼干的尺寸排序
+        index = len(s) - 1  # 饼干数组的下标，从最后一个饼干开始
+        result = 0  # 满足孩子的数量
+        for i in range(len(g)-1, -1, -1):  # 遍历胃口，从最后一个孩子开始
+            if index >= 0 and s[index] >= g[i]:  # 遍历饼干
+                result += 1
+                index -= 1
         return result
-    
-    def backtracking(self, nums, startIndex, path, result):
-        if len(path) > 1:
-            result.append(path[:])  # 注意要使用切片将当前路径的副本加入结果集
-            # 注意这里不要加return，要取树上的节点
-        
-        uset = set()  # 使用集合对本层元素进行去重
-        for i in range(startIndex, len(nums)):
-            if (path and nums[i] < path[-1]) or nums[i] in uset:
-                continue
-            
-            uset.add(nums[i])  # 记录这个元素在本层用过了，本层后面不能再用了
-            path.append(nums[i])
-            self.backtracking(nums, i + 1, path, result)
-            path.pop()
+
+# solution 2
+class Solution:
+    def findContentChildren(self, g, s):
+        g.sort()  # 将孩子的贪心因子排序
+        s.sort()  # 将饼干的尺寸排序
+        index = 0
+        for i in range(len(s)):  # 遍历饼干
+            if index < len(g) and g[index] <= s[i]:  # 如果当前孩子的贪心因子小于等于当前饼干尺寸
+                index += 1  # 满足一个孩子，指向下一个孩子
+        return index  # 返回满足的孩子数目
 ```
-Time: **O(n * 2^n)**     
-Space: **O(target)** 
+Time: **O(n * logn)**     
+Space: **O(1)** 
 
 ##  LC 46 permutations
 [Link](https://leetcode.com/problems/permutations/)   
