@@ -6,14 +6,16 @@
     - Proof by Contradiction
     - Mathematical Induction
 
-## LC 455 assign-cookies
+## LC * 455 assign-cookies
 [Link](https://leetcode.com/problems/assign-cookies/description/)   
 [Cousrse Link](https://programmercarl.com/0455.%E5%88%86%E5%8F%91%E9%A5%BC%E5%B9%B2.html)    
 - Use index to save one for loop
 - Two logics
     - Use greed as loop from large to small: large cookis can satisfy needs large greed
+        - What if loop greed from small to large: if there is one extrem greek, if should be fine
     - Use cookies as loop from small to large: small greed can be satisfied by small cookies
-        - What if loop small cookies from small to large
+        - What if loop cookies from large to small: if there is one extrem large greed, then no one can eat
+- What to do 
 ```python
 # solution 1
 class Solution:
@@ -71,41 +73,25 @@ Time: **O(n)**
 Space: **O(1)** 
 
 
-##  LC 47 permutations-ii
-[Link](https://leetcode.cn/problems/permutations-ii/)   
-[Cousrse Link](https://programmercarl.com/0047.%E5%85%A8%E6%8E%92%E5%88%97II.html)    
-- **combination and permutation problems collect results at the leaf nodes of a tree structure, while the subset problem gathers results from all nodes on the tree.**
-- Both used[i - 1] == true/false can be used
+##  LC 53 maximum-subarray
+[Link](https://leetcode.com/problems/maximum-subarray/description/)   
+[Cousrse Link](https://programmercarl.com/0053.%E6%9C%80%E5%A4%A7%E5%AD%90%E5%BA%8F%E5%92%8C.html)    
+- Every time the current sum(count) < 0 , reset the count since add negative sum will for sure decrease the later sum
 ```python
 class Solution:
-    def permuteUnique(self, nums):
-        nums.sort()  # 排序
-        result = []
-        self.backtracking(nums, [], [False] * len(nums), result)
+    def maxSubArray(self, nums):
+        result = float('-inf')  # 初始化结果为负无穷大
+        count = 0
+        for i in range(len(nums)):
+            count += nums[i]
+            if count > result:  # 取区间累计的最大值（相当于不断确定最大子序终止位置）
+                result = count
+            if count <= 0:  # 相当于重置最大子序起始位置，因为遇到负数一定是拉低总和
+                count = 0
         return result
 
-    def backtracking(self, nums, path, used, result):
-        if len(path) == len(nums):
-            result.append(path[:])
-            return
-        for i in range(len(nums)):
-            // used[i - 1] == true，说明同一树枝nums[i - 1]使用过
-            // used[i - 1] == false，说明同一树层nums[i - 1]使用过 more effecient
-            // 如果同一树层nums[i - 1]使用过则直接跳过
-            if (i > 0 and nums[i] == nums[i - 1] and not used[i - 1]) or used[i]:  # de-dupe
-                continue
-            used[i] = True
-            path.append(nums[i])
-            self.backtracking(nums, path, used, result)
-            path.pop()
-            used[i] = False
-
 ```
-Time: **O(n! * n )**     
-Space: **O(n)** 
+Time: **O(n)**     
+Space: **O(1)** 
 
-## Adds on
-- [ ] 332, 51 , 37 for harder backtracking problems
-- summary [Link](https://programmercarl.com/%E5%9B%9E%E6%BA%AF%E6%80%BB%E7%BB%93.html#%E7%BB%84%E5%90%88%E9%97%AE%E9%A2%98)
-    - the power of backtracking: using recursion to control the number of nested for loops
 
