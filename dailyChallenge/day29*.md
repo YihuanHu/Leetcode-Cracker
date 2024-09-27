@@ -1,45 +1,67 @@
 # Day29 Greedy Algo Part3
 
-## LC 122 best-time-to-buy-and-sell-stock-ii
-[Link](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/description/)   
-[Cousrse Link](https://programmercarl.com/0122.%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BAII.html)    
-- Local optimality: Collecting positive profits each day. Global optimality: Achieving the maximum profit
+## LC 134 gas-station
+[Link](https://leetcode.com/problems/gas-station/description/)   
+[Cousrse Link](https://programmercarl.com/0134.%E5%8A%A0%E6%B2%B9%E7%AB%99.html)    
+- Local optimality: Once the cumulative sum curSum of rest[i] becomes less than 0, the starting position must be at least i + 1, because starting from any position before i will not work.
+- Global optimality: Find the starting position that allows completing a full circle.
 ```python
 class Solution:
-    def maxProfit(self, prices: List[int]) -> int:
-        result = 0
-        for i in range(1, len(prices)): # only collect postive prediff
-            result += max(prices[i] - prices[i - 1], 0)
-        return result
+    def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
+        curSum = 0  # 当前累计的剩余油量
+        totalSum = 0  # 总剩余油量
+        start = 0  # 起始位置
+        
+        for i in range(len(gas)):
+            curSum += gas[i] - cost[i]
+            totalSum += gas[i] - cost[i]
+            
+            if curSum < 0:  # 当前累计剩余油量curSum小于0
+                start = i + 1  # 起始位置更新为i+1
+                curSum = 0  # curSum重新从0开始累计
+        
+        if totalSum < 0:
+            return -1  # 总剩余油量totalSum小于0，说明无法环绕一圈
+        return start
 ```
 Time: **O(n)**     
 Space: **O(1)** 
 
-##  LC 55 jump-game
-[Link](https://leetcode.com/problems/jump-game/)   
-[Cousrse Link](https://programmercarl.com/0055.%E8%B7%B3%E8%B7%83%E6%B8%B8%E6%88%8F.html)
-
-- Local optimality: At each step, take the maximum jump distance (to achieve the largest coverage)
-- Global optimality: Ultimately achieving the maximum coverage to see if it is possible to reach the endpoint.
+##  LC 135 candy
+[Link](https://leetcode.com/problems/candy/description/)   
+[Cousrse Link](https://programmercarl.com/0135.%E5%88%86%E5%8F%91%E7%B3%96%E6%9E%9C.html)
+- Two greedy algo:
+    - One pass is from left to right, comparing where the score of the left < right 
+    - Another pass is from right to left, comparing where the score of the right < left
+- Local optimality: Take the maximum between candyVec[i + 1] + 1 and candyVec[i] to ensure that the number of candies for the i-th child is greater than both the left and right children
+- Global optimality: Among adjacent children, the child with the higher score receives more candies
 ```python
 ## for循环
 class Solution:
-    def canJump(self, nums: List[int]) -> bool:
-        cover = 0
-        if len(nums) == 1: return True
-        for i in range(len(nums)):
-            if i <= cover:
-                cover = max(i + nums[i], cover)
-                if cover >= len(nums) - 1: return True
-        return False
+    def candy(self, ratings: List[int]) -> int:
+        candyVec = [1] * len(ratings)
+        
+        # 从前向后遍历，处理右侧比左侧评分高的情况
+        for i in range(1, len(ratings)):
+            if ratings[i] > ratings[i - 1]:
+                candyVec[i] = candyVec[i - 1] + 1
+        
+        # 从后向前遍历，处理左侧比右侧评分高的情况
+        for i in range(len(ratings) - 2, -1, -1):
+            if ratings[i] > ratings[i + 1]:
+                candyVec[i] = max(candyVec[i], candyVec[i + 1] + 1)
+        
+        # 统计结果
+        result = sum(candyVec)
+        return result
 ```
 Time: **O(n)**     
-Space: **O(1)** 
+Space: **O(n)** 
 
 
-##  LC 45 jump-game-ii
-[Link](https://leetcode.com/problems/jump-game-ii/description/)   
-[Cousrse Link](https://programmercarl.com/0045.%E8%B7%B3%E8%B7%83%E6%B8%B8%E6%88%8FII.html#%E6%80%9D%E8%B7%AF)    
+##  LC 860 lemonade-change
+[Link](https://leetcode.com/problems/lemonade-change/description/)   
+[Cousrse Link](https://programmercarl.com/0860.%E6%9F%A0%E6%AA%AC%E6%B0%B4%E6%89%BE%E9%9B%B6.html)      
 - Increase the maximum coverage with the minimum number of steps until the coverage reaches the endpoint. Within this range, the minimum number of steps will definitely allow us to jump to the target, regardless of the specifics of the jumps.
 - If the moving index reaches the maximum coverage distance for the current step and has not yet reached the endpoint, then an additional step must be taken to increase the coverage range until it encompasses the endpoint.
 - Local optimality: At each step, update the next distance
@@ -67,9 +89,9 @@ class Solution:
 Time: **O(n)**     
 Space: **O(1)** 
 
-##  LC 1005 maximize-sum-of-array-after-k-negations
-[Link](https://leetcode.com/problems/maximize-sum-of-array-after-k-negations/)   
-[Cousrse Link](https://programmercarl.com/1005.K%E6%AC%A1%E5%8F%96%E5%8F%8D%E5%90%8E%E6%9C%80%E5%A4%A7%E5%8C%96%E7%9A%84%E6%95%B0%E7%BB%84%E5%92%8C.html)    
+##  LC 860 lemonade-change
+[Link](https://leetcode.com/problems/lemonade-change/description/)   
+[Cousrse Link](https://programmercarl.com/0860.%E6%9F%A0%E6%AA%AC%E6%B0%B4%E6%89%BE%E9%9B%B6.html)    
 - Two greedy algo
     - For negative
         - Local optimality: Transform large absolute negative numbers into positive numbers, maximizing the current value
