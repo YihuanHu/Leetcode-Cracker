@@ -30,6 +30,7 @@ Space: **O(1)**
 ##  LC 135 candy
 [Link](https://leetcode.com/problems/candy/description/)   
 [Cousrse Link](https://programmercarl.com/0135.%E5%88%86%E5%8F%91%E7%B3%96%E6%9E%9C.html)
+- Focus on handling one side before addressing the other; don't try to balance both sides at the same time.
 - Two greedy algo:
     - One pass is from left to right, comparing where the score of the left < right 
     - Another pass is from right to left, comparing where the score of the right < left
@@ -62,63 +63,66 @@ Space: **O(n)**
 ##  LC 860 lemonade-change
 [Link](https://leetcode.com/problems/lemonade-change/description/)   
 [Cousrse Link](https://programmercarl.com/0860.%E6%9F%A0%E6%AA%AC%E6%B0%B4%E6%89%BE%E9%9B%B6.html)      
-- Increase the maximum coverage with the minimum number of steps until the coverage reaches the endpoint. Within this range, the minimum number of steps will definitely allow us to jump to the target, regardless of the specifics of the jumps.
-- If the moving index reaches the maximum coverage distance for the current step and has not yet reached the endpoint, then an additional step must be taken to increase the coverage range until it encompasses the endpoint.
-- Local optimality: At each step, update the next distance
-- Global optimality: Ultimately achieving the maximum coverage to see if it is possible to reach the endpoint.
+- Local optimality: When encountering a bill of 20, prioritize using a 10-dollar bill to make the change for this transaction
+- Global optimality: Successfully complete the change for all bills
 ```python
 class Solution:
-    def jump(self, nums):
-        if len(nums) == 1:
-            return 0
+    def lemonadeChange(self, bills: List[int]) -> bool:
+        five = 0
+        ten = 0
+        twenty = 0
         
-        cur_distance = 0  # 当前覆盖最远距离下标
-        ans = 0  # 记录走的最大步数
-        next_distance = 0  # 下一步覆盖最远距离下标
+        for bill in bills:
+            # 情况一：收到5美元
+            if bill == 5:
+                five += 1
+            
+            # 情况二：收到10美元
+            if bill == 10:
+                if five <= 0:
+                    return False
+                ten += 1
+                five -= 1
+            
+            # 情况三：收到20美元
+            if bill == 20:
+                # 先尝试使用10美元和5美元找零
+                if five > 0 and ten > 0:
+                    five -= 1
+                    ten -= 1
+                    #twenty += 1
+                # 如果无法使用10美元找零，则尝试使用三张5美元找零
+                elif five >= 3:
+                    five -= 3
+                    #twenty += 1
+                else:
+                    return False
         
-        for i in range(len(nums)):
-            next_distance = max(nums[i] + i, next_distance)  # 更新下一步覆盖最远距离下标
-            if i == cur_distance:  # 遇到当前覆盖最远距离下标
-                ans += 1  # 需要走下一步
-                cur_distance = next_distance  # 更新当前覆盖最远距离下标（相当于加油了）
-                if next_distance >= len(nums) - 1:  # 当前覆盖最远距离达到数组末尾，不用再做ans++操作，直接结束
-                    break
-        
-        return ans
+        return True
 ```
 Time: **O(n)**     
 Space: **O(1)** 
 
-##  LC 860 lemonade-change
-[Link](https://leetcode.com/problems/lemonade-change/description/)   
-[Cousrse Link](https://programmercarl.com/0860.%E6%9F%A0%E6%AA%AC%E6%B0%B4%E6%89%BE%E9%9B%B6.html)    
-- Two greedy algo
-    - For negative
-        - Local optimality: Transform large absolute negative numbers into positive numbers, maximizing the current value
-        - Global optimality: Maximize the total sum of the entire array
-    - For positive
-        - Local optimality: Only find the smallest positive integer to reverse, maximizing the current value and sum
-        - Global optimality: Maximize the total sum of the entire array
-        - for example, in the positive integer array {5, 3, 1}, reversing 1 results in -1, which is much larger than reversing 5 to get -5
-- For code
-- Why use  ``K % 2 == 1`` ? what if there are 2 left in k?
-    - If k is odd, need to reverse the smallest positve number
-    - If k is even, reverse it twice and keep it the same
+##  LC 406 queue-reconstruction-by-height
+[Link](https://leetcode.com/problems/queue-reconstruction-by-height/description/)   
+[Cousrse Link](https://programmercarl.com/0406.%E6%A0%B9%E6%8D%AE%E8%BA%AB%E9%AB%98%E9%87%8D%E5%BB%BA%E9%98%9F%E5%88%97.html)    
+- Focus on handling one side before addressing the other; don't try to balance both sides at the same time.
+- Local optimality: Prioritize inserting people based on the height of the tallest individuals, ensuring that the queue properties are satisfied after each insertion
+- Global optimality: After completing all insertion operations, the entire queue satisfies the problem's queue properties
+- The insert is based at index k
 ```python
 class Solution:
-    def largestSumAfterKNegations(self, A: List[int], K: int) -> int:
-        A.sort(key=lambda x: abs(x), reverse=True)  # 第一步：按照绝对值降序排序数组A
-
-        for i in range(len(A)):  # 第二步：执行K次取反操作
-            if A[i] < 0 and K > 0:
-                A[i] *= -1
-                K -= 1
-
-        if K % 2 == 1:  # 第三步：如果K还有剩余奇数次数，将绝对值最小的元素取反 偶数次可以忽略 因为可以reverse twice
-            A[-1] *= -1
-
-        result = sum(A)  # 第四步：计算数组A的元素和
-        return result
+    def reconstructQueue(self, people: List[List[int]]) -> List[List[int]]:
+    	# 先按照h维度的身高顺序从高到低排序。确定第一个维度
+        # lambda返回的是一个元组：当-x[0](维度h）相同时，再根据x[1]（维度k）从小到大排序
+        people.sort(key=lambda x: (-x[0], x[1]))
+        que = []
+	
+	# 根据每个元素的第二个维度k，贪心算法，进行插入
+        # people已经排序过了：同一高度时k值小的排前面。
+        for p in people:
+            que.insert(p[1], p)
+        return que
 ```
-Time: **O(n*logn)**     
-Space: **O(1)** 
+Time: **O(n*logn + n^2)**     
+Space: **O(n)** 
