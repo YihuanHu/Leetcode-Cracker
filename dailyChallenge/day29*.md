@@ -106,7 +106,10 @@ Space: **O(1)**
 ##  LC 406 queue-reconstruction-by-height
 [Link](https://leetcode.com/problems/queue-reconstruction-by-height/description/)   
 [Cousrse Link](https://programmercarl.com/0406.%E6%A0%B9%E6%8D%AE%E8%BA%AB%E9%AB%98%E9%87%8D%E5%BB%BA%E9%98%9F%E5%88%97.html)    
-- Focus on handling one side before addressing the other; don't try to balance both sides at the same time.
+- Focus on handling one side before addressing the other; don't try to balance both sides at the same time
+- **Two greedy algo**:
+    - One pass is from left to right, comparing where the weight is decreasing
+    - Another pass is from left to right of sorted people, insert at ki
 - Local optimality: Prioritize inserting people based on the height of the tallest individuals, ensuring that the queue properties are satisfied after each insertion
 - Global optimality: After completing all insertion operations, the entire queue satisfies the problem's queue properties
 - The insert is based at index k
