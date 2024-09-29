@@ -3,48 +3,58 @@
 ## LC 56 merge-intervals
 [Link](https://leetcode.com/problems/merge-intervals/description/)   
 [Cousrse Link](https://programmercarl.com/0056.%E5%90%88%E5%B9%B6%E5%8C%BA%E9%97%B4.html)    
-- Local optimality: When balloons overlap, shoot them together to minimize the number of arrows used
-- Global optimality: Find the starting position that allows completing a full circle.
+- Using the overlapping format 
 ```python
 class Solution:
-    def findMinArrowShots(self, points: List[List[int]]) -> int:
-        if len(points) == 0: return 0
-        points.sort(key=lambda x: x[0])
-        result = 1
-        for i in range(1, len(points)):
-            if points[i][0] > points[i - 1][1]: # 气球i和气球i-1不挨着，注意这里不是>=
-                result += 1     
+    def merge(self, intervals):
+        result = []
+        if len(intervals) == 0:
+            return result  # 区间集合为空直接返回
+
+        intervals.sort(key=lambda x: x[0])  # 按照区间的左边界进行排序
+
+        result.append(intervals[0])  # 第一个区间可以直接放入结果集中
+
+        for i in range(1, len(intervals)):
+            if result[-1][1] >= intervals[i][0]:  # 发现重叠区间
+                # 合并区间，只需要更新结果集最后一个区间的右边界，因为根据排序，左边界已经是最小的
+                result[-1][1] = max(result[-1][1], intervals[i][1])
             else:
-                points[i][1] = min(points[i - 1][1], points[i][1]) # 更新重叠气球最小右边界 by pick the min of i & i-1 for common
+                result.append(intervals[i])  # 区间不重叠
+
         return result
 ```
 Time: **O(n*Logn)**     
-Space: **O(1)** 
+Space: **O(n)** 
 
-##  LC 435 non-overlapping-intervals
-[Link](https://leetcode.com/problems/non-overlapping-intervals/description/)   
-[Cousrse Link](https://programmercarl.com/0435.%E6%97%A0%E9%87%8D%E5%8F%A0%E5%8C%BA%E9%97%B4.html)
-- Pretty like 452 to count the nonn-overlapping 
+##  LC 738 monotone-increasing-digits
+[Link](https://leetcode.com/problems/monotone-increasing-digits/description/)   
+[Cousrse Link](https://programmercarl.com/0738.%E5%8D%95%E8%B0%83%E9%80%92%E5%A2%9E%E7%9A%84%E6%95%B0%E5%AD%97.html)
+- e.g 32 -> 329 -> 299
+- iterate backward
+    - One counter example is: Number: 332. If we traverse from front to back, it becomes 329. At this point, 2 is still less than the first digit 3, so the correct result should be 299.    
+- Local optimal: Once the condition strNum[i - 1] > strNum[i] occurs (non-monotonically), the first step is to decrease strNum[i - 1] by one and set strNum[i] to 9.
+- Global optimal: get max the monotone increasing numbers
 ```python
 class Solution:
-    def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:
-        if not intervals:
-            return 0
-        
-        intervals.sort(key=lambda x: x[0])  # 按照左边界升序排序
-        
-        result = 1  # 不重叠区间数量，初始化为1，因为至少有一个不重叠的区间
-        
-        for i in range(1, len(intervals)):
-            if intervals[i][0] >= intervals[i - 1][1]:  # 没有重叠
-                result += 1
-            else:  # 重叠情况
-                intervals[i][1] = min(intervals[i - 1][1], intervals[i][1])  # 更新重叠区间的右边界
-        
-        return len(intervals) - result
+    def monotoneIncreasingDigits(self, N: int) -> int:
+        # 将整数转换为字符串
+        strNum = list(str(N))
+
+        # 从右往左遍历字符串
+        for i in range(len(strNum) - 1, 0, -1):
+            # 如果当前字符比前一个字符小，说明需要修改前一个字符
+            if strNum[i - 1] > strNum[i]:
+                strNum[i - 1] = str(int(strNum[i - 1]) - 1)  # 将前一个字符减1
+                # 将修改位置后面的字符都设置为9，因为修改前一个字符可能破坏了递增性质
+                strNum[i:] = '9' * (len(strNum) - i)
+
+        # 将列表转换为字符串，并将字符串转换为整数并返回
+        return int(''.join(strNum))
+
 ```
 Time: **O(n)**     
-Space: **O(1)** 
+Space: **O(n)** 
 
 
 ##  LC 763 partition-labels
@@ -103,3 +113,8 @@ class Solution:
 ```
 Time: **O(n*Logn)**     
 Space: **O(n)** 
+
+## Adds on
+- [ ] greedy algo summary [Link](https://programmercarl.com/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93%E7%AF%87.html#%E8%B4%AA%E5%BF%83%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80)
+    - No specific cheatsheet to follow
+    - Find out local/global locality 
