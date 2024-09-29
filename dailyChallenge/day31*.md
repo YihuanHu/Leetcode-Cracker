@@ -57,61 +57,70 @@ Time: **O(n)**
 Space: **O(n)** 
 
 
-##  LC 763 partition-labels
-[Link](https://leetcode.com/problems/partition-labels/description/)   
+## * LC 968 binary-tree-cameras
+[Link](https://leetcode.com/problems/binary-tree-cameras/description/)   
 [Cousrse Link](https://programmercarl.com/0763.%E5%88%92%E5%88%86%E5%AD%97%E6%AF%8D%E5%8C%BA%E9%97%B4.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)      
-- for solution 2, update the the recent last_occurance since any smaller last_occurance gonna be included to avoid one char in several partition
+- Use postorder so that we can start iterate from bottom to top
+- 3 states:
+    - 0: The node is uncovered
+    - 1: The node has a camera
+    - 2: The node is covered
+- 4 cases
+- What about null node?
+    - cannot be in an uncovered state, as this would require placing a camera on the leaf node
+    - cannot have a camera, as this would make it unnecessary to place a camera on the parent node of the leaf node, instead, the camera could be placed on the grandparent node of the leaf
+    - Therefore, the state of an empty node can only be covered, allowing us to place a camera on the parent node of the leaf node
+- Local optimality: Place cameras on the parent nodes of the leaf nodes to minimize the number of cameras used
+- Global optimality: Minimize the total number of cameras used overal
 ```python
-# solution #1 use similar overlapping structure 
 class Solution:
-    def countLabels(self, s):
-        # 初始化一个长度为26的区间列表，初始值为负无穷
-        hash = [[float('-inf'), float('-inf')] for _ in range(26)]
-        hash_filter = []
-        for i in range(len(s)):
-            if hash[ord(s[i]) - ord('a')][0] == float('-inf'):
-                hash[ord(s[i]) - ord('a')][0] = i
-            hash[ord(s[i]) - ord('a')][1] = i
-        for i in range(len(hash)):
-            if hash[i][0] != float('-inf'):
-                hash_filter.append(hash[i])
-        return hash_filter
+         # Greedy Algo:
+        # 从下往上安装摄像头：跳过leaves这样安装数量最少，局部最优 -> 全局最优
+        # 先给leaves的父节点安装，然后每隔两层节点安装一个摄像头，直到Head
+        # 0: 该节点未覆盖
+        # 1: 该节点有摄像头
+        # 2: 该节点有覆盖
+    def minCameraCover(self, root: TreeNode) -> int:
+        # 定义递归函数
+        result = [0]  # 用于记录摄像头的安装数量
+        # 情况4：头结点没有覆盖
+        if self.traversal(root, result) == 0:
+            result[0] += 1
 
-    def partitionLabels(self, s):
-        res = []
-        hash = self.countLabels(s)
-        hash.sort(key=lambda x: x[0])  # 按左边界从小到大排序
-        rightBoard = hash[0][1]  # 记录最大右边界
-        leftBoard = 0
-        for i in range(1, len(hash)):
-            if hash[i][0] > rightBoard:  # 出现分割点
-                res.append(rightBoard - leftBoard + 1)
-                leftBoard = hash[i][0]
-            rightBoard = max(rightBoard, hash[i][1])
-        res.append(rightBoard - leftBoard + 1)  # 最右端
-        return res
+        return result[0]
+
+        
+    def traversal(self, cur: TreeNode, result: List[int]) -> int:
+        if not cur:
+            return 2
+
+        left = self.traversal(cur.left, result)
+        right = self.traversal(cur.right, result)
+
+        # 情况1: 左右节点都有覆盖, 中间节点应该就是无覆盖的状态
+        if left == 2 and right == 2:
+            return 0
+
+        # 情况2: 左右节点至少有一个无覆盖的情况,中间节点（父节点）应该放摄像头
+        # left == 0 && right == 0 左右节点无覆盖
+        # left == 1 && right == 0 左节点有摄像头，右节点无覆盖
+        # left == 0 && right == 1 左节点无覆盖，右节点有摄像头
+        # left == 0 && right == 2 左节点无覆盖，右节点覆盖
+        # left == 2 && right == 0 左节点覆盖，右节点无覆盖
+        if left == 0 or right == 0:
+            result[0] += 1
+            return 1
+
+        # 情况3: 左右节点至少有一个有摄像头,其父节点就应该是2（覆盖的状态）
+        # left == 1 && right == 2 左节点有摄像头，右节点有覆盖
+        # left == 2 && right == 1 左节点有覆盖，右节点有摄像头
+        # left == 1 && right == 1 左右节点都有摄像头
+        if left == 1 or right == 1:
+            return 2
 
 
-
-# solution 2: use last occurance
-class Solution:
-    def partitionLabels(self, s: str) -> List[int]:
-        last_occurrence = {}  # 存储每个字符最后出现的位置
-        for i, ch in enumerate(s):
-            last_occurrence[ch] = i
-
-        result = []
-        start = 0
-        end = 0
-        for i, ch in enumerate(s):
-            end = max(end, last_occurrence[ch])  # 找到当前字符出现的最远位置
-            if i == end:  # 如果当前位置是最远位置，表示可以分割出一个区间
-                result.append(end - start + 1)
-                start = i + 1
-
-        return result
 ```
-Time: **O(n*Logn)**     
+Time: **O(n)**     
 Space: **O(n)** 
 
 ## Adds on
