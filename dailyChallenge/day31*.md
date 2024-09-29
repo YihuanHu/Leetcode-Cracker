@@ -70,6 +70,8 @@ Space: **O(n)**
     - cannot be in an uncovered state, as this would require placing a camera on the leaf node
     - cannot have a camera, as this would make it unnecessary to place a camera on the parent node of the leaf node, instead, the camera could be placed on the grandparent node of the leaf
     - Therefore, the state of an empty node can only be covered, allowing us to place a camera on the parent node of the leaf node
+- Why case 4? Why case 4 cannot be part of case 1?
+- Since we need to add one more camera for case 4 while case 1(for those intermediate nodes) just need to return 0 and add in case 2&3 
 - Local optimality: Place cameras on the parent nodes of the leaf nodes to minimize the number of cameras used
 - Global optimality: Minimize the total number of cameras used overal
 ```python
