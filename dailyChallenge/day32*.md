@@ -21,7 +21,7 @@
     - Define the dp[i]: The Fibonacci value of the i-th number is dp[i]
     - Define the state transition: problem states dp[i] = dp[i - 1] + dp[i - 2]
     - How to initialize the DP array: problem states dp[0] = 0; dp[1] = 1
-    - Determine the order of traversal: dp[i] = dp[i - 1] + dp[i - 2];, we can see that dp[i] depends on dp[i - 1] and dp[i - 2] so must iterate front to back
+    - Determine the order of traversal: we can see that dp[i] depends on dp[i - 1] and dp[i - 2] so must iterate front to back
     - Provide an example to derive the DP array: dp[10] = 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55
 ```python
 # solution 1
@@ -75,8 +75,8 @@ Space: **O(n)** for solution 1 and **O(1)** for solution 2
         - there are only two ways reach dp[i],which are dp[i - 1] and dp[i-2]
         - If there are dp[i - 1] ways to reach the i-1-th step, then taking one more step to reach the i-th step gives us dp[i]
         - If there are dp[i - 2] ways to reach the i-2-th step, then taking two steps at once to reach the i-th step also gives us dp[i]
-    - How to initialize the DP array: since n is postive integer so dp[1] = 1，dp[2] = 2
-    - Determine the order of traversal: dp[i] = dp[i - 1] + dp[i - 2];, we can see that dp[i] depends on dp[i - 1] and dp[i - 2] so must iterate front to back
+    - How to initialize the DP array: since n is postive integer so ignore 0 dp[1] = 1，dp[2] = 2
+    - Determine the order of traversal: we can see that dp[i] depends on dp[i - 1] and dp[i - 2] so must iterate front to back
     - Provide an example to derive the DP array: dp[5] = 1, 1, 2, 3, 5
 ```python
 # solution 1: dp table
@@ -121,64 +121,46 @@ Space: **O(n)** for solution 1 and **O(1)** for solution 2
 [Link](https://leetcode.com/problems/min-cost-climbing-stairs/description/)   
 [Cousrse Link](https://programmercarl.com/0746.%E4%BD%BF%E7%94%A8%E6%9C%80%E5%B0%8F%E8%8A%B1%E8%B4%B9%E7%88%AC%E6%A5%BC%E6%A2%AF.html)
 - Steps for DP:
-    - Define the dp[i]: To reach the i-th step of the staircase, there are dp[i] ways to do so
-    - Define the state transition: dp[i] = dp[i - 1] + dp[i - 2]
+    - Define the dp[i]: To reach the i-th step of the staircase with the min cost
+    - Define the state transition: dp[i] = min(dp[i - 1] + cost[i - 1], dp[i - 2] + cost[i - 2])
         - there are only two ways reach dp[i],which are dp[i - 1] and dp[i-2]
         - If there are dp[i - 1] ways to reach the i-1-th step, then taking one more step to reach the i-th step gives us dp[i]
         - If there are dp[i - 2] ways to reach the i-2-th step, then taking two steps at once to reach the i-th step also gives us dp[i]
-    - How to initialize the DP array: since n is postive integer so dp[1] = 1，dp[2] = 2
-    - Determine the order of traversal: dp[i] = dp[i - 1] + dp[i - 2];, we can see that dp[i] depends on dp[i - 1] and dp[i - 2] so must iterate front to back
-    - Provide an example to derive the DP array: dp[5] = 1, 1, 2, 3, 5
+    - How to initialize the DP array: dp[0] = 0，dp[1] = 0 
+    - Determine the order of traversal: we can see that dp[i] depends on dp[i - 1] and dp[i - 2] so must iterate front to back
+    - Provide an example to derive the DP array: cost = [1, 100, 1, 1, 1, 100, 1, 1, 100, 1] min cost = 6
 ```python
-# solution #1 use similar overlapping structure 
+# solution 1: dp table
 class Solution:
-    def countLabels(self, s):
-        # 初始化一个长度为26的区间列表，初始值为负无穷
-        hash = [[float('-inf'), float('-inf')] for _ in range(26)]
-        hash_filter = []
-        for i in range(len(s)):
-            if hash[ord(s[i]) - ord('a')][0] == float('-inf'):
-                hash[ord(s[i]) - ord('a')][0] = i
-            hash[ord(s[i]) - ord('a')][1] = i
-        for i in range(len(hash)):
-            if hash[i][0] != float('-inf'):
-                hash_filter.append(hash[i])
-        return hash_filter
-
-    def partitionLabels(self, s):
-        res = []
-        hash = self.countLabels(s)
-        hash.sort(key=lambda x: x[0])  # 按左边界从小到大排序
-        rightBoard = hash[0][1]  # 记录最大右边界
-        leftBoard = 0
-        for i in range(1, len(hash)):
-            if hash[i][0] > rightBoard:  # 出现分割点
-                res.append(rightBoard - leftBoard + 1)
-                leftBoard = hash[i][0]
-            rightBoard = max(rightBoard, hash[i][1])
-        res.append(rightBoard - leftBoard + 1)  # 最右端
-        return res
+    def minCostClimbingStairs(self, cost: List[int]) -> int:
+        dp = [0] * (len(cost) + 1)
+        dp[0] = 0  # 初始值，表示从起点开始不需要花费体力
+        dp[1] = 0  # 初始值，表示经过第一步不需要花费体力
+        
+        for i in range(2, len(cost) + 1):
+            # 在第i步，可以选择从前一步（i-1）花费体力到达当前步，或者从前两步（i-2）花费体力到达当前步
+            # 选择其中花费体力较小的路径，加上当前步的花费，更新dp数组
+            dp[i] = min(dp[i - 1] + cost[i - 1], dp[i - 2] + cost[i - 2])
+        
+        return dp[len(cost)]  # 返回到达楼顶的最小花费
 
 
-
-# solution 2: use last occurance
+# solution 2: use only 2 variables
 class Solution:
-    def partitionLabels(self, s: str) -> List[int]:
-        last_occurrence = {}  # 存储每个字符最后出现的位置
-        for i, ch in enumerate(s):
-            last_occurrence[ch] = i
-
-        result = []
-        start = 0
-        end = 0
-        for i, ch in enumerate(s):
-            end = max(end, last_occurrence[ch])  # 找到当前字符出现的最远位置
-            if i == end:  # 如果当前位置是最远位置，表示可以分割出一个区间
-                result.append(end - start + 1)
-                start = i + 1
-
-        return result
+    def minCostClimbingStairs(self, cost: List[int]) -> int:
+        dp0 = 0  # 初始值，表示从起点开始不需要花费体力
+        dp1 = 0  # 初始值，表示经过第一步不需要花费体力
+        
+        for i in range(2, len(cost) + 1):
+            # 在第i步，可以选择从前一步（i-1）花费体力到达当前步，或者从前两步（i-2）花费体力到达当前步
+            # 选择其中花费体力较小的路径，加上当前步的花费，得到当前步的最小花费
+            dpi = min(dp1 + cost[i - 1], dp0 + cost[i - 2])
+            
+            dp0 = dp1  # 更新dp0为前一步的值，即上一次循环中的dp1
+            dp1 = dpi  # 更新dp1为当前步的最小花费
+        
+        return dp1  # 返回到达楼顶的最小花费
 ```
-Time: **O(n*Logn)**     
-Space: **O(n)** 
+Time: **O(n)**     
+Space: **O(n)** for solution 1 and **O(1)** for solution 2
 
