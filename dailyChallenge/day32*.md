@@ -1,31 +1,70 @@
-# Day32 Dynamic Program Part1
-
-## LC 56 merge-intervals
-[Link](https://leetcode.com/problems/merge-intervals/description/)   
-[Cousrse Link](https://programmercarl.com/0056.%E5%90%88%E5%B9%B6%E5%8C%BA%E9%97%B4.html)    
-- Using the overlapping format 
+# Day32 Dynamic Programming Part1
+## DP
+-  DP VS Greedu Algo
+    - DP: each state is derived from the previous state
+    - Greedy:  directly select the optimal choice from local information
+- Steps for DP:
+    - Define the dp[i] 
+    - Define the state transition 
+    - How to initialize the DP array
+    - Determine the order of traversal
+    - Provide an example to derive the DP array
+- How to debug:
+    - Did I derive the state transition formula for this problem with an example?
+    - Did I print the logs of the DP array?
+    - Does the printed DP array match what I expected?
+      
+## LC 509 fibonacci-number
+[Link](https://leetcode.com/problems/fibonacci-number/description/)   
+[Cousrse Link](https://programmercarl.com/0509.%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E6%95%B0.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)    
+- Steps for DP:
+    - Define the dp[i]: The Fibonacci value of the i-th number is dp[i]
+    - Define the state transition: problem states dp[i] = dp[i - 1] + dp[i - 2]
+    - How to initialize the DP array: problem states dp[0] = 0; dp[1] = 1
+    - Determine the order of traversal: dp[i] = dp[i - 1] + dp[i - 2];, we can see that dp[i] depends on dp[i - 1] and dp[i - 2] so must iterate front to back
+    - Provide an example to derive the DP array: dp[10] = 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55
 ```python
+# solution 1
 class Solution:
-    def merge(self, intervals):
-        result = []
-        if len(intervals) == 0:
-            return result  # 区间集合为空直接返回
+    def fib(self, n: int) -> int:
+       
+        # 排除 Corner Case
+        if n == 0:
+            return 0
+        
+        # 创建 dp table 
+        dp = [0] * (n + 1)
 
-        intervals.sort(key=lambda x: x[0])  # 按照区间的左边界进行排序
+        # 初始化 dp 数组
+        dp[0] = 0
+        dp[1] = 1
 
-        result.append(intervals[0])  # 第一个区间可以直接放入结果集中
+        # 遍历顺序: 由前向后。因为后面要用到前面的状态
+        for i in range(2, n + 1):
 
-        for i in range(1, len(intervals)):
-            if result[-1][1] >= intervals[i][0]:  # 发现重叠区间
-                # 合并区间，只需要更新结果集最后一个区间的右边界，因为根据排序，左边界已经是最小的
-                result[-1][1] = max(result[-1][1], intervals[i][1])
-            else:
-                result.append(intervals[i])  # 区间不重叠
+            # 确定递归公式/状态转移公式
+            dp[i] = dp[i - 1] + dp[i - 2]
+        
+        # 返回答案
+        return dp[n]
 
-        return result
+# solution 2: use only 2 variables
+class Solution:
+    def fib(self, n: int) -> int:
+        if n <= 1:
+            return n
+        
+        prev1, prev2 = 0, 1
+        
+        for _ in range(2, n + 1):
+            curr = prev1 + prev2
+            prev1, prev2 = prev2, curr
+        
+        return prev2
 ```
-Time: **O(n*Logn)**     
-Space: **O(n)** 
+Time: **O(n)**     
+Space: **O(n)** for solution 1 and **O(1)** for solution 2
+
 
 ##  LC 738 monotone-increasing-digits
 [Link](https://leetcode.com/problems/monotone-increasing-digits/description/)   
