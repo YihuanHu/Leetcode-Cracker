@@ -25,7 +25,7 @@
     - Provide an example to derive the DP array: dp[10] = 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55
 ```python
 # solution 1
-class Solution:
+class Solution: dp table
     def fib(self, n: int) -> int:
        
         # 排除 Corner Case
@@ -66,40 +66,69 @@ Time: **O(n)**
 Space: **O(n)** for solution 1 and **O(1)** for solution 2
 
 
-##  LC 738 monotone-increasing-digits
-[Link](https://leetcode.com/problems/monotone-increasing-digits/description/)   
-[Cousrse Link](https://programmercarl.com/0738.%E5%8D%95%E8%B0%83%E9%80%92%E5%A2%9E%E7%9A%84%E6%95%B0%E5%AD%97.html)
-- e.g 332 -> 329 -> 299
-- iterate backward
-    - One counter example is: Number: 332. If we traverse from front to back, it becomes 329. At this point, 2 is still less than the first digit 3, so the correct result should be 299.    
-- Local optimal: Once the condition strNum[i - 1] > strNum[i] occurs (non-monotonically), the first step is to decrease strNum[i - 1] by one and set strNum[i] to 9.
-- Global optimal: get max the monotone increasing numbers
+##  LC 70 climbing-stairs
+[Link](https://leetcode.com/problems/climbing-stairs/description/)   
+[Cousrse Link](https://programmercarl.com/0070.%E7%88%AC%E6%A5%BC%E6%A2%AF.html)
+- Steps for DP:
+    - Define the dp[i]: To reach the i-th step of the staircase, there are dp[i] ways to do so
+    - Define the state transition: dp[i] = dp[i - 1] + dp[i - 2]
+        - there are only two ways reach dp[i],which are dp[i - 1] and dp[i-2]
+        - If there are dp[i - 1] ways to reach the i-1-th step, then taking one more step to reach the i-th step gives us dp[i]
+        - If there are dp[i - 2] ways to reach the i-2-th step, then taking two steps at once to reach the i-th step also gives us dp[i]
+    - How to initialize the DP array: since n is postive integer so dp[1] = 1，dp[2] = 2
+    - Determine the order of traversal: dp[i] = dp[i - 1] + dp[i - 2];, we can see that dp[i] depends on dp[i - 1] and dp[i - 2] so must iterate front to back
+    - Provide an example to derive the DP array: dp[5] = 1, 1, 2, 3, 5
 ```python
+# solution 1: dp table
+# 空间复杂度为O(n)版本
 class Solution:
-    def monotoneIncreasingDigits(self, N: int) -> int:
-        # 将整数转换为字符串
-        strNum = list(str(N))
+    def climbStairs(self, n: int) -> int:
+        if n <= 1:
+            return n
+        
+        dp = [0] * (n + 1)
+        dp[1] = 1
+        dp[2] = 2
+        
+        for i in range(3, n + 1):
+            dp[i] = dp[i - 1] + dp[i - 2]
+        
+        return dp[n]
 
-        # 从右往左遍历字符串
-        for i in range(len(strNum) - 1, 0, -1):
-            # 如果当前字符比前一个字符小，说明需要修改前一个字符
-            if strNum[i - 1] > strNum[i]:
-                strNum[i - 1] = str(int(strNum[i - 1]) - 1)  # 将前一个字符减1
-                # 将修改位置后面的字符都设置为9，因为修改前一个字符可能破坏了递增性质
-                strNum[i:] = '9' * (len(strNum) - i)
-
-        # 将列表转换为字符串，并将字符串转换为整数并返回
-        return int(''.join(strNum))
+# solution 2: use only 2 variables
+# 空间复杂度为O(1)版本
+class Solution:
+    def climbStairs(self, n: int) -> int:
+        if n <= 1:
+            return n
+        
+        prev1 = 1
+        prev2 = 2
+        
+        for i in range(3, n + 1):
+            total = prev1 + prev2
+            prev1 = prev2
+            prev2 = total
+        
+        return prev2
 
 ```
 Time: **O(n)**     
-Space: **O(n)** 
+Space: **O(n)** for solution 1 and **O(1)** for solution 2
 
 
-##  LC 763 partition-labels
-[Link](https://leetcode.com/problems/partition-labels/description/)   
-[Cousrse Link](https://programmercarl.com/0763.%E5%88%92%E5%88%86%E5%AD%97%E6%AF%8D%E5%8C%BA%E9%97%B4.html#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80%E7%89%88%E6%9C%AC)      
-- for solution 2, update the the recent last_occurance since any smaller last_occurance gonna be included to avoid one char in several partition
+##  LC 746 min-cost-climbing-stairs
+[Link](https://leetcode.com/problems/min-cost-climbing-stairs/description/)   
+[Cousrse Link](https://programmercarl.com/0746.%E4%BD%BF%E7%94%A8%E6%9C%80%E5%B0%8F%E8%8A%B1%E8%B4%B9%E7%88%AC%E6%A5%BC%E6%A2%AF.html)
+- Steps for DP:
+    - Define the dp[i]: To reach the i-th step of the staircase, there are dp[i] ways to do so
+    - Define the state transition: dp[i] = dp[i - 1] + dp[i - 2]
+        - there are only two ways reach dp[i],which are dp[i - 1] and dp[i-2]
+        - If there are dp[i - 1] ways to reach the i-1-th step, then taking one more step to reach the i-th step gives us dp[i]
+        - If there are dp[i - 2] ways to reach the i-2-th step, then taking two steps at once to reach the i-th step also gives us dp[i]
+    - How to initialize the DP array: since n is postive integer so dp[1] = 1，dp[2] = 2
+    - Determine the order of traversal: dp[i] = dp[i - 1] + dp[i - 2];, we can see that dp[i] depends on dp[i - 1] and dp[i - 2] so must iterate front to back
+    - Provide an example to derive the DP array: dp[5] = 1, 1, 2, 3, 5
 ```python
 # solution #1 use similar overlapping structure 
 class Solution:
@@ -153,7 +182,3 @@ class Solution:
 Time: **O(n*Logn)**     
 Space: **O(n)** 
 
-## Adds on
-- [ ] greedy algo summary [Link](https://programmercarl.com/%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93%E7%AF%87.html#%E8%B4%AA%E5%BF%83%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80)
-    - No specific cheatsheet to follow
-    - Find out local/global locality 
