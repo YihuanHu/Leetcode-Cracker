@@ -4,52 +4,51 @@
 [Link](https://leetcode.com/problems/unique-paths/)   
 [Cousrse Link](https://programmercarl.com/0062.%E4%B8%8D%E5%90%8C%E8%B7%AF%E5%BE%84.html)    
 - Steps for DP:
-    - Define the dp[i]: The Fibonacci value of the i-th number is dp[i]
-    - Define the state transition: problem states dp[i] = dp[i - 1] + dp[i - 2]
-    - How to initialize the DP array: problem states dp[0] = 0; dp[1] = 1
-    - Determine the order of traversal: we can see that dp[i] depends on dp[i - 1] and dp[i - 2] so must iterate front to back
-    - Provide an example to derive the DP array: dp[10] = 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55
+    - Define the dp[i][j]: the number of different paths from (0, 0) to (i, j)
+    - Define the state transition: dp[i][j] = dp[i - 1][j] + dp[i][j - 1] we only have 2 ways to reach dp[i][j]
+    - How to initialize the DP array: since we can only go down or right, we only one solution for those edges
+        - for i in range(m):dp[i][0] = 1
+        - for j in range(n):dp[0][j] = 1
+    - Determine the order of traversal: we can see that dp[i][j] depends on dp[i - 1] and dp[j - 1] so must iterate front to back
+    - Provide an example to derive the DP array: try m,k = 3,3
 ```python
-# solution 1
-class Solution: dp table
-    def fib(self, n: int) -> int:
-       
-        # 排除 Corner Case
-        if n == 0:
-            return 0
-        
-        # 创建 dp table 
-        dp = [0] * (n + 1)
-
-        # 初始化 dp 数组
-        dp[0] = 0
-        dp[1] = 1
-
-        # 遍历顺序: 由前向后。因为后面要用到前面的状态
-        for i in range(2, n + 1):
-
-            # 确定递归公式/状态转移公式
-            dp[i] = dp[i - 1] + dp[i - 2]
-        
-        # 返回答案
-        return dp[n]
-
-# solution 2: use only 2 variables
+# solution 1: dp table
 class Solution:
-    def fib(self, n: int) -> int:
-        if n <= 1:
-            return n
+    def uniquePaths(self, m: int, n: int) -> int:
+        # 创建一个二维列表用于存储唯一路径数
+        dp = [[0] * n for _ in range(m)]
         
-        prev1, prev2 = 0, 1
+        # 设置第一行和第一列的基本情况
+        for i in range(m):
+            dp[i][0] = 1
+        for j in range(n):
+            dp[0][j] = 1
         
-        for _ in range(2, n + 1):
-            curr = prev1 + prev2
-            prev1, prev2 = prev2, curr
+        # 计算每个单元格的唯一路径数
+        for i in range(1, m):
+            for j in range(1, n):
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
         
-        return prev2
+        # 返回右下角单元格的唯一路径数
+        return dp[m - 1][n - 1]
+
+
+# solution 2: use roll
+class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        # 创建一个一维列表用于存储每列的唯一路径数
+        dp = [1] * n
+        
+        # 计算每个单元格的唯一路径数
+        for j in range(1, m):
+            for i in range(1, n):
+                dp[i] += dp[i - 1]
+        
+        # 返回右下角单元格的唯一路径数
+        return dp[n - 1]
 ```
-Time: **O(n)**     
-Space: **O(n)** for solution 1 and **O(1)** for solution 2
+Time: **O(m*n)**     
+Space: **O(m*n)** for solution 1 and **O(n)** for solution 2
 
 
 ##  LC 70 climbing-stairs
