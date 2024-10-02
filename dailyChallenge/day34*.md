@@ -1,51 +1,49 @@
-# Day34 Dynamic Programming Part3
+# Day34 Dynamic Programming Part3 Knapsack/Bag Problem
+## Knapsack/Bag Problem
+- In general, Knapsack Problem is Given a set of items, each with a weight and a value, determine the maximum value that can be carried in a knapsack of a fixed capacity
+- 0/1 Knapsack Problem:  Each item can either be included (1) or excluded (0).
+- Unbounded Knapsack Problem: use an unlimited number of each item
+- Bounded Knapsack Problem: generalization of the 0/1 knapsack problem where each item has a limit on the number of times
 
-## LC 62 unique-paths
-[Link](https://leetcode.com/problems/unique-paths/)   
-[Cousrse Link](https://programmercarl.com/0062.%E4%B8%8D%E5%90%8C%E8%B7%AF%E5%BE%84.html)    
+## 0/1 Knapsack Problem
+[Cousrse Link](https://programmercarl.com/%E8%83%8C%E5%8C%85%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%8001%E8%83%8C%E5%8C%85-1.html#%E6%80%9D%E8%B7%AF)    
 - Steps for DP:
-    - Define the dp[i][j]: the number of different paths from (0, 0) to (i, j)
-    - Define the state transition: dp[i][j] = dp[i - 1][j] + dp[i][j - 1] we only have 2 ways to reach dp[i][j]
-    - How to initialize the DP array: since we can only go down or right, we only one solution for those edges
-        - for i in range(m):dp[i][0] = 1
-        - for j in range(n):dp[0][j] = 1
-    - Determine the order of traversal: we can see that dp[i][j] depends on dp[i - 1] and dp[j - 1] so must iterate front to back
-    - Provide an example to derive the DP array: try m,k = 3,3
+    - Define the dp[i][j]:
+        - i for item
+        - j for the knapsack weight
+        - dp[i][j]:the maximum total value that can be obtained by taking **any items from indices [0-i] and placing them in a knapsack with a capacity of j**
+    - Define the state transition: **dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i])**
+        - Only two ways for item i:
+        - Not Put in i since j < weight[i]: **dp[i - 1][j]**
+        - Put in i since j >= weight[i]: **dp[i - 1][j - weight[i]] + value[i]** represents the maximum value putting item i and plus value of item i
+    - How to initialize the DP array: initial first row * col
+        - first row is item 0 value only if j > weight[0] : for j in range(weight[0], bagweight + 1): dp[0][j] = value[0]
+        - first col all 0 since bag limit is 0: can be ignored since we initiate whole dp as 0
+    - Determine the order of traversal: two nested loop for item and bag weight from small to large since dp[i][j] depends on dp[i - 1][j] and dp[i - 1][j - weight[i]] which are on the left upper side. Outer loop can be item or bag weight. Both are fine.
+    - Provide an example to derive the DP array:
+        - bag weight = 4,
+        - item weight = [1,3,4]
+        - item value = [15,20,30]
+        - dp = [ [0,15,15,15,15], [0,15,15,20,35], [0,15,15,20,35] ]
 ```python
-# solution 1: dp table
-class Solution:
-    def uniquePaths(self, m: int, n: int) -> int:
-        # 创建一个二维列表用于存储唯一路径数
-        dp = [[0] * n for _ in range(m)]
-        
-        # 设置第一行和第一列的基本情况
-        for i in range(m):
-            dp[i][0] = 1
-        for j in range(n):
-            dp[0][j] = 1
-        
-        # 计算每个单元格的唯一路径数
-        for i in range(1, m):
-            for j in range(1, n):
-                dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
-        
-        # 返回右下角单元格的唯一路径数
-        return dp[m - 1][n - 1]
+n, bagweight = map(int, input().split())
 
+weight = list(map(int, input().split()))
+value = list(map(int, input().split()))
 
-# solution 2: use rolling array
-class Solution:
-    def uniquePaths(self, m: int, n: int) -> int:
-        # 创建一个一维列表用于存储每列的唯一路径数
-        dp = [1] * n
-        
-        # 计算每个单元格的唯一路径数
-        for j in range(1, m):
-            for i in range(1, n):
-                dp[i] += dp[i - 1]
-        
-        # 返回右下角单元格的唯一路径数
-        return dp[n - 1]
+dp = [[0] * (bagweight + 1) for _ in range(n)]
+
+for j in range(weight[0], bagweight + 1):
+    dp[0][j] = value[0]
+
+for i in range(1, n):
+    for j in range(bagweight + 1):
+        if j < weight[i]:
+            dp[i][j] = dp[i - 1][j]
+        else:
+            dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i])
+
+print(dp[n - 1][bagweight])
 ```
 Time: **O(m*n)**     
 Space: **O(m*n)** for solution 1 and **O(n)** for solution 2
