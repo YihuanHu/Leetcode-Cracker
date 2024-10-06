@@ -184,60 +184,35 @@ class Solution:
         result *= n  # 将剩余的n乘以最后的结果
         return result
 ```
-Time: **O(n^2)** for solution 1 and **O(n)** for solution 2
+Time: **O(n^2)** for solution 1 and **O(n)** for solution 2    
 Space: **O(n)** for solution 1 and **O(1)** for solution 2
 
 
 ## * LC 96 unique-binary-search-trees
 [Link](https://leetcode.com/problems/unique-binary-search-trees/description/)   
 [Cousrse Link](https://programmercarl.com/0096.%E4%B8%8D%E5%90%8C%E7%9A%84%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91.html)
+- Remember this is a BST where the values have order!!
 - Steps for DP:
-    - Define the dp[i]: The maximum product that can be obtained by breaking the number
+    - Define the dp[i]: The number of binary search trees composed of i different elements/nodes
     - Define the state transition: dp[i] = max({dp[i], (i - j) * j, dp[i - j] * j})
-        - there are only two ways of calculation:
-        - For only 2 numbers: direct multiplication (i - j) * j
-        - More than 2 numbers: dp[i - j] * j
-    - How to initialize the DP array: dp[2] = 1 hard to tell dp[0] and dp[1]
-    - Determine the order of traversal: we can see that dp[i] depends on dp[i - j] so must iterate front to back. Also, j is the inner loop for each i
-    - Provide an example to derive the DP array: for n = 5, dp is [1,2,4,6,9]
+        - dp[i] += dp[j - 1] * dp[i - j]
+        - centered at j
+        - j - 1 : # nodes in the left subtree
+        - i - j : # nodes in the right subtree 
+    - How to initialize the DP array: dp[0] = 1 to avoid 0 in multiplication 
+    - Determine the order of traversal: we can see that dp[i] depends on dp[i - j] so must iterate front to back. Also, j is the inner loop for each i starting from 1
+    - Provide an example to derive the DP array: for n = 5, dp is [1,2,5,14,42]
 ```python
-# solution 1: dp table
+#  dp table
 class Solution:
-         # 假设对正整数 i 拆分出的第一个正整数是 j（1 <= j < i），则有以下两种方案：
-        # 1) 将 i 拆分成 j 和 i−j 的和，且 i−j 不再拆分成多个正整数，此时的乘积是 j * (i-j)
-        # 2) 将 i 拆分成 j 和 i−j 的和，且 i−j 继续拆分成多个正整数，此时的乘积是 j * dp[i-j]
-    def integerBreak(self, n):
-        dp = [0] * (n + 1)   # 创建一个大小为n+1的数组来存储计算结果
-        dp[2] = 1  # 初始化dp[2]为1，因为当n=2时，只有一个切割方式1+1=2，乘积为1
-       
-        # 从3开始计算，直到n
-        for i in range(3, n + 1):
-            # 遍历所有可能的切割点
-            for j in range(1, i // 2 + 1): # mathmaticlly, max multiply only appears when two divides are equal/similar
+    def numTrees(self, n: int) -> int:
+        dp = [0] * (n + 1)  # 创建一个长度为n+1的数组，初始化为0
+        dp[0] = 1  # 当n为0时，只有一种情况，即空树，所以dp[0] = 1
+        for i in range(1, n + 1):  # 遍历从1到n的每个数字
+            for j in range(1, i + 1):  # 对于每个数字i，计算以i为根节点的二叉搜索树的数量
+                dp[i] += dp[j - 1] * dp[i - j]  # 利用动态规划的思想，累加左子树和右子树的组合数量
+        return dp[n]  # 返回以1到n为节点的二叉搜索树的总数量
 
-                # 计算切割点j和剩余部分(i-j)的乘积，并与之前的结果进行比较取较大值
-                
-                dp[i] = max(dp[i], (i - j) * j, dp[i - j] * j)
-        
-        return dp[n]  # 返回最终的计算结果
-
-
-
-# solution 2: greedy algo and need math prove
-class Solution:
-    def integerBreak(self, n):
-        if n == 2:  # 当n等于2时，只有一种拆分方式：1+1=2，乘积为1
-            return 1
-        if n == 3:  # 当n等于3时，只有一种拆分方式：2+1=3，乘积为2
-            return 2
-        if n == 4:  # 当n等于4时，有两种拆分方式：2+2=4和1+1+1+1=4，乘积都为4
-            return 4
-        result = 1
-        while n > 4:
-            result *= 3  # 每次乘以3，因为3的乘积比其他数字更大
-            n -= 3  # 每次减去3
-        result *= n  # 将剩余的n乘以最后的结果
-        return result
 ```
-Time: **O(n^2)** for solution 1 and **O(n)** for solution 2
-Space: **O(n)** for solution 1 and **O(1)** for solution 2
+Time: **O(n^2)**    
+Space: **O(n)** 
