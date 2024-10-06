@@ -35,119 +35,116 @@ Time: **O(m*n)**
 Space: **O(n)** 
 
 
-##  LC 416 partition-equal-subset-sum
-[Link](https://leetcode.com/problems/partition-equal-subset-sum/description/)   
-[Cousrse Link](https://programmercarl.com/0416.%E5%88%86%E5%89%B2%E7%AD%89%E5%92%8C%E5%AD%90%E9%9B%86.html)
-- Typical 0/1 bag where value = weight = numbers and we need to find out if bag weight = sum / 2
-- Steps for DP:
-    - Define the dp[j]:
-        - a knapsack with a capacity of j, the maximum weight that can be carried is represented by dp[j]
-    - Define the state transition deleting i: **dp[j] = max(dp[j], dp[j - nums[i]] + nums[i])**
+##  LC 494 target-sum
+[Link](https://leetcode.com/problems/target-sum/description/)   
+[Cousrse Link](https://programmercarl.com/0494.%E7%9B%AE%E6%A0%87%E5%92%8C.html)
+- How to transfer this combination question into a 0/1 bag problem:
+    - assume all + are x, then sum of negative would be -(sum-x)
+    - problem requires x - (sum-x) = target  => x = (target + sum) / 2
+- Steps for DP table:
+    - Define the dp[i][j]:
+        - The number of ways to fill a knapsack with a capacity of j (including j) using the elements indexed from [0, i] in nums[i]
+    - Define the state transition deleting i:
+        - **Not Including Item i**: dp[i - 1][j]
+        - **Including Item i**: To include item i, you first make room for its capacity. The new knapsack capacity becomes (j - weight of item i). The number of ways to fill the knapsack with this reduced capacity is dp[i - 1][j - nums[i]]
+        - **if (nums[i] > j) dp[i][j] = dp[i - 1][j];  else dp[i][j] = dp[i - 1][j] + dp[i - 1][j - nums[i]]**
     - How to initialize the DP array: 
         -  we initiate whole dp as 0 since all are postive integer
-        -  if we have negative, we should iniate it as negative infinite
-    - Determine the order of traversal: **reverse loop for bag and item first then bag**
+        -  dp[0][0] = 1 which means put nothing
+        -  first row: dp[0][i] = 0 except only when j = nums[0], then dp = 1
+        -  first col: dp[i][0] = 1 except there are multiple numbers = 0 then dp = 2^{# of 0 inside [0,i]}
+    - Determine the order of traversal: **from left to right and from top to bottom and those outer inner loop can be changed**
         -  The inener bag loop from large to small:
             -  dp[2] = dp[2 - weight[0]] + value[0] = 15 （dp数组已经都初始化为0）
             -  dp[1] = dp[1 - weight[0]] + value[0] = 15
         -  Only can iterate item first and then bag otherwise each j can only put one item
         -  iterate bag then item: If you loop over j (the capacity) in the outer loop and then iterate over the items i in the inner loop, you are updating dp[j] for the current capacity before considering all items
+    - Provide an example to derive the DP array (skip)
+-----------
+- Steps for DP of rolling array/1D array:
+    - Define the dp[j]:
+        - dp[j]:The number of ways to fill a knapsack with a capacity of j (including j) 
+    - Define the state transition deleting i: dp[j] = dp[j] + dp[j - nums[i]] => **dp[j] += dp[j - nums[i]]**
+        - Assume we already have item i, adding ways of diff combination excluding i by dp[j-nums[i]]
+        - And we iterate nums i in the outter loop
+    - How to initialize the DP array: dp[0] = 1 for putting nothing
+    - Determine the order of traversal: **reverse loop for bag and item first then bag**
     - Provide an example to derive the DP array:
-        - nums = [1,5,11,5] => bag weight = (1+5+11+5)/2 = 11
-        - dp = [0,1,1,1,15,6,6,6,6,10,11]
+        - nums = [1,1,1,1,1] target = 3
+        - => bagsize = (5+3)/2 = 4
+        - dp = [ [0,15,15,15,15], [0,15,15,20,35], [0,15,15,20,35] ]
 ```python
 # solution 1: dp table
 class Solution:
-    def canPartition(self, nums: List[int]) -> bool:
-        _sum = 0
+    def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        total_sum = sum(nums)  # 计算nums的总和
+        if abs(target) > total_sum:
+            return 0  # 此时没有方案
+        if (target + total_sum) % 2 == 1:
+            return 0  # 此时没有方案
+        target_sum = (target + total_sum) // 2  # 目标和
 
-        # dp[i]中的i表示背包内总和
-        # 题目中说：每个数组中的元素不会超过 100，数组的大小不会超过 200
-        # 总和不会大于20000，背包最大只需要其中一半，所以10001大小就可以了
-        dp = [0] * 10001
-        for num in nums:
-            _sum += num
-        # 也可以使用内置函数一步求和
-        # _sum = sum(nums)
-        if _sum % 2 == 1:
-            return False
-        target = _sum // 2
+        # 创建二维动态规划数组，行表示选取的元素数量，列表示累加和
+        dp = [[0] * (target_sum + 1) for _ in range(len(nums) + 1)]
 
-        # 开始 0-1背包
-        for num in nums:
-            for j in range(target, num - 1, -1):  # 每一个元素一定是不可重复放入，所以从大到小遍历
-                dp[j] = max(dp[j], dp[j - num] + num)
+        # 初始化状态
+        dp[0][0] = 1
 
-        # 集合中的元素正好可以凑成总和target
-        if dp[target] == target:
-            return True
-        return False
-
-# solution 2: use rolling arrays / 1D array
-class Solution:
-    def canPartition(self, nums: List[int]) -> bool:
-        if sum(nums) % 2 != 0:
-            return False
-        target = sum(nums) // 2
-        dp = [0] * (target + 1)
-        for num in nums:
-            for j in range(target, num-1, -1):
-                dp[j] = max(dp[j], dp[j-num] + num)
-        return dp[-1] == target
-
-```
-Time: **O(n^2)**      
-Space: **O(n^2)** for solution 1 and **O(n)** for solution 2 since we can treat the fixed 
-
--  we can use T/F to replace the exact numbers
-```python
-# solution 1: dp table
-class Solution:
-    def canPartition(self, nums: List[int]) -> bool:
-        
-        total_sum = sum(nums)
-
-        if total_sum % 2 != 0:
-            return False
-
-        target_sum = total_sum // 2
-        dp = [[False] * (target_sum + 1) for _ in range(len(nums) + 1)]
-
-        # 初始化第一行（空子集可以得到和为0）
-        for i in range(len(nums) + 1):
-            dp[i][0] = True
-
+        # 动态规划过程
         for i in range(1, len(nums) + 1):
-            for j in range(1, target_sum + 1):
-                if j < nums[i - 1]:
-                    # 当前数字大于目标和时，无法使用该数字
-                    dp[i][j] = dp[i - 1][j]
-                else:
-                    # 当前数字小于等于目标和时，可以选择使用或不使用该数字
-                    dp[i][j] = dp[i - 1][j] or dp[i - 1][j - nums[i - 1]]
+            for j in range(target_sum + 1):
+                dp[i][j] = dp[i - 1][j]  # 不选取当前元素
+                if j >= nums[i - 1]:
+                    dp[i][j] += dp[i - 1][j - nums[i - 1]]  # 选取当前元素
 
-        return dp[len(nums)][target_sum]
+        return dp[len(nums)][target_sum]  # 返回达到目标和的方案数
+
 
 # solution 2: use rolling arrays / 1D array
 class Solution:
-    def canPartition(self, nums: List[int]) -> bool:
-
-        total_sum = sum(nums)
-
-        if total_sum % 2 != 0:
-            return False
-
-        target_sum = total_sum // 2
-        dp = [False] * (target_sum + 1)
-        dp[0] = True
-
+    def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        total_sum = sum(nums)  # 计算nums的总和
+        if abs(target) > total_sum:
+            return 0  # 此时没有方案
+        if (target + total_sum) % 2 == 1:
+            return 0  # 此时没有方案
+        target_sum = (target + total_sum) // 2  # 目标和
+        dp = [0] * (target_sum + 1)  # 创建动态规划数组，初始化为0
+        dp[0] = 1  # 当目标和为0时，只有一种方案，即什么都不选
         for num in nums:
-            # 从target_sum逆序迭代到num，步长为-1
-            for i in range(target_sum, num - 1, -1):
-                dp[i] = dp[i] or dp[i - num]
-        return dp[target_sum]
+            for j in range(target_sum, num - 1, -1):
+                dp[j] += dp[j - num]  # 状态转移方程，累加不同选择方式的数量
+        return dp[target_sum]  # 返回达到目标和的方案数
+
 
 ```
+Time: **O(n^m)**      
+Space: **O(n^m)** for solution 1 and **O(n)** for solution 2 
 
 
+##  LC 474 ones-and-zeroes
+[Link](https://leetcode.com/problems/ones-and-zeroes/description/)   
+[Cousrse Link](https://programmercarl.com/0474.%E4%B8%80%E5%92%8C%E9%9B%B6.html)
+- How to transfer this combination question into a 0/1 bag problem:
+    - assume all + are x, then sum of negative would be -(sum-x)
+    - problem requires x - (sum-x) = target  => x = (target + sum) / 2
+- Steps for DP table:
+    - Define the dp[i][j]:
+        - The number of ways to fill a knapsack with a capacity of j (including j) using the elements indexed from [0, i] in nums[i]
+    - Define the state transition deleting i:
+        - **Not Including Item i**: dp[i - 1][j]
+        - **Including Item i**: To include item i, you first make room for its capacity. The new knapsack capacity becomes (j - weight of item i). The number of ways to fill the knapsack with this reduced capacity is dp[i - 1][j - nums[i]]
+        - **if (nums[i] > j) dp[i][j] = dp[i - 1][j];  else dp[i][j] = dp[i - 1][j] + dp[i - 1][j - nums[i]]**
+    - How to initialize the DP array: 
+        -  we initiate whole dp as 0 since all are postive integer
+        -  dp[0][0] = 1 which means put nothing
+        -  first row: dp[0][i] = 0 except only when j = nums[0], then dp = 1
+        -  first col: dp[i][0] = 1 except there are multiple numbers = 0 then dp = 2^{# of 0 inside [0,i]}
+    - Determine the order of traversal: **from left to right and from top to bottom and those outer inner loop can be changed**
+        -  The inener bag loop from large to small:
+            -  dp[2] = dp[2 - weight[0]] + value[0] = 15 （dp数组已经都初始化为0）
+            -  dp[1] = dp[1 - weight[0]] + value[0] = 15
+        -  Only can iterate item first and then bag otherwise each j can only put one item
+        -  iterate bag then item: If you loop over j (the capacity) in the outer loop and then iterate over the items i in the inner loop, you are updating dp[j] for the current capacity before considering all items
+    - Provide an example to derive the DP array (skip)
 
