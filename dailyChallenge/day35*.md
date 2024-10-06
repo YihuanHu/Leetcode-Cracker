@@ -8,7 +8,7 @@
 - Steps for DP:
     - Define the dp[j]:
         - a knapsack with a capacity of j, the maximum weight that can be carried is represented by dp[j]
-    - Define the state transition deleting i: **dp[j] = max(dp[j], dp[j - stones[i]] + stones[i])**
+    - Define the state transition: **dp[j] = max(dp[j], dp[j - stones[i]] + stones[i])**
     - How to initialize the DP array: 
         -  we initiate whole dp as 0 since all are postive integer
         -  if we have negative, we should iniate it as negative infinite
@@ -44,7 +44,7 @@ Space: **O(n)**
 - Steps for DP table:
     - Define the dp[i][j]:
         - The number of ways to fill a knapsack with a capacity of j (including j) using the elements indexed from [0, i] in nums[i]
-    - Define the state transition deleting i:
+    - Define the state transition:
         - **Not Including Item i**: dp[i - 1][j]
         - **Including Item i**: To include item i, you first make room for its capacity. The new knapsack capacity becomes (j - weight of item i). The number of ways to fill the knapsack with this reduced capacity is dp[i - 1][j - nums[i]]
         - **if (nums[i] > j) dp[i][j] = dp[i - 1][j];  else dp[i][j] = dp[i - 1][j] + dp[i - 1][j - nums[i]]**
@@ -125,26 +125,25 @@ Space: **O(n^m)** for solution 1 and **O(n)** for solution 2
 ##  LC 474 ones-and-zeroes
 [Link](https://leetcode.com/problems/ones-and-zeroes/description/)   
 [Cousrse Link](https://programmercarl.com/0474.%E4%B8%80%E5%92%8C%E9%9B%B6.html)
-- How to transfer this combination question into a 0/1 bag problem:
-    - assume all + are x, then sum of negative would be -(sum-x)
-    - problem requires x - (sum-x) = target  => x = (target + sum) / 2
+- Two 0/1 bags problem: one for 0 and another for 1
 - Steps for DP table:
-    - Define the dp[i][j]:
-        - The number of ways to fill a knapsack with a capacity of j (including j) using the elements indexed from [0, i] in nums[i]
-    - Define the state transition deleting i:
-        - **Not Including Item i**: dp[i - 1][j]
-        - **Including Item i**: To include item i, you first make room for its capacity. The new knapsack capacity becomes (j - weight of item i). The number of ways to fill the knapsack with this reduced capacity is dp[i - 1][j - nums[i]]
-        - **if (nums[i] > j) dp[i][j] = dp[i - 1][j];  else dp[i][j] = dp[i - 1][j] + dp[i - 1][j - nums[i]]**
-    - How to initialize the DP array: 
-        -  we initiate whole dp as 0 since all are postive integer
-        -  dp[0][0] = 1 which means put nothing
-        -  first row: dp[0][i] = 0 except only when j = nums[0], then dp = 1
-        -  first col: dp[i][0] = 1 except there are multiple numbers = 0 then dp = 2^{# of 0 inside [0,i]}
-    - Determine the order of traversal: **from left to right and from top to bottom and those outer inner loop can be changed**
-        -  The inener bag loop from large to small:
-            -  dp[2] = dp[2 - weight[0]] + value[0] = 15 （dp数组已经都初始化为0）
-            -  dp[1] = dp[1 - weight[0]] + value[0] = 15
-        -  Only can iterate item first and then bag otherwise each j can only put one item
-        -  iterate bag then item: If you loop over j (the capacity) in the outer loop and then iterate over the items i in the inner loop, you are updating dp[j] for the current capacity before considering all items
+    - Define the dp[i][j]: The maximum size of the subset of strings with at most i zeros and j ones.
+    - Define the state transition: **dp[i][j] = max(dp[i][j], dp[i - zeroNum][j - oneNum] + 1)**
+    - How to initialize the DP array: all 0
+    - Determine the order of traversal: **iterate items from left to right twice for m & n**
     - Provide an example to derive the DP array (skip)
 
+```python
+class Solution:
+    def findMaxForm(self, strs: List[str], m: int, n: int) -> int:
+        dp = [[0] * (n + 1) for _ in range(m + 1)]  # 创建二维动态规划数组，初始化为0
+        for s in strs:  # 遍历物品
+            zeroNum = s.count('0')  # 统计0的个数
+            oneNum = len(s) - zeroNum  # 统计1的个数
+            for i in range(m, zeroNum - 1, -1):  # 遍历背包容量且从后向前遍历
+                for j in range(n, oneNum - 1, -1):
+                    dp[i][j] = max(dp[i][j], dp[i - zeroNum][j - oneNum] + 1)  # 状态转移方程
+        return dp[m][n]
+```
+Time: **O(k*m*n)** k is for string length          
+Space: **O(m*n)** 
