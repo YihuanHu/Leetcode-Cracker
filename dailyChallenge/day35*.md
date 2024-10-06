@@ -1,218 +1,153 @@
 # Day35 Dynamic Programming Part4
 
-## LC 62 unique-paths
-[Link](https://leetcode.com/problems/unique-paths/)   
-[Cousrse Link](https://programmercarl.com/0062.%E4%B8%8D%E5%90%8C%E8%B7%AF%E5%BE%84.html)    
+## LC 1049 last-stone-weight-ii
+[Link](https://leetcode.com/problems/last-stone-weight-ii/description/)   
+[Cousrse Link](https://programmercarl.com/1049.%E6%9C%80%E5%90%8E%E4%B8%80%E5%9D%97%E7%9F%B3%E5%A4%B4%E7%9A%84%E9%87%8D%E9%87%8FII.html)    
+- like a 0/1 bag problem where we trying to find out two divided subset which near sum / 2 e.g LC 416 partition-equal-subset-sum
+- we get target = sum / 2 by floor function so sum - dp[target] > dp[target] and we return this diff as the remaining stone
 - Steps for DP:
-    - Define the dp[i][j]: the number of different paths from (0, 0) to (i, j)
-    - Define the state transition: dp[i][j] = dp[i - 1][j] + dp[i][j - 1] we only have 2 ways to reach dp[i][j]
-    - How to initialize the DP array: since we can only go down or right, we only one solution for those edges
-        - for i in range(m):dp[i][0] = 1
-        - for j in range(n):dp[0][j] = 1
-    - Determine the order of traversal: we can see that dp[i][j] depends on dp[i - 1] and dp[j - 1] so must iterate front to back
-    - Provide an example to derive the DP array: try m,k = 3,3
+    - Define the dp[j]:
+        - a knapsack with a capacity of j, the maximum weight that can be carried is represented by dp[j]
+    - Define the state transition deleting i: **dp[j] = max(dp[j], dp[j - stones[i]] + stones[i])**
+    - How to initialize the DP array: 
+        -  we initiate whole dp as 0 since all are postive integer
+        -  if we have negative, we should iniate it as negative infinite
+    - Determine the order of traversal: **reverse loop for bag and item first then bag** see Day 34 LC 416 
+    - Provide an example to derive the DP array:
+        - stones = [2,4,1,1] => bag weight = (2+4+1+1)/2 = 4 
+        - dp = [0,1,2,3,4]
 ```python
-# solution 1: dp table
+# rolling array/1 D array
 class Solution:
-    def uniquePaths(self, m: int, n: int) -> int:
-        # 创建一个二维列表用于存储唯一路径数
-        dp = [[0] * n for _ in range(m)]
-        
-        # 设置第一行和第一列的基本情况
-        for i in range(m):
-            dp[i][0] = 1
-        for j in range(n):
-            dp[0][j] = 1
-        
-        # 计算每个单元格的唯一路径数
-        for i in range(1, m):
-            for j in range(1, n):
-                dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
-        
-        # 返回右下角单元格的唯一路径数
-        return dp[m - 1][n - 1]
+    def lastStoneWeightII(self, stones: List[int]) -> int:
+        dp = [0] * 15001
+        total_sum = sum(stones)
+        target = total_sum // 2
 
+        for stone in stones:  # 遍历物品
+            for j in range(target, stone - 1, -1):  # 遍历背包
+                dp[j] = max(dp[j], dp[j - stone] + stone)
 
-# solution 2: use rolling array
-class Solution:
-    def uniquePaths(self, m: int, n: int) -> int:
-        # 创建一个一维列表用于存储每列的唯一路径数
-        dp = [1] * n
-        
-        # 计算每个单元格的唯一路径数
-        for j in range(1, m):
-            for i in range(1, n):
-                dp[i] += dp[i - 1]
-        
-        # 返回右下角单元格的唯一路径数
-        return dp[n - 1]
-```
-Time: **O(m*n)**     
-Space: **O(m*n)** for solution 1 and **O(n)** for solution 2
-
-
-##  LC unique-paths-ii
-[Link](https://leetcode.com/problems/unique-paths-ii/description/)   
-[Cousrse Link](https://programmercarl.com/0063.%E4%B8%8D%E5%90%8C%E8%B7%AF%E5%BE%84II.html)
-- Steps for DP:
-    - Define the dp[i][j]: the number of different paths from (0, 0) to (i, j)
-    - Define the state transition:
-        - dp[i][j] = dp[i - 1][j] + dp[i][j - 1] we only have 2 ways to reach dp[i][j]
-        - **but dp stays 0 for any obstacle and incoming elements** e.g [0 1 0] will lead to [1 0 0] since no way to the very right end
-    - How to initialize the DP array: since we can only go down or right, we only one solution for those edges 
-        - for i in range(m):dp[i][0] = 1
-        - for j in range(n):dp[0][j] = 1
-    - Determine the order of traversal: we can see that dp[i][j] depends on dp[i - 1] and dp[j - 1] so must iterate front to back
-    - Provide an example to derive the DP array: try m,k = 3,3
-```python
-# solution 1: dp table
-class Solution:
-    def uniquePathsWithObstacles(self, obstacleGrid):
-        m = len(obstacleGrid)  # 网格的行数
-        n = len(obstacleGrid[0])  # 网格的列数
-        
-        if obstacleGrid[m - 1][n - 1] == 1 or obstacleGrid[0][0] == 1:
-            # 如果起点或终点有障碍物，直接返回0
-            return 0
-        
-        dp = [[0] * n for _ in range(m)]  # 创建一个二维列表用于存储路径数
-        
-        # 设置起点的路径数为1
-        dp[0][0] = 1 if obstacleGrid[0][0] == 0 else 0
-        
-        # 计算第一列的路径数
-        for i in range(1, m):
-            if obstacleGrid[i][0] == 0:
-                dp[i][0] = dp[i - 1][0]
-        
-        # 计算第一行的路径数
-        for j in range(1, n):
-            if obstacleGrid[0][j] == 0:
-                dp[0][j] = dp[0][j - 1]
-        
-        # 计算其他位置的路径数
-        for i in range(1, m):
-            for j in range(1, n):
-                if obstacleGrid[i][j] == 1:
-                    continue
-                dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
-        
-        return dp[m - 1][n - 1]  # 返回终点的路径数
-
-# solution 2: use rolling arrays & break & continue
-class Solution:
-    def uniquePathsWithObstacles(self, obstacleGrid):
-        if obstacleGrid[0][0] == 1:
-            return 0
-        
-        m, n = len(obstacleGrid), len(obstacleGrid[0])
-        
-        dp = [0] * n  # 创建一个一维列表用于存储路径数
-        
-        # 初始化第一行的路径数
-        for j in range(n):
-            if obstacleGrid[0][j] == 1:
-                break
-            dp[j] = 1
-
-        # 计算其他行的路径数
-        for i in range(1, m):
-            if obstacleGrid[i][0] == 1:
-                dp[0] = 0
-            for j in range(1, n):
-                if obstacleGrid[i][j] == 1:
-                    dp[j] = 0
-                    continue
-                
-                dp[j] += dp[j - 1]
-        
-        return dp[-1]  # 返回最后一个元素，即终点的路径数
+        return total_sum - dp[target] - dp[target]
 
 ```
 Time: **O(m*n)**     
-Space: **O(m*n)** for solution 1 and **O(n)** for solution 2
-
-
-##  LC 343 integer-break
-[Link](https://leetcode.com/problems/integer-break/description/)   
-[Cousrse Link](https://programmercarl.com/0343.%E6%95%B4%E6%95%B0%E6%8B%86%E5%88%86.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
-- Steps for DP:
-    - Define the dp[i]: The maximum product that can be obtained by breaking the number
-    - Define the state transition: dp[i] = max({dp[i], (i - j) * j, dp[i - j] * j})
-        - there are only two ways of calculation:
-        - For only 2 numbers: direct multiplication (i - j) * j
-        - More than 2 numbers: dp[i - j] * j
-    - How to initialize the DP array: dp[2] = 1 hard to tell dp[0] and dp[1]
-    - Determine the order of traversal: we can see that dp[i] depends on dp[i - j] so must iterate front to back. Also, j is the inner loop for each i
-    - Provide an example to derive the DP array: for n = 5, dp is [1,2,4,6,9]
-```python
-# solution 1: dp table
-class Solution:
-         # 假设对正整数 i 拆分出的第一个正整数是 j（1 <= j < i），则有以下两种方案：
-        # 1) 将 i 拆分成 j 和 i−j 的和，且 i−j 不再拆分成多个正整数，此时的乘积是 j * (i-j)
-        # 2) 将 i 拆分成 j 和 i−j 的和，且 i−j 继续拆分成多个正整数，此时的乘积是 j * dp[i-j]
-    def integerBreak(self, n):
-        dp = [0] * (n + 1)   # 创建一个大小为n+1的数组来存储计算结果
-        dp[2] = 1  # 初始化dp[2]为1，因为当n=2时，只有一个切割方式1+1=2，乘积为1
-       
-        # 从3开始计算，直到n
-        for i in range(3, n + 1):
-            # 遍历所有可能的切割点
-            for j in range(1, i // 2 + 1): # mathmaticlly, max multiply only appears when two divides are equal/similar
-
-                # 计算切割点j和剩余部分(i-j)的乘积，并与之前的结果进行比较取较大值
-                
-                dp[i] = max(dp[i], (i - j) * j, dp[i - j] * j)
-        
-        return dp[n]  # 返回最终的计算结果
-
-
-
-# solution 2: greedy algo and need math prove
-class Solution:
-    def integerBreak(self, n):
-        if n == 2:  # 当n等于2时，只有一种拆分方式：1+1=2，乘积为1
-            return 1
-        if n == 3:  # 当n等于3时，只有一种拆分方式：2+1=3，乘积为2
-            return 2
-        if n == 4:  # 当n等于4时，有两种拆分方式：2+2=4和1+1+1+1=4，乘积都为4
-            return 4
-        result = 1
-        while n > 4:
-            result *= 3  # 每次乘以3，因为3的乘积比其他数字更大
-            n -= 3  # 每次减去3
-        result *= n  # 将剩余的n乘以最后的结果
-        return result
-```
-Time: **O(n^2)** for solution 1 and **O(n)** for solution 2    
-Space: **O(n)** for solution 1 and **O(1)** for solution 2
-
-
-## * LC 96 unique-binary-search-trees
-[Link](https://leetcode.com/problems/unique-binary-search-trees/description/)   
-[Cousrse Link](https://programmercarl.com/0096.%E4%B8%8D%E5%90%8C%E7%9A%84%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91.html)
-- Remember this is a BST where the values have order!!
-- Steps for DP:
-    - Define the dp[i]: The number of binary search trees composed of i different elements/nodes
-    - Define the state transition: dp[i] = max({dp[i], (i - j) * j, dp[i - j] * j})
-        - dp[i] += dp[j - 1] * dp[i - j]
-        - centered at j
-        - j - 1 : # nodes in the left subtree
-        - i - j : # nodes in the right subtree 
-    - How to initialize the DP array: dp[0] = 1 to avoid 0 in multiplication 
-    - Determine the order of traversal: we can see that dp[i] depends on dp[i - j] so must iterate front to back. Also, j is the inner loop for each i starting from 1
-    - Provide an example to derive the DP array: for n = 5, dp is [1,2,5,14,42]
-```python
-#  dp table
-class Solution:
-    def numTrees(self, n: int) -> int:
-        dp = [0] * (n + 1)  # 创建一个长度为n+1的数组，初始化为0
-        dp[0] = 1  # 当n为0时，只有一种情况，即空树，所以dp[0] = 1
-        for i in range(1, n + 1):  # 遍历从1到n的每个数字
-            for j in range(1, i + 1):  # 对于每个数字i，计算以i为根节点的二叉搜索树的数量
-                dp[i] += dp[j - 1] * dp[i - j]  # 利用动态规划的思想，累加左子树和右子树的组合数量
-        return dp[n]  # 返回以1到n为节点的二叉搜索树的总数量
-
-```
-Time: **O(n^2)**    
 Space: **O(n)** 
+
+
+##  LC 416 partition-equal-subset-sum
+[Link](https://leetcode.com/problems/partition-equal-subset-sum/description/)   
+[Cousrse Link](https://programmercarl.com/0416.%E5%88%86%E5%89%B2%E7%AD%89%E5%92%8C%E5%AD%90%E9%9B%86.html)
+- Typical 0/1 bag where value = weight = numbers and we need to find out if bag weight = sum / 2
+- Steps for DP:
+    - Define the dp[j]:
+        - a knapsack with a capacity of j, the maximum weight that can be carried is represented by dp[j]
+    - Define the state transition deleting i: **dp[j] = max(dp[j], dp[j - nums[i]] + nums[i])**
+    - How to initialize the DP array: 
+        -  we initiate whole dp as 0 since all are postive integer
+        -  if we have negative, we should iniate it as negative infinite
+    - Determine the order of traversal: **reverse loop for bag and item first then bag**
+        -  The inener bag loop from large to small:
+            -  dp[2] = dp[2 - weight[0]] + value[0] = 15 （dp数组已经都初始化为0）
+            -  dp[1] = dp[1 - weight[0]] + value[0] = 15
+        -  Only can iterate item first and then bag otherwise each j can only put one item
+        -  iterate bag then item: If you loop over j (the capacity) in the outer loop and then iterate over the items i in the inner loop, you are updating dp[j] for the current capacity before considering all items
+    - Provide an example to derive the DP array:
+        - nums = [1,5,11,5] => bag weight = (1+5+11+5)/2 = 11
+        - dp = [0,1,1,1,15,6,6,6,6,10,11]
+```python
+# solution 1: dp table
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        _sum = 0
+
+        # dp[i]中的i表示背包内总和
+        # 题目中说：每个数组中的元素不会超过 100，数组的大小不会超过 200
+        # 总和不会大于20000，背包最大只需要其中一半，所以10001大小就可以了
+        dp = [0] * 10001
+        for num in nums:
+            _sum += num
+        # 也可以使用内置函数一步求和
+        # _sum = sum(nums)
+        if _sum % 2 == 1:
+            return False
+        target = _sum // 2
+
+        # 开始 0-1背包
+        for num in nums:
+            for j in range(target, num - 1, -1):  # 每一个元素一定是不可重复放入，所以从大到小遍历
+                dp[j] = max(dp[j], dp[j - num] + num)
+
+        # 集合中的元素正好可以凑成总和target
+        if dp[target] == target:
+            return True
+        return False
+
+# solution 2: use rolling arrays / 1D array
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        if sum(nums) % 2 != 0:
+            return False
+        target = sum(nums) // 2
+        dp = [0] * (target + 1)
+        for num in nums:
+            for j in range(target, num-1, -1):
+                dp[j] = max(dp[j], dp[j-num] + num)
+        return dp[-1] == target
+
+```
+Time: **O(n^2)**      
+Space: **O(n^2)** for solution 1 and **O(n)** for solution 2 since we can treat the fixed 
+
+-  we can use T/F to replace the exact numbers
+```python
+# solution 1: dp table
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        
+        total_sum = sum(nums)
+
+        if total_sum % 2 != 0:
+            return False
+
+        target_sum = total_sum // 2
+        dp = [[False] * (target_sum + 1) for _ in range(len(nums) + 1)]
+
+        # 初始化第一行（空子集可以得到和为0）
+        for i in range(len(nums) + 1):
+            dp[i][0] = True
+
+        for i in range(1, len(nums) + 1):
+            for j in range(1, target_sum + 1):
+                if j < nums[i - 1]:
+                    # 当前数字大于目标和时，无法使用该数字
+                    dp[i][j] = dp[i - 1][j]
+                else:
+                    # 当前数字小于等于目标和时，可以选择使用或不使用该数字
+                    dp[i][j] = dp[i - 1][j] or dp[i - 1][j - nums[i - 1]]
+
+        return dp[len(nums)][target_sum]
+
+# solution 2: use rolling arrays / 1D array
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+
+        total_sum = sum(nums)
+
+        if total_sum % 2 != 0:
+            return False
+
+        target_sum = total_sum // 2
+        dp = [False] * (target_sum + 1)
+        dp[0] = True
+
+        for num in nums:
+            # 从target_sum逆序迭代到num，步长为-1
+            for i in range(target_sum, num - 1, -1):
+                dp[i] = dp[i] or dp[i - num]
+        return dp[target_sum]
+
+```
+
+
+
