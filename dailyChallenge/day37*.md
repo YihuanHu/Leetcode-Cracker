@@ -146,9 +146,11 @@ Space: **O(n)**
     - Provide an example to derive the DP array:
         - String: `"leetcode"`
         - Dictionary: `["leet", "code"]`
-        | Index (i) | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-        |-----------|---|---|---|---|---|---|---|---|---|
-        | `dp[i]`   | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |
+         
+| Index (i) | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|-----------|---|---|---|---|---|---|---|---|---|
+| `dp[i]`   | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |
+
 
 ```python
 class Solution:
@@ -225,7 +227,8 @@ Space: **O(n)**
         - 动态规划：279. 完全平方数
 
 - DP summary [Link](https://programmercarl.com/%E8%83%8C%E5%8C%85%E6%80%BB%E7%BB%93%E7%AF%87.html)
-- Table summary:
+- Table summary:       
+
 | Problem Type         | Inner Loop  | Iteration for Inner Loop  |
 |----------------------|-------------|---------------------------|
 | 0/1 knapsack (2D dp) | Item/Bag    | Small to large            |
