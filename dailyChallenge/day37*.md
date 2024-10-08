@@ -79,45 +79,92 @@ class Solution:
 Time: **O(n * amount)** n is coin list length               
 Space: **O(amount)** 
 
-##  LC 377 combination-sum-iv
-[Link](https://leetcode.com/problems/combination-sum-iv/description/)   
-[Cousrse Link](https://programmercarl.com/0377.%E7%BB%84%E5%90%88%E6%80%BB%E5%92%8C%E2%85%A3.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
-- Compared with the above LC 518
+##  LC 279 perfect-squares
+[Link](https://leetcode.com/problems/perfect-squares/description/)   
+[Cousrse Link](https://programmercarl.com/0279.%E5%AE%8C%E5%85%A8%E5%B9%B3%E6%96%B9%E6%95%B0.html)
 - Steps for DP:
     - Define the dp[j]:
-        - dp[j]:number of PERMUTATIONS of getting exact amount j
-    - Define the state transition deleting i:
-    -   To find the number of ways to fill the knapsack, the formula is: dp[j] += dp[j - nums[i]]
-    - How to initialize the DP array: 
-        -  dp[0] = 1 otherewise the calculation is meaningless
-    - Determine the order of traversal: **weight is the outer loop and item is the inner**
-      - Same above
+        - dp[j]:the min number of getting exact sum j by adding its square sums
+    - Define the state transition: dp[j] = min(dp[j - i * i] + 1, dp[j])
+    - How to initialize the DP array: dp[0] = 0 and all intiate as INF 
+    - Determine the order of traversal: No matter the inner/outer loop or from small to large
     - Provide an example to derive the DP array:
-        -  target = 4, coins = [1, 2, 3]     
-        -[  [1, 0, 0, 0, 0],  # Initial state (dp[0] = 1)    
-              [1, 1, 0, 0, 0],  # After calculating dp[1] = dp[0]     
-              [1, 1, 2, 0, 0],  # After calculating dp[2] = dp[1] + dp[0]     
-              [1, 1, 2, 4, 0],  # After calculating dp[3] = dp[2] + dp[1] + dp[0]     
-              [1, 1, 2, 4, 7]   # After calculating dp[4] = dp[3] + dp[2] + dp[1]     
-            ]      
+        - `dp[0] = 0`
+        - `dp[1] = min(dp[0] + 1) = 1`
+        - `dp[2] = min(dp[1] + 1) = 2`
+        - `dp[3] = min(dp[2] + 1) = 3`
+        - `dp[4] = min(dp[3] + 1, dp[0] + 1) = 1`
+        - `dp[5] = min(dp[4] + 1, dp[1] + 1) = 2`
 
 ```python
+# solution 1:item first
 class Solution:
-    def combinationSum4(self, nums: List[int], target: int) -> int:
-        dp = [0] * (target + 1)
-        dp[0] = 1
-        for i in range(1, target + 1):  # 遍历背包
-            for j in range(len(nums)):  # 遍历物品
-                if i - nums[j] >= 0:
-                    dp[i] += dp[i - nums[j]]
-        return dp[target]
+    def numSquares(self, n: int) -> int:
+        dp = [float('inf')] * (n + 1)
+        dp[0] = 0
 
+        for i in range(1, int(n ** 0.5) + 1):  # 遍历物品
+            for j in range(i * i, n + 1):  # 遍历背包
+                # 更新凑成数字 j 所需的最少完全平方数数量
+                dp[j] = min(dp[j - i * i] + 1, dp[j])
+
+        return dp[n]
+
+# solution 2: bag first
+class Solution:
+    def numSquares(self, n: int) -> int:
+        dp = [float('inf')] * (n + 1)
+        dp[0] = 0
+
+        for i in range(1, n + 1):  # 遍历背包
+            for j in range(1, int(i ** 0.5) + 1):  # 遍历物品
+                # 更新凑成数字 i 所需的最少完全平方数数量
+                dp[i] = min(dp[i], dp[i - j * j] + 1)
+
+        return dp[n]
 
 ```
-Time: **O(target * n)**  n is nums list length               
-Space: **O(target)** 
+Time: **O(n * square root of n)**              
+Space: **O(n)** 
 
-##  Advanced Climbing Ladder
-[Cousrse Link](https://programmercarl.com/0070.%E7%88%AC%E6%A5%BC%E6%A2%AF%E5%AE%8C%E5%85%A8%E8%83%8C%E5%8C%85%E7%89%88%E6%9C%AC.html)
-- One example of Permutation
-- Compared with LC 57
+##  LC 139 word-break
+[Link](https://leetcode.com/problems/word-break/description/)   
+[Cousrse Link](https://programmercarl.com/0139.%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86.html)
+- Steps for DP:
+    - Define the dp[j]:
+        - dp[j]:the min number of getting exact sum j by adding its square sums
+    - Define the state transition: dp[j] = min(dp[j - i * i] + 1, dp[j])
+    - How to initialize the DP array: dp[0] = 0 and all intiate as INF 
+    - Determine the order of traversal: No matter the inner/outer loop or from small to large
+    - Provide an example to derive the DP array: 
+
+```python
+# solution 1:item first
+class Solution:
+    def numSquares(self, n: int) -> int:
+        dp = [float('inf')] * (n + 1)
+        dp[0] = 0
+
+        for i in range(1, int(n ** 0.5) + 1):  # 遍历物品
+            for j in range(i * i, n + 1):  # 遍历背包
+                # 更新凑成数字 j 所需的最少完全平方数数量
+                dp[j] = min(dp[j - i * i] + 1, dp[j])
+
+        return dp[n]
+
+# solution 2: bag first
+class Solution:
+    def numSquares(self, n: int) -> int:
+        dp = [float('inf')] * (n + 1)
+        dp[0] = 0
+
+        for i in range(1, n + 1):  # 遍历背包
+            for j in range(1, int(i ** 0.5) + 1):  # 遍历物品
+                # 更新凑成数字 i 所需的最少完全平方数数量
+                dp[i] = min(dp[i], dp[i - j * j] + 1)
+
+        return dp[n]
+
+```
+Time: **O(n * square root of n)**              
+Space: **O(n)** 
