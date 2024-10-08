@@ -225,3 +225,10 @@ Space: **O(n)**
         - 动态规划：279. 完全平方数
 
 - DP summary [Link](https://programmercarl.com/%E8%83%8C%E5%8C%85%E6%80%BB%E7%BB%93%E7%AF%87.html)
+- Table summary:
+| Problem Type         | Inner Loop  | Iteration for Inner Loop  |
+|----------------------|-------------|---------------------------|
+| 0/1 knapsack (2D dp) | Item/Bag    | Small to large            |
+| 0/1 knapsack (1D dp) | Bag         | Large to small            |
+| Unbounded knapsack (2D dp) | Item/Bag | Small to large         |
+| Unbounded knapsack (1D dp) | Item/Bag | Small to large         |
