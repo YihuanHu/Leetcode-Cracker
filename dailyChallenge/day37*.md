@@ -173,7 +173,7 @@ Space: **O(n)**
 
 
 ## Adds On
-- Topics summary for DP:
+- Topics summary for Bag:
 - For state transition:
     ### 问题 1: 能否装满背包（或者最多装多少）
     公式：`dp[j] = max(dp[j], dp[j - nums[i]] + nums[i]);`  
@@ -226,7 +226,7 @@ Space: **O(n)**
         - 动态规划：322. 零钱兑换
         - 动态规划：279. 完全平方数
 
-- DP summary [Link](https://programmercarl.com/%E8%83%8C%E5%8C%85%E6%80%BB%E7%BB%93%E7%AF%87.html)
+- Bag summary [Link](https://programmercarl.com/%E8%83%8C%E5%8C%85%E6%80%BB%E7%BB%93%E7%AF%87.html)
 - Table summary:       
 
 | Problem Type         | Inner Loop  | Iteration for Inner Loop  |
