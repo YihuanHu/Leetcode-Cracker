@@ -1,237 +1,172 @@
 # Day38 Dynamic Programming Part7
-## Unbounded Knapsack/Bag Problem
-- **combinations: the outer for loop should iterate over the items, and the inner for loop should iterate over the knapsack capacities**
-- **permutations: the outer for loop should iterate over the knapsack capacities, and the inner for loop should iterate over the items**
-```python
-# sample 1
-def test_CompletePack():
-    weight = [1, 3, 4]
-    value = [15, 20, 30]
-    bagWeight = 4
-    dp = [0] * (bagWeight + 1)
-    for i in range(len(weight)):  # 遍历物品
-        for j in range(weight[i], bagWeight + 1):  # 遍历背包容量
-            dp[j] = max(dp[j], dp[j - weight[i]] + value[i])
-    print(dp[bagWeight])
 
-test_CompletePack()
-
-# sample 2
-def test_CompletePack():
-    weight = [1, 3, 4]
-    value = [15, 20, 30]
-    bagWeight = 4
-
-    dp = [0] * (bagWeight + 1)
-
-    for j in range(bagWeight + 1):  # 遍历背包容量
-        for i in range(len(weight)):  # 遍历物品
-            if j - weight[i] >= 0:
-                dp[j] = max(dp[j], dp[j - weight[i]] + value[i])
-
-    print(dp[bagWeight])
-
-test_CompletePack()
-```
-## bounded Knapsack/Bag Problem
-- generalization of the 0/1 knapsack problem where each item has a limit on the number of times
-- Add one more loop inside the item to go through the counts for each item
-
-##  LC 322 coin-change
-[Link](https://leetcode.com/problems/coin-change/description/)   
-[Cousrse Link](https://programmercarl.com/0322.%E9%9B%B6%E9%92%B1%E5%85%91%E6%8D%A2.html)
+##  LC 198 house-robber
+[Link](https://leetcode.com/problems/house-robber/description/)   
+[Cousrse Link](https://programmercarl.com/0198.%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D.html)
 - Not about combinations or permutations compared with LC 518 for combinations LC 377 for permutations
 - Steps for DP:
     - Define the dp[j]:
-        - dp[j]:the min number of coins of getting exact amount j
-    - Define the state transition: dp[j] = min(dp[j - coins[i]] + 1, dp[j])
-    - How to initialize the DP array: dp[0] = 0 and all other intiates as INF 
-    - Determine the order of traversal: No matter the inner/outer loop or from small to large
-    - Provide an example to derive the DP array: skip
-```python
-# solution 1:item first
-class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
-        dp = [float('inf')] * (amount + 1)  # 创建动态规划数组，初始值为正无穷大
-        dp[0] = 0  # 初始化背包容量为0时的最小硬币数量为0
-
-        for coin in coins:  # 遍历硬币列表，相当于遍历物品
-            for i in range(coin, amount + 1):  # 遍历背包容量
-                if dp[i - coin] != float('inf'):  # 如果dp[i - coin]不是初始值，则进行状态转移
-                    dp[i] = min(dp[i - coin] + 1, dp[i])  # 更新最小硬币数量
-
-        if dp[amount] == float('inf'):  # 如果最终背包容量的最小硬币数量仍为正无穷大，表示无解
-            return -1
-        return dp[amount]  # 返回背包容量为amount时的最小硬币数量
-
-# solution 2: bag first
-class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
-        dp = [float('inf')] * (amount + 1)  # 创建动态规划数组，初始值为正无穷大
-        dp[0] = 0  # 初始化背包容量为0时的最小硬币数量为0
-
-        for i in range(1, amount + 1):  # 遍历背包容量
-            for j in range(len(coins)):  # 遍历硬币列表，相当于遍历物品
-                if i - coins[j] >= 0 and dp[i - coins[j]] != float('inf'):  # 如果dp[i - coins[j]]不是初始值，则进行状态转移
-                    dp[i] = min(dp[i - coins[j]] + 1, dp[i])  # 更新最小硬币数量
-
-        if dp[amount] == float('inf'):  # 如果最终背包容量的最小硬币数量仍为正无穷大，表示无解
-            return -1
-        return dp[amount]  # 返回背包容量为amount时的最小硬币数量
-```
-Time: **O(n * amount)** n is coin list length               
-Space: **O(amount)** 
-
-##  LC 279 perfect-squares
-[Link](https://leetcode.com/problems/perfect-squares/description/)   
-[Cousrse Link](https://programmercarl.com/0279.%E5%AE%8C%E5%85%A8%E5%B9%B3%E6%96%B9%E6%95%B0.html)
-- Steps for DP:
-    - Define the dp[j]:
-        - dp[j]:the min number of getting exact sum j by adding its square sums
-    - Define the state transition: dp[j] = min(dp[j - i * i] + 1, dp[j])
-    - How to initialize the DP array: dp[0] = 0 and all other intiate as INF 
-    - Determine the order of traversal: No matter the inner/outer loop or from small to large
+        - dp[j]:Considering the houses up to index i (including i), dp[i] represents the maximum amount that can be stolen
+    - Define the state transition: dp[i] = max(dp[i - 2] + nums[i], dp[i - 1]) whether or not to steal nth house
+    - How to initialize the DP array: dp[0] = nums[0] dp[1] = max(nums[0], nums[1])
+    - Determine the order of traversal: forward since [i-1] and [i-2]
     - Provide an example to derive the DP array:
-        - `dp[0] = 0`
-        - `dp[1] = min(dp[0] + 1) = 1`
-        - `dp[2] = min(dp[1] + 1) = 2`
-        - `dp[3] = min(dp[2] + 1) = 3`
-        - `dp[4] = min(dp[3] + 1, dp[0] + 1) = 1`
-        - `dp[5] = min(dp[4] + 1, dp[1] + 1) = 2`
-
+        - nums = [2,7,9,3,1]
+        - dp = [2,7,11,11,12]
 ```python
-# solution 1:item first
+# solution 1:dp table
 class Solution:
-    def numSquares(self, n: int) -> int:
-        dp = [float('inf')] * (n + 1)
-        dp[0] = 0
+    def rob(self, nums: List[int]) -> int:
+        if not nums:  # 如果没有房屋，返回0
+            return 0
 
-        for i in range(1, int(n ** 0.5) + 1):  # 遍历物品
-            for j in range(i * i, n + 1):  # 遍历背包
-                # 更新凑成数字 j 所需的最少完全平方数数量
-                dp[j] = min(dp[j - i * i] + 1, dp[j])
+        n = len(nums)
+        dp = [[0, 0] for _ in range(n)]  # 创建二维动态规划数组，dp[i][0]表示不抢劫第i个房屋的最大金额，dp[i][1]表示抢劫第i个房屋的最大金额
 
-        return dp[n]
+        dp[0][1] = nums[0]  # 抢劫第一个房屋的最大金额为第一个房屋的金额
 
-# solution 2: bag first
+        for i in range(1, n):
+            dp[i][0] = max(dp[i-1][0], dp[i-1][1])  # 不抢劫第i个房屋，最大金额为前一个房屋抢劫和不抢劫的最大值
+            dp[i][1] = dp[i-1][0] + nums[i]  # 抢劫第i个房屋，最大金额为前一个房屋不抢劫的最大金额加上当前房屋的金额
+
+        return max(dp[n-1][0], dp[n-1][1])  # 返回最后一个房屋中可抢劫的最大金额
+
+    # solution 2: 1D array
 class Solution:
-    def numSquares(self, n: int) -> int:
-        dp = [float('inf')] * (n + 1)
-        dp[0] = 0
+    def rob(self, nums: List[int]) -> int:
+        if len(nums) == 0:  # 如果没有房屋，返回0
+            return 0
+        if len(nums) == 1:  # 如果只有一个房屋，返回其金额
+            return nums[0]
 
-        for i in range(1, n + 1):  # 遍历背包
-            for j in range(1, int(i ** 0.5) + 1):  # 遍历物品
-                # 更新凑成数字 i 所需的最少完全平方数数量
-                dp[i] = min(dp[i], dp[i - j * j] + 1)
+        # 创建一个动态规划数组，用于存储最大金额
+        dp = [0] * len(nums)
+        dp[0] = nums[0]  # 将dp的第一个元素设置为第一个房屋的金额
+        dp[1] = max(nums[0], nums[1])  # 将dp的第二个元素设置为第一二个房屋中的金额较大者
 
-        return dp[n]
+        # 遍历剩余的房屋
+        for i in range(2, len(nums)):
+            # 对于每个房屋，选择抢劫当前房屋和抢劫前一个房屋的最大金额
+            dp[i] = max(dp[i - 2] + nums[i], dp[i - 1])
 
+        return dp[-1]  # 返回最后一个房屋中可抢劫的最大金额
 ```
-Time: **O(n * square root of n)**              
+Time: **O(n)**                 
 Space: **O(n)** 
 
-##  LC 139 word-break
-[Link](https://leetcode.com/problems/word-break/description/)   
-[Cousrse Link](https://programmercarl.com/0139.%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86.html)
-- We can use backtracking and memoried recursion like LC 131 but its Time Complexity is O(2 ^ n )         
-- Steps for DP:
-    - Define the dp[j]:
-        - dp[j]:If the length of the string is i, dp[i] being true means that the string can be split into one or more words that appear in the dictionary
-    - Define the state transition:
-        - If the substring in the range [j, i] appears in the dictionary & dp[j] is true, then dp[i] is set to true
-    - How to initialize the DP array: dp[0] = True and all other initiate as False 
-    - Determine the order of traversal:
-        - Try to get the permutation since order matters
-        - so bag first and item second 
-    - Provide an example to derive the DP array:
-        - String: `"leetcode"`
-        - Dictionary: `["leet", "code"]`
-         
-| Index (i) | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-|-----------|---|---|---|---|---|---|---|---|---|
-| `dp[i]`   | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |
-
+##  LC 213 house-robber-ii
+[Link](https://leetcode.com/problems/house-robber-ii/)   
+[Cousrse Link](https://programmercarl.com/0213.%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8DII.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
+- Like the above LC 198 but there is a loop
+- So three cases to consider to never rob both the first and last houses at the same time. We only need 2nd and 3rd cases since first is being part of them.
+    - Exclude start & end
+    - Exclude start
+    - Exclude end 
 
 ```python
+# solution 1:DP table
 class Solution:
-    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
-        wordSet = set(wordDict)
-        n = len(s)
-        dp = [False] * (n + 1)  # dp[i] 表示字符串的前 i 个字符是否可以被拆分成单词
-        dp[0] = True  # 初始状态，空字符串可以被拆分成单词
+    def rob(self, nums: List[int]) -> int:
+        if len(nums) < 3:
+            return max(nums)
 
-        for i in range(1, n + 1): # 遍历背包
-            for j in range(i): # 遍历单词
-                if dp[j] and s[j:i] in wordSet:
-                    dp[i] = True  # 如果 s[0:j] 可以被拆分成单词，并且 s[j:i] 在单词集合中存在，则 s[0:i] 可以被拆分成单词
-                    break
+        # 情况二：不抢劫第一个房屋
+        result1 = self.robRange(nums[:-1])
 
-        return dp[n]
+        # 情况三：不抢劫最后一个房屋
+        result2 = self.robRange(nums[1:])
+
+        return max(result1, result2)
+
+    def robRange(self, nums):
+        dp = [[0, 0] for _ in range(len(nums))]
+        dp[0][1] = nums[0]
+
+        for i in range(1, len(nums)):
+            dp[i][0] = max(dp[i - 1])
+            dp[i][1] = dp[i - 1][0] + nums[i]
+
+        return max(dp[-1])
+
+# solution 2: 1D array
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        if len(nums) == 0:
+            return 0
+        if len(nums) == 1:
+            return nums[0]
+        
+        result1 = self.robRange(nums, 0, len(nums) - 2)  # 情况二
+        result2 = self.robRange(nums, 1, len(nums) - 1)  # 情况三
+        return max(result1, result2)
+    # 198.打家劫舍的逻辑
+    def robRange(self, nums: List[int], start: int, end: int) -> int:
+        if end == start:
+            return nums[start]
+        
+        prev_max = nums[start]
+        curr_max = max(nums[start], nums[start + 1])
+        
+        for i in range(start + 2, end + 1):
+            temp = curr_max
+            curr_max = max(prev_max + nums[i], curr_max)
+            prev_max = temp
+        
+        return curr_max
+
 ```
-Time: **O(n ^ 2)**              
+Time: **O(n)**              
 Space: **O(n)** 
 
+##  LC 337 house-robber-iii
+[Link](https://leetcode.com/problems/house-robber-iii/description/)   
+[Cousrse Link](https://programmercarl.com/0337.%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8DIII.html)
+- Like the above LC 198 but there is a binary tree
+- Steps for Binary Tree:
+    - returning parameters and values:
+        - return dp array of length 2 since recursion gonna save the parameters in each stack
+        - Index 0 represents the maximum amount of money obtained if the current node is not robbed.
+        - Index 1 represents the maximum amount of money obtained if the current node is robbed.
+    - When to return: if node is null, retuen (0,0)
+    - Order: We need to use postorder since both LR need to be considered for stealing before make a decision
+    - What we do for each recursion:
+        - conside stealing child's node: val_0 = max(left[0], left[1]) + max(right[0], right[1])
+        - steal cur node: val_1 = node.val + left[0] + right[0]
+        - **Remember when we steal child's node, we are not 100% sure to steal child's node so we just pick the max values out of it**
 
-## Adds On
-- Topics summary for Bag:
-- For state transition:
-    ### 问题 1: 能否装满背包（或者最多装多少）
-    公式：`dp[j] = max(dp[j], dp[j - nums[i]] + nums[i]);`  
-    对应题目如下：
-    - 动态规划：416. 分割等和子集
-    - 动态规划：1049. 最后一块石头的重量 II
-    
-    ### 问题 2: 装满背包有几种方法
-    公式：`dp[j] += dp[j - nums[i]]`  
-    对应题目如下：
-    - 动态规划：494. 目标和
-    - 动态规划：518. 零钱兑换 II
-    - 动态规划：377. 组合总和 IV
-    - 动态规划：70. 爬楼梯进阶版（完全背包）
-    
-    ### 问题 3: 装满背包的最大价值
-    公式：`dp[j] = max(dp[j], dp[j - weight[i]] + value[i]);`  
-    对应题目如下：
-    - 动态规划：474. 一和零
-    
-    ### 问题 4: 装满背包所有物品的最小个数
-    公式：`dp[j] = min(dp[j - coins[i]] + 1, dp[j]);`  
-    对应题目如下：
-    - 动态规划：322. 零钱兑换
-    - 动态规划：279. 完全平方数
-- For iteration:
-    ### 01 背包
-    在 [动态规划：关于 01 背包问题，你该了解这些！] 中，我们讲解了**二维 dp 数组的 01 背包**，无论是先遍历物品还是先遍历背包容量都是可以的，且第二层 `for` 循环是从小到大遍历。
-    
-    在 [动态规划：关于 01 背包问题，你该了解这些！（滚动数组）] 中，我们讲解了**一维 dp 数组的 01 背包**。在这种情况下，必须**先遍历物品，再遍历背包容量**，且第二层 `for` 循环是从**大到小**遍历。
-    
-    ### 完全背包
-    在 [动态规划：关于完全背包，你该了解这些！] 中，介绍了**纯完全背包的一维 dp 数组实现**，在这种情况下，无论是先遍历物品还是先遍历背包容量都是可以的，且第二层 `for` 循环是从**小到大**遍历。
-    
-    但仅限于**纯完全背包**的问题，这种遍历顺序是适用的。如果题目稍有变化，两个 `for` 循环的先后顺序可能就不同了：
-    
-    - **求组合数**时，外层 `for` 循环遍历**物品**，内层 `for` 循环遍历**背包容量**。
-    - **求排列数**时，外层 `for` 循环遍历**背包容量**，内层 `for` 循环遍历**物品**。
-    
-    #### 相关题目
-    - **求组合数**：
-      - 动态规划：518. 零钱兑换 II
-    
-    - **求排列数**：
-      - 动态规划：377. 组合总和 IV
-      - 动态规划：70. 爬楼梯进阶版（完全背包）
-    
-    - **求最小数**：
-      - 如果求最小数，两层 `for` 循环的顺序没有特别要求，相关题目如下：
-        - 动态规划：322. 零钱兑换
-        - 动态规划：279. 完全平方数
+```python
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def rob(self, root: Optional[TreeNode]) -> int:
+        # dp数组（dp table）以及下标的含义：
+        # 1. 下标为 0 记录 **不偷该节点** 所得到的的最大金钱
+        # 2. 下标为 1 记录 **偷该节点** 所得到的的最大金钱
+        dp = self.traversal(root)
+        return max(dp)
 
-- Bag summary [Link](https://programmercarl.com/%E8%83%8C%E5%8C%85%E6%80%BB%E7%BB%93%E7%AF%87.html)
-- Table summary:       
+    # 要用后序遍历, 因为要通过递归函数的返回值来做下一步计算
+    def traversal(self, node):
+        
+        # 递归终止条件，就是遇到了空节点，那肯定是不偷的
+        if not node:
+            return (0, 0)
 
-| Problem Type         | Inner Loop  | Iteration for Inner Loop  |
-|----------------------|-------------|---------------------------|
-| 0/1 knapsack (2D dp) | Item/Bag    | Small to large            |
-| 0/1 knapsack (1D dp) | Bag         | Large to small            |
-| Unbounded knapsack (2D dp) | Item/Bag | Small to large         |
-| Unbounded knapsack (1D dp) | Item/Bag | Small to large         |
+        left = self.traversal(node.left)
+        right = self.traversal(node.right)
+
+        # 不偷当前节点, 偷子节点
+        val_0 = max(left[0], left[1]) + max(right[0], right[1])
+
+        # 偷当前节点, 不偷子节点
+        val_1 = node.val + left[0] + right[0]
+
+        return (val_0, val_1)
+```
+Time: **O(n)**              
+Space: **O(log n)** 
+
