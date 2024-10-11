@@ -9,8 +9,8 @@
         - dp[i][0] represents the maximum cash obtained on day i when holding a stock
         - dp[i][1] represents the maximum cash obtained on day i when not holding a stock.
     - Define the state transition:
-    - If hold a stock at day i , then we can either hold beofre day i or buy at day i: dp[i][0] = max(dp[i - 1][0], -prices[i])
-    - If did not hold a stock at day i, then we can either sell it before day i or sell at day i: dp[i][1] = max(dp[i - 1][1], prices[i] + dp[i - 1][0])
+        - If hold a stock at day i , then we can either hold beofre day i or buy at day i: dp[i][0] = max(dp[i - 1][0], -prices[i])
+        - If did not hold a stock at day i, then we can either sell it before day i or sell at day i: dp[i][1] = max(dp[i - 1][1], prices[i] + dp[i - 1][0])
     - How to initialize the DP array:
       - dp[0][0] -= prices[0]
       - dp[0][1] = 0
@@ -94,9 +94,9 @@ Space: **O(n)** for solution 1 and **O(1)** for solution 2
         - `dp[i][3]` represents the maximum cash obtained on day `i` when **second time holding a stock**.
         - `dp[i][4]` represents the maximum cash obtained on day `i` when **second time not holding a stock**.
     - Define the state transition:
-    - If hold a stock at day i , then we can either hold beofre day i or buy at day i:  dp[i][1] = max(dp[i-1][0] - prices[i], dp[i - 1][1])
-    - If did not hold a stock at day i, then we can either sell it before day i or sell at day i:  dp[i][2] = max(dp[i - 1][1] + prices[i], dp[i - 1][2])
-    - same for 3 & 4: dp[i][3] = max(dp[i - 1][3], dp[i - 1][2] - prices[i]); dp[i][4] = max(dp[i - 1][4], dp[i - 1][3] + prices[i]);
+        - If hold a stock at day i , then we can either hold beofre day i or buy at day i:  dp[i][1] = max(dp[i-1][0] - prices[i], dp[i - 1][1])
+        - If did not hold a stock at day i, then we can either sell it before day i or sell at day i:  dp[i][2] = max(dp[i - 1][1] + prices[i], dp[i - 1][2])
+        - same for 3 & 4: dp[i][3] = max(dp[i - 1][3], dp[i - 1][2] - prices[i]); dp[i][4] = max(dp[i - 1][4], dp[i - 1][3] + prices[i])
     - How to initialize the DP array:
       - dp[0][0] = 0
       - dp[0][1] = -prices[0]
