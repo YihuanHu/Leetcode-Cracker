@@ -1,125 +1,100 @@
-# Day41 Dynamic Programming Part10
+# Day41 Dynamic Programming Part10 Subarray
 
-##  LC 188 best-time-to-buy-and-sell-stock-iv
-[Link](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/)   
-[Cousrse Link](https://programmercarl.com/0188.%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BAIV.html)
-- Similar to LC 123
+##  LC 300 longest-increasing-subsequence
+[Link](https://leetcode.com/problems/longest-increasing-subsequence/description/)   
+[Cousrse Link](https://programmercarl.com/0300.%E6%9C%80%E9%95%BF%E4%B8%8A%E5%8D%87%E5%AD%90%E5%BA%8F%E5%88%97.html)
 - Steps for DP:
-    - Define the dp (odd are holding while even are not holding)
-        - `dp[i][0]` represents the maximum cash obtained on day `i` when **No operation** (we could actually omit this state).
-        - `dp[i][1]` represents the maximum cash obtained on day `i` when **first time holding a stock**.
-        - `dp[i][2]` represents the maximum cash obtained on day `i` when **first time not holding a stock** etc.
+    - Define the dp: dp[i] represents the length of the longest increasing subsequence ending at nums[i], including all elements up to and including index i
     - Define the state transition:     
-      - If hold a stock at day i(odd) , then we can either hold beofre day i or buy at day i:  dp[i][j + 1] = max(dp[i - 1][j + 1], dp[i - 1][j] - prices[i])
-      - If did not hold a stock at day i(even), then we can either sell it before day i or sell at day i: dp[i][j + 2] = max(dp[i - 1][j + 2], dp[i - 1][j + 1] + prices[i])
-    - How to initialize the DP array:
-      - for odd: dp[0][0] = 0  dp[0][2] = 0  dp[0][4] = 0
-      - for even: dp[0][1] = -prices[0]  dp[0][3] = -prices[0]
-    - Determine the order of traversal: forward since [i-1] 
+      - The **longest increasing subsequence ending at position `i`** is equal to the **maximum length of all increasing subsequences ending at positions `j` (from 0 to i-1)** that can be extended to include `nums[i]`, plus one (to include `nums[i]` itself).
+      -  **if (nums[i] > nums[j]) dp[i] = max(dp[i], dp[j] + 1)**
+    - How to initialize the DP array: all begins with 0
+    - Determine the order of traversal: forward 
+    - Provide an example to derive the DP array:
+        - nums = [0,1,0,3,2]
+        - return dp = [1,2,1,3,3] 
+```python
+# solution 1: dp 
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        if len(nums) <= 1:
+            return len(nums)
+        dp = [1] * len(nums)
+        result = 1
+        for i in range(1, len(nums)):
+            for j in range(0, i):
+                if nums[i] > nums[j]:
+                    dp[i] = max(dp[i], dp[j] + 1)
+            result = max(result, dp[i]) #取长的子序列
+        return result
+
+# solution 2: greedy algo
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        if len(nums) <= 1:
+            return len(nums)
+        
+        tails = [nums[0]]  # 存储递增子序列的尾部元素
+        for num in nums[1:]:
+            if num > tails[-1]:
+                tails.append(num)  # 如果当前元素大于递增子序列的最后一个元素，直接加入到子序列末尾
+            else:
+                # 使用二分查找找到当前元素在递增子序列中的位置，并替换对应位置的元素
+                left, right = 0, len(tails) - 1
+                while left < right:
+                    mid = (left + right) // 2
+                    if tails[mid] < num:
+                        left = mid + 1
+                    else:
+                        right = mid
+                tails[left] = num
+        
+        return len(tails)  # 返回递增子序列的长度
+
+```
+Time: **O(n^2)** for solution 1 and **O(n)** for solution 2                            
+Space: **O(n)** 
+
+##  LC 674 longest-continuous-increasing-subsequence
+[Link](https://leetcode.com/problems/longest-continuous-increasing-subsequence/description/)   
+[Cousrse Link](https://programmercarl.com/0674.%E6%9C%80%E9%95%BF%E8%BF%9E%E7%BB%AD%E9%80%92%E5%A2%9E%E5%BA%8F%E5%88%97.html)
+- Like the above LC 300 but the subarray must be continuous so it only cares the prev state while LC 300 cares about 0 to i-1 states
+- Steps for DP:
+    - Define the dp: dp[i]: Represents the length of the longest continuous increasing subsequence **ending at index i**
+    - Define the state transition:     
+      - Just check the order strickly ending in i
+      - **if (nums[i] > nums[i-1]) dp[i] = dp[i - 1] + 1**
+    - How to initialize the DP array: all begins with 0
+    - Determine the order of traversal: forward 
     - Provide an example to derive the DP array: skip
 ```python
-# solution 1:greedy algo
-class Solution:
-    def maxProfit(self, k: int, prices: List[int]) -> int:
-        if len(prices) == 0:
-            return 0
-        dp = [[0] * (2*k+1) for _ in range(len(prices))]
-        for j in range(1, 2*k, 2):
-            dp[0][j] = -prices[0]
-        for i in range(1, len(prices)):
-            for j in range(0, 2*k-1, 2):
-                dp[i][j+1] = max(dp[i-1][j+1], dp[i-1][j] - prices[i])
-                dp[i][j+2] = max(dp[i-1][j+2], dp[i-1][j+1] + prices[i])
-        return dp[-1][2*k]
-
-# solution 2: dp table
-class Solution:
-    def maxProfit(self, k: int, prices: List[int]) -> int:
-        if len(prices) == 0: return 0
-        dp = [0] * (2*k + 1)
-        for i in range(1,2*k,2):
-            dp[i] = -prices[0]
-        for i in range(1,len(prices)):
-            for j in range(1,2*k + 1):
-                if j % 2:
-                    dp[j] = max(dp[j],dp[j-1]-prices[i])
-                else:
-                    dp[j] = max(dp[j],dp[j-1]+prices[i])
-        return dp[2*k]
-```
-Time: **O(n*k)**                   
-Space: **O(n*k)** for solution 1 and **O(n)** for solution 2
-
-##  LC 309 best-time-to-buy-and-sell-stock-with-cooldown
-[Link](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/description/)   
-[Cousrse Link](https://programmercarl.com/0309.%E6%9C%80%E4%BD%B3%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E6%97%B6%E6%9C%BA%E5%90%AB%E5%86%B7%E5%86%BB%E6%9C%9F.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE)
-- Like the above LC 122 but we have a cool down and thus we need a seperate state for not holding for selling today to distinguishi cool down
-- Steps for DP:
-    - Define the dp:
-        - `dp[i][0]` represents the maximum cash obtained on day `i` **Holding a stock** (either bought the stock today, or bought it earlier and have been holding without any action
-        - `dp[i][1]` represents the maximum cash obtained on day `i` **Maintaining the state of having sold the stock** (sold the stock two days ago and completed the one-day cooldown, or had already sold the stock before and did nothing further
-        - `dp[i][2]` represents the maximum cash obtained on day `i` when **Selling the stock today**.
-        - `dp[i][3]` represents the maximum cash obtained on day `i` when **Today is a cooldown state**.
-    - Define the state transition:     
-      - If hold a stock at day i, then we can either hold beofre day i or buy at day i(yesterday is cooling day/complete cooldown long before):  dp[i][0] = max(dp[i - 1][0], dp[i - 1][3] - prices[i], dp[i - 1][1] - prices[i]);
-      - If did not hold a stock at day i, then we can either sell it long before day i or sell it yesterday: dp[i][1] = max(dp[i - 1][1], dp[i - 1][3])
-      - If selling the stock at day i, then we hold a stock in yesterday: dp[i][2] = dp[i - 1][0] + prices[i]
-      - If today i is a cooldown, then we must sell it yesterday: dp[i][3] = dp[i - 1][2] 
-    - How to initialize the DP array:
-      - dp[0][0] = -prices[0]
-      - and all other dp[0][j] are all 0
-    - Determine the order of traversal: forward since [i-1] 
-    - Provide an example to derive the DP array:
-      
-| Day (Index) | Stock Price | State 0 | State 1 | State 2 | State 3 |
-|-------------|-------------|---------|---------|---------|---------|
-| 1           | 1           | -1      | 0       | 0       | 0       |
-| 2           | 2           | -1      | 0       | 1       | 0       |
-| 3           | 3           | -1      | 0       | 2       | 1       |
-| 4           | 0           | 1       | 1       | -1      | 2       |
-| 5           | 2           | 1       | 2       | 3       | -1      |
-```python
 # solution 1:DP table
-from typing import List
-
 class Solution:
-    def maxProfit(self, prices: List[int]) -> int:
-        n = len(prices)
-        if n == 0:
+    def findLengthOfLCIS(self, nums: List[int]) -> int:
+        if len(nums) == 0:
             return 0
-        dp = [[0] * 4 for _ in range(n)]  # 创建动态规划数组，4个状态分别表示持有股票、不持有股票且处于冷冻期、不持有股票且不处于冷冻期、不持有股票且当天卖出后处于冷冻期
-        dp[0][0] = -prices[0]  # 初始状态：第一天持有股票的最大利润为买入股票的价格
-        for i in range(1, n):
-            dp[i][0] = max(dp[i-1][0], max(dp[i-1][3], dp[i-1][1]) - prices[i])  # 当前持有股票的最大利润等于前一天持有股票的最大利润或者前一天不持有股票且不处于冷冻期的最大利润减去当前股票的价格
-            dp[i][1] = max(dp[i-1][1], dp[i-1][3])  # 当前不持有股票且处于冷冻期的最大利润等于前一天持有股票的最大利润加上当前股票的价格
-            dp[i][2] = dp[i-1][0] + prices[i]  # 当前不持有股票且不处于冷冻期的最大利润等于前一天不持有股票的最大利润或者前一天处于冷冻期的最大利润
-            dp[i][3] = dp[i-1][2]  # 当前不持有股票且当天卖出后处于冷冻期的最大利润等于前一天不持有股票且不处于冷冻期的最大利润
-        return max(dp[n-1][3], dp[n-1][1], dp[n-1][2])  # 返回最后一天不持有股票的最大利润
+        result = 1
+        dp = [1] * len(nums)
+        for i in range(len(nums)-1):
+            if nums[i+1] > nums[i]: #连续记录
+                dp[i+1] = dp[i] + 1
+            result = max(result, dp[i+1])
+        return result
 
-
-# solution 2: 1D array
+# solution 2: greedy algo
 class Solution:
-    def maxProfit(self, prices: List[int]) -> int:
-        n = len(prices)
-        if n < 2:
+    def findLengthOfLCIS(self, nums: List[int]) -> int:
+        if len(nums) == 0:
             return 0
-
-        # 定义三种状态的动态规划数组
-        dp = [[0] * 3 for _ in range(n)]
-        dp[0][0] = -prices[0]  # 持有股票的最大利润
-        dp[0][1] = 0           # 不持有股票，且处于冷冻期的最大利润
-        dp[0][2] = 0           # 不持有股票，不处于冷冻期的最大利润
-
-        for i in range(1, n):
-            # 当前持有股票的最大利润等于前一天持有股票的最大利润或者前一天不持有股票且不处于冷冻期的最大利润减去当前股票的价格
-            dp[i][0] = max(dp[i-1][0], dp[i-1][2] - prices[i])
-            # 当前不持有股票且处于冷冻期的最大利润等于前一天持有股票的最大利润加上当前股票的价格
-            dp[i][1] = dp[i-1][0] + prices[i]
-            # 当前不持有股票且不处于冷冻期的最大利润等于前一天不持有股票的最大利润或者前一天处于冷冻期的最大利润
-            dp[i][2] = max(dp[i-1][2], dp[i-1][1])
-
-        # 返回最后一天不持有股票的最大利润
-        return max(dp[-1][1], dp[-1][2])
+        result = 1 #连续子序列最少也是1
+        count = 1
+        for i in range(len(nums)-1):
+            if nums[i+1] > nums[i]: #连续记录
+                count += 1
+            else: #不连续，count从头开始
+                count = 1
+            result = max(result, count)
+        return result
 
 ```
 Time: **O(n)**                   
