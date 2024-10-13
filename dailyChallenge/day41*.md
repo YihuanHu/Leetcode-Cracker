@@ -28,7 +28,7 @@ class Solution:
             result = max(result, dp[i]) #取长的子序列
         return result
 
-# solution 2: greedy algo
+# solution 2: greedy algo (Intuatively, for every non increasing, we gonna replace it with appropriate position)
 class Solution:
     def lengthOfLIS(self, nums: List[int]) -> int:
         if len(nums) <= 1:
@@ -52,7 +52,7 @@ class Solution:
         return len(tails)  # 返回递增子序列的长度
 
 ```
-Time: **O(n^2)** for solution 1 and **O(n)** for solution 2                            
+Time: **O(n^2)** for solution 1 and **O(n*logn)** for solution 2                            
 Space: **O(n)** 
 
 ##  LC 674 longest-continuous-increasing-subsequence
@@ -100,43 +100,93 @@ class Solution:
 Time: **O(n)**                   
 Space: **O(n)** for solution 1 and **O(1)** for solution 2
 
-##  LC 714 best-time-to-buy-and-sell-stock-with-transaction-fee
-[Link](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)   
-[Cousrse Link](https://programmercarl.com/0714.%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BA%E5%90%AB%E6%89%8B%E7%BB%AD%E8%B4%B9%EF%BC%88%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%EF%BC%89.html)
+##  LC 718 maximum-length-of-repeated-subarray
+[Link](https://leetcode.com/problems/maximum-length-of-repeated-subarray/description/)   
+[Cousrse Link](https://programmercarl.com/0718.%E6%9C%80%E9%95%BF%E9%87%8D%E5%A4%8D%E5%AD%90%E6%95%B0%E7%BB%84.html)
 - Similar to LC 122 but with a transaction fee
-- Define the state transition:     
-  - If hold a stock at day i , then we can either hold beofre day i or buy at day i:  dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] - prices[i])
-  - If did not hold a stock at day i/even, then we can either sell it before day i or sell at day i **need to pay the fee**: dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] + prices[i]-fee)
+- Steps for DP table:
+    - Define the dp:
+        - dp[i]: dp[i][j] represents the length of the longest common subarray ending at index **i - 1** in A and index **j - 1** in B
+        - why not use i for A and j for B: to avoid initialize the first row and col for dp
+    - Define the state transition: **if nums1[i - 1] == nums2[j - 1]: dp[i][j] = dp[i - 1][j - 1] + 1**
+    - How to initialize the DP array: all 0 
+    - Determine the order of traversal: forward and no matter the inner/outer
+    - Provide an example to derive the DP array:
+        - A = [1,2,3,2,1] B = [3,2,1,4,7]
 
+| A \ B  | 3 | 2 | 1 | 4 | 7 |
+|--------|---|---|---|---|---|
+| **1**  | 0 | 0 | 1 | 0 | 0 |
+| **2**  | 0 | 1 | 0 | 0 | 0 |
+| **3**  | 1 | 0 | 0 | 0 | 0 |
+| **2**  | 0 | 2 | 0 | 0 | 0 |
+| **1**  | 0 | 0 | 3 | 0 | 0 |
 
+**Maximum Length**: 3
+
+- Steps for DP table:
+    - Define the state transition:
+        -  if nums1[i - 1] != nums2[j - 1]:  dp[j] = prev + 1
+        -  if nums1[i - 1] == nums2[j - 1]: dp[j] = 0 
+    - Determine the order of traversal: the inner loop needs to be backward to avoid dupes
+- 
 ```python
 # solution 1: dp table
 class Solution:
-    def maxProfit(self, prices: List[int], fee: int) -> int:
-        n = len(prices)
-        dp = [[0] * 2 for _ in range(n)]
-        dp[0][0] = -prices[0] #持股票
-        for i in range(1, n):
-            dp[i][0] = max(dp[i-1][0], dp[i-1][1] - prices[i])
-            dp[i][1] = max(dp[i-1][1], dp[i-1][0] + prices[i] - fee)
-        return max(dp[-1][0], dp[-1][1])
+    def findLength(self, nums1: List[int], nums2: List[int]) -> int:
+        # 创建一个二维数组 dp，用于存储最长公共子数组的长度
+        dp = [[0] * (len(nums2) + 1) for _ in range(len(nums1) + 1)]
+        # 记录最长公共子数组的长度
+        result = 0
+
+        # 遍历数组 nums1
+        for i in range(1, len(nums1) + 1):
+            # 遍历数组 nums2
+            for j in range(1, len(nums2) + 1):
+                # 如果 nums1[i-1] 和 nums2[j-1] 相等
+                if nums1[i - 1] == nums2[j - 1]:
+                    # 在当前位置上的最长公共子数组长度为前一个位置上的长度加一
+                    dp[i][j] = dp[i - 1][j - 1] + 1
+                # 更新最长公共子数组的长度
+                if dp[i][j] > result:
+                    result = dp[i][j]
+
+        # 返回最长公共子数组的长度
+        return result
 
 # solution 2: 1 d array 
 class Solution:
-    def maxProfit(self, prices: List[int], fee: int) -> int:
-        # 持有股票手上的最大現金
-        hold = -prices[0] - fee
-        # 不持有股票手上的最大現金
-        not_hold = 0
-        for price in prices[1:]:
-            new_hold = max(hold, not_hold - price - fee)
-            new_not_hold = max(not_hold, hold + price)
-            hold, not_hold = new_hold, new_not_hold
-        return not_hold
-```
-Time: **O(n)**              
-Space: **O(n)** for solution 1 and **O(1)** for solution 2
+    def findLength(self, nums1: List[int], nums2: List[int]) -> int:
+        # 创建一个一维数组 dp，用于存储最长公共子数组的长度
+        dp = [0] * (len(nums2) + 1)
+        # 记录最长公共子数组的长度
+        result = 0
 
-## Adds On
-- Summary for stock type: [Link](https://programmercarl.com/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E8%82%A1%E7%A5%A8%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93%E7%AF%87.html#%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BAii)
+        # 遍历数组 nums1
+        for i in range(1, len(nums1) + 1):
+            # 用于保存上一个位置的值
+            prev = 0
+            # 遍历数组 nums2
+            for j in range(1, len(nums2) + 1):
+                # 保存当前位置的值，因为会在后面被更新
+                current = dp[j]
+                # 如果 nums1[i-1] 和 nums2[j-1] 相等
+                if nums1[i - 1] == nums2[j - 1]:
+                    # 在当前位置上的最长公共子数组长度为上一个位置的长度加一
+                    dp[j] = prev + 1
+                    # 更新最长公共子数组的长度
+                    if dp[j] > result:
+                        result = dp[j]
+                else:
+                    # 如果不相等，将当前位置的值置为零
+                    dp[j] = 0
+                # 更新 prev 变量为当前位置的值，供下一次迭代使用
+                prev = current
+
+        # 返回最长公共子数组的长度
+        return result
+
+```
+Time: **O(n*m)**              
+Space: **O(n*m)** for solution 1 and **O(m)** for solution 2
 
