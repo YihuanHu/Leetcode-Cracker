@@ -109,6 +109,7 @@ Space: **O(n)**
 ##  LC 392 is-subsequence
 [Link](https://leetcode.com/problems/is-subsequence/description/)   
 [Cousrse Link](https://programmercarl.com/0392.%E5%88%A4%E6%96%AD%E5%AD%90%E5%BA%8F%E5%88%97.html)
+- Similar to LC 1143
 - Steps for DP table:
     - Define the dp: dp[i][j] represents the length of the **longest common subsequence** between the substring of s **ending at index i-1** and the substring of t **ending at index j-1**
     - Define the state transition: 
