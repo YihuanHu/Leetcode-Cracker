@@ -103,7 +103,6 @@ Space: **O(n)** for solution 1 and **O(1)** for solution 2
 ##  LC 718 maximum-length-of-repeated-subarray
 [Link](https://leetcode.com/problems/maximum-length-of-repeated-subarray/description/)   
 [Cousrse Link](https://programmercarl.com/0718.%E6%9C%80%E9%95%BF%E9%87%8D%E5%A4%8D%E5%AD%90%E6%95%B0%E7%BB%84.html)
-- Similar to LC 122 but with a transaction fee
 - Steps for DP table:
     - Define the dp:
         - dp[i]: dp[i][j] represents the length of the longest common subarray ending at index **i - 1** in A and index **j - 1** in B
