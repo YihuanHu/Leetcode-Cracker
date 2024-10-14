@@ -143,8 +143,3 @@ class Solution:
 ```
 Time: **O(n*m)**              
 Space: **O(n*m)** 
-
-```
-Time: **O(n*m)**              
-Space: **O(n*m)** for solution 1 and **O(m)** for solution 2
-
