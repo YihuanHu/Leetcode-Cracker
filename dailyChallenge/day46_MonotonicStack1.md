@@ -16,6 +16,7 @@
 ##  LC 739 daily-temperatures
 [Link](https://leetcode.com/problems/daily-temperatures/description/)   
 [Cousrse Link](https://programmercarl.com/0739.%E6%AF%8F%E6%97%A5%E6%B8%A9%E5%BA%A6.html)
+- initial as 0
 - Use increaseing stack (from top to bottom)
   -  If T[i] < T[st.top()], add to stack
   -  If T[i] = T[st.top()], add to stack
@@ -42,50 +43,53 @@ class Solution:
 Time: **O(n)**                                  
 Space: **O(n)** 
 
-##  LC 516 longest-palindromic-subsequence
-[Link](https://leetcode.com/problems/longest-palindromic-subsequence/description/)   
-[Cousrse Link](https://programmercarl.com/0516.%E6%9C%80%E9%95%BF%E5%9B%9E%E6%96%87%E5%AD%90%E5%BA%8F%E5%88%97.html)
-- This is similar to the above LC 647 but it is subseuqence(can delete) while LC 647 is the substrings(exact match)
-- Steps for DP:
-    - Define the dp: dp[i][j] represents the length of the longest palindromic subsequence in the substring of s within the range [i, j]
-    - Define the state transition:     
-      - If s[i] != s[j]: dp[i][j] = max(dp[i + 1][j], dp[i][j - 1])
-          - Case 1: Include i, dp[i][j - 1]
-          - Case 2: Include j, dp[i + 1][j]
-      - If s[i] = s[j]: dp[i][j] = dp[i + 1][j - 1] + 2
-    - How to initialize the DP array: all 0 and **dp[i][j] = 1 when i=j**
-    - Determine the order of traversal: we need dp[i + 1][j - 1] so **bottom to top and left to right**
-    - Provide an example to derive the DP array:
-        - inputs = 'cbbd' 
- 
-|   | c | b | b | d |
-|---|---|---|---|---|
-| c | 1 | 1 | 2 | 2 |
-| b | 0 | 1 | 2 | 2 |
-| b | 0 | 0 | 1 | 1 |
-| d | 0 | 0 | 0 | 1 |
+##  LC 496 next-greater-element-i
+[Link](https://leetcode.com/problems/next-greater-element-i/description/)   
+[Cousrse Link](https://programmercarl.com/0503.%E4%B8%8B%E4%B8%80%E4%B8%AA%E6%9B%B4%E5%A4%A7%E5%85%83%E7%B4%A0II.html)
+- initial as -1
+- be careful on the indexing 
+- Use increaseing stack (from top to bottom)
+  -  If T[i] < T[st.top()], add to stack
+  -  If T[i] = T[st.top()], add to stack
+  -  If T[i] > T[st.top()], pop and calculate res till elements inside is larger than top
 
 ```python
 class Solution:
-    def longestPalindromeSubseq(self, s: str) -> int:
-        dp = [[0] * len(s) for _ in range(len(s))]
-        for i in range(len(s)):
-            dp[i][i] = 1
-        for i in range(len(s)-1, -1, -1):
-            for j in range(i+1, len(s)):
-                if s[i] == s[j]:
-                    dp[i][j] = dp[i+1][j-1] + 2
-                else:
-                    dp[i][j] = max(dp[i+1][j], dp[i][j-1])
-        return dp[0][-1]
+    def nextGreaterElement(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        result = [-1]*len(nums1)
+        stack = [0]
+        for i in range(1,len(nums2)):
+            # 情况一情况二
+            if nums2[i]<=nums2[stack[-1]]:
+                stack.append(i)
+            # 情况三
+            else:
+                while len(stack)!=0 and nums2[i]>nums2[stack[-1]]:
+                    if nums2[stack[-1]] in nums1: #check top exist in nums1
+                        index = nums1.index(nums2[stack[-1]])
+                        result[index]=nums2[i]
+                    stack.pop()                 
+                stack.append(i)
+        return result
 ```
-Time: **O(n*2)**                   
-Space: **O(n*2)** 
+Time: **O(n)**                   
+Space: **O(n)** 
 
-## Adds on
-- DP Summary [Link](https://programmercarl.com/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E6%80%BB%E7%BB%93%E7%AF%87.html)
-    - basic
-    - bag
-    - steal house
-    - stock
-    - subarray  
+##  LC 503 next-greater-element-ii
+[Link](https://leetcode.com/problems/next-greater-element-ii/description/)   
+[Cousrse Link](https://programmercarl.com/0496.%E4%B8%8B%E4%B8%80%E4%B8%AA%E6%9B%B4%E5%A4%A7%E5%85%83%E7%B4%A0I.html)
+- Similar to LC 739 but it a circular array so we can iterate it twice
+```python
+class Solution:
+    def nextGreaterElements(self, nums: List[int]) -> List[int]:
+        dp = [-1] * len(nums)
+        stack = []
+        for i in range(len(nums)*2):
+            while(len(stack) != 0 and nums[i%len(nums)] > nums[stack[-1]]):
+                    dp[stack[-1]] = nums[i%len(nums)]
+                    stack.pop()
+            stack.append(i%len(nums))
+        return dp
+```
+Time: **O(n)**                   
+Space: **O(n)** 
