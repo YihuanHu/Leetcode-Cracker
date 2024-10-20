@@ -1,17 +1,47 @@
 # Day48 GraphTheory1
 ## Graph Theory 
-- when to use monotonic stack?
-  - **when dealing with a one-dimensional array and we need to find the position of the first element to the right or left that is either larger or smaller than the current element**
-- Time complexity is O(n).
-  - Sacrifice space for quick time. We use a stack to keep track of the elements we’ve traversed. When we iterate through the array, we don’t know which elements we’ve previously encountered
-- What elements should be stored in the monotonic stack?
-  - The monotonic stack only needs to store the index i of the element and directly access it with T[i]
-- Should the elements in the stack be in increasing or decreasing order?
-  - **from the top of the stack to the bottom**, if we are looking for the next greater element to the right, the monotonic stack should be increasing
-- Logic for creating the M stack: current element T[i] and the top element T[st.top()]
-  -  If T[i] < T[st.top()]
-  -  If T[i] = T[st.top()]
-  -  If T[i] > T[st.top()]
+[Link](https://www.programmercarl.com/kamacoder/%E5%9B%BE%E8%AE%BA%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80.html#%E8%BF%9E%E9%80%9A%E6%80%A7)
+- terminology:
+  - directed graphs
+  - undirected graphs
+- Degrees:
+  - in an undirected graph, the degree of a node is the number of edges connected to that node
+  - directed graph:
+    - Out-degree: The number of edges that originate from a given node.
+    - In-degree: The number of edges that point to a given node
+- Connectivity:
+  - if any two nodes are reachable from each other, we call it a connected graph
+  - In a directed graph, if any two nodes are mutually reachable from each other, we call it a strongly connected graph
+- How to avoid:
+  - Naive storage 
+  - Adjacency list: good for sparse graph / easy to iterate for each edge
+  - Adjacency matrix: easy understand / fast / suitable for dense graph
+```python
+# List of edges (undirected graph)
+edges = [
+    ('A', 'B'),
+    ('A', 'C'),
+    ('B', 'D')
+]
+
+# Example of an undirected graph using an adjacency list
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D'],
+    'C': ['A', 'D'],
+    'D': ['B', 'C']
+}
+
+# Example of an undirected graph using an adjacency matrix
+# Graph: A - B, A - C, B - D, C - D
+graph = [
+    #  A  B  C  D
+    [ 0, 1, 1, 0 ],  # A
+    [ 1, 0, 0, 1 ],  # B
+    [ 1, 0, 0, 1 ],  # C
+    [ 0, 1, 1, 0 ]   # D
+]
+```
 
 ##  LC 739 daily-temperatures
 [Link](https://leetcode.com/problems/daily-temperatures/description/)   
