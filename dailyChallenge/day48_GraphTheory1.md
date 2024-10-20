@@ -42,6 +42,12 @@ graph = [
     [ 0, 1, 1, 0 ]   # D
 ]
 ```
+- iteration:
+  - BFS: iterate eveything for a node and move to the next node
+  - DFS: go until you hit the ground and then go back to change direction(recursion) to last possible selection. 
+## DFS
+- code 
+
 
 ##  LC 739 daily-temperatures
 [Link](https://leetcode.com/problems/daily-temperatures/description/)   
