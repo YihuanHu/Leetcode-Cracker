@@ -46,86 +46,123 @@ graph = [
   - BFS: iterate eveything for a node and move to the next node
   - DFS: go until you hit the ground and then go back to change direction(recursion) to last possible selection. 
 ## DFS
-- code 
+- Pattern:
+  - parameters: if we need 2d array for all the paths/1 d array for single path, we can create a global variable 
+  - termination condition: sometimes we don't need it since we handle it inside the recursion condition
+  - Handle the logic for the current node: for loop for all the nodes connected to the current node
+- Pseudocode
+```
+void dfs(参数) {
+    if (终止条件) {
+        存放结果;
+        return;
+    }
+
+    for (选择：本节点所连接的其他节点) {
+        处理节点;
+        dfs(图，选择的节点); // 递归
+        回溯，撤销处理结果
+    }
+}
+```
 
 
-##  LC 739 daily-temperatures
-[Link](https://leetcode.com/problems/daily-temperatures/description/)   
-[Cousrse Link](https://programmercarl.com/0739.%E6%AF%8F%E6%97%A5%E6%B8%A9%E5%BA%A6.html)
-- initial as 0
-- Use increaseing stack (from top to bottom)
-  -  If T[i] < T[st.top()], add to stack
-  -  If T[i] = T[st.top()], add to stack
-  -  If T[i] > T[st.top()], pop and calculate res till elements inside is larger than top
+##  LC 797 all-paths-from-source-to-target
+[Link](https://leetcode.com/problems/all-paths-from-source-to-target/description/)   
+[Cousrse Link](https://www.programmercarl.com/kamacoder/0098.%E6%89%80%E6%9C%89%E5%8F%AF%E8%BE%BE%E8%B7%AF%E5%BE%84.html)
+- use ACM
+- DFS
 
 ```python
-class Solution:
-    def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
-        answer = [0]*len(temperatures)
-        stack = [0]
-        for i in range(1,len(temperatures)):
-            # 情况一和情况二
-            if temperatures[i]<=temperatures[stack[-1]]:
-                stack.append(i)
-            # 情况三
-            else:
-                while len(stack) != 0 and temperatures[i]>temperatures[stack[-1]]:
-                    answer[stack[-1]]=i-stack[-1]
-                    stack.pop()
-                stack.append(i)
+# solution 1: adjacency matrix
+def dfs(graph, x, n, path, result):
+    if x == n:
+        result.append(path.copy())
+        return
+    for i in range(1, n + 1):
+        if graph[x][i] == 1:
+            path.append(i)
+            dfs(graph, i, n, path, result)
+            path.pop()
 
-        return answer
+def main():
+    n, m = map(int, input().split())
+    graph = [[0] * (n + 1) for _ in range(n + 1)]
+
+    for _ in range(m):
+        s, t = map(int, input().split())
+        graph[s][t] = 1
+
+    result = []
+    dfs(graph, 1, n, [1], result)
+
+    if not result:
+        print(-1)
+    else:
+        for path in result:
+            print(' '.join(map(str, path)))
+
+if __name__ == "__main__":
+    main()
+
+# solution2 : adjacency list
+from collections import defaultdict
+
+result = []  # 收集符合条件的路径
+path = []  # 1节点到终点的路径
+
+def dfs(graph, x, n):
+    if x == n:  # 找到符合条件的一条路径
+        result.append(path.copy())
+        return
+    for i in graph[x]:  # 找到 x指向的节点
+        path.append(i)  # 遍历到的节点加入到路径中来
+        dfs(graph, i, n)  # 进入下一层递归
+        path.pop()  # 回溯，撤销本节点
+
+def main():
+    n, m = map(int, input().split())
+
+    graph = defaultdict(list)  # 邻接表
+    for _ in range(m):
+        s, t = map(int, input().split())
+        graph[s].append(t)
+
+    path.append(1)  # 无论什么路径已经是从1节点出发
+    dfs(graph, 1, n)  # 开始遍历
+
+    # 输出结果
+    if not result:
+        print(-1)
+    for pa in result:
+        print(' '.join(map(str, pa)))
+
+if __name__ == "__main__":
+    main()
+
 ```
-Time: **O(n)**                                  
-Space: **O(n)** 
 
-##  LC 496 next-greater-element-i
-[Link](https://leetcode.com/problems/next-greater-element-i/description/)   
-[Cousrse Link](https://programmercarl.com/0503.%E4%B8%8B%E4%B8%80%E4%B8%AA%E6%9B%B4%E5%A4%A7%E5%85%83%E7%B4%A0II.html)
-- initial as -1
-- be careful on the indexing 
-- Use increaseing stack (from top to bottom)
-  -  If T[i] < T[st.top()], add to stack
-  -  If T[i] = T[st.top()], add to stack
-  -  If T[i] > T[st.top()], pop and calculate res till elements inside is larger than top
-
-```python
-class Solution:
-    def nextGreaterElement(self, nums1: List[int], nums2: List[int]) -> List[int]:
-        result = [-1]*len(nums1)
-        stack = [0]
-        for i in range(1,len(nums2)):
-            # 情况一情况二
-            if nums2[i]<=nums2[stack[-1]]:
-                stack.append(i)
-            # 情况三
-            else:
-                while len(stack)!=0 and nums2[i]>nums2[stack[-1]]:
-                    if nums2[stack[-1]] in nums1: #check top exist in nums1
-                        index = nums1.index(nums2[stack[-1]])
-                        result[index]=nums2[i]
-                    stack.pop()                 
-                stack.append(i)
-        return result
+## BFS
+- suitable for finding the shortest path between two middle nodes
+- we can use array to store and keep the same iteration direction every time. we can also use stack, one for clockweise and another for anti clockwise
+- Pseudocode
 ```
-Time: **O(n)**                   
-Space: **O(n)** 
+from collections import deque
 
-##  LC 503 next-greater-element-ii
-[Link](https://leetcode.com/problems/next-greater-element-ii/description/)   
-[Cousrse Link](https://programmercarl.com/0496.%E4%B8%8B%E4%B8%80%E4%B8%AA%E6%9B%B4%E5%A4%A7%E5%85%83%E7%B4%A0I.html)
-- Similar to LC 739 but it a circular array so we can iterate it twice
-```python
-class Solution:
-    def nextGreaterElements(self, nums: List[int]) -> List[int]:
-        dp = [-1] * len(nums)
-        stack = []
-        for i in range(len(nums)*2):
-            while(len(stack) != 0 and nums[i%len(nums)] > nums[stack[-1]]):
-                    dp[stack[-1]] = nums[i%len(nums)]
-                    stack.pop()
-            stack.append(i%len(nums))
-        return dp
+# BFS function for graph traversal
+def bfs(graph, start):
+    visited = set()  # Set to keep track of visited nodes
+    queue = deque([start])  # Initialize the queue with the starting node
+    
+    visited.add(start)  # Mark the start node as visited
+
+    while queue:
+        node = queue.popleft()  # Dequeue the next node
+        print(node)  # Process the current node (e.g., print or perform an operation)
+
+        # Traverse all the neighbors of the current node
+        for neighbor in graph[node]:
+            if neighbor not in visited:  # If neighbor hasn't been visited
+                visited.add(neighbor)  # Mark neighbor as visited
+                queue.append(neighbor)  # Enqueue the neighbor
 ```
-Time: **O(n)**                   
-Space: **O(n)** 
