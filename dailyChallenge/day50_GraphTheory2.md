@@ -91,8 +91,6 @@ if __name__ == "__main__":
 ##  LC 695 max-area-of-island
 [Link](https://leetcode.com/problems/max-area-of-island/description/)   
 [Cousrse Link](https://www.programmercarl.com/kamacoder/0100.%E5%B2%9B%E5%B1%BF%E7%9A%84%E6%9C%80%E5%A4%A7%E9%9D%A2%E7%A7%AF.html)
-- use ACM
-- DFS
 
 ```python
 # solution 1: dfs
