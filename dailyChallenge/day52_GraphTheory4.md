@@ -1,174 +1,81 @@
 # Day52 GraphTheory4
 
-##   LC 1245 number-of-closed-islands
-[Link](https://leetcode.com/problems/number-of-closed-islands/description/)     
+##   110. 字符串接龙
 [Course Link](https://www.programmercarl.com/kamacoder/0100.%E5%B2%9B%E5%B1%BF%E7%9A%84%E6%9C%80%E5%A4%A7%E9%9D%A2%E7%A7%AF.html#%E6%80%9D%E8%B7%AF)     
 
-- two iterations:
-  - one to find out non close islands and mark it as if not exist (start from left & right for each row and top & bottom for each col)
-  - anther to find out the left reminding number of islands
+- Use bfs since for finding the shortest path 
 ```python
+def judge(s1,s2):
+    count=0
+    for i in range(len(s1)):
+        if s1[i]!=s2[i]:
+            count+=1
+    return count==1
 
-## bfs
-from collections import deque
-
-# 处理输入
-n, m = list(map(int, input().strip()))
-g = []
-for _ in range(n):
-    row = list(map(int, input().strip()))
-    g.append(row)
-
-# 定义四个方向、孤岛面积（遍历完边缘后会被重置）
-directions = [[0,1], [1,0], [-1,0], [0,-1]]
-count = 0
-
-# 广搜
-def bfs(r, c):
-    global count
-    q = deque()
-    q.append((r, c))
-    g[r][c] = 0
-    count += 1
-
-    while q:
-        r, c = q.popleft()
-        for di in directions:
-            next_r = r + di[0]
-            next_c = c + di[1]
-            if next_c < 0 or next_c >= m or next_r < 0 or next_r >= n:
-                continue
-            if g[next_r][next_c] == 1:
-                q.append((next_r, next_c))
-                g[next_r][next_c] = 0
-                count += 1
-
-
-for i in range(n):
-    if g[i][0] == 1: bfs(i, 0)
-    if g[i][m-1] == 1: bfs(i, m-1)
-
-for i in range(m):
-    if g[0][i] == 1: bfs(0, i)
-    if g[n-1][i] == 1: bfs(n-1, i)
-
-count = 0
-for i in range(n):
-    for j in range(m):
-        if g[i][j] == 1: bfs(i, j)
-
-print(count)
+if __name__=='__main__':
+    n=int(input())
+    beginstr,endstr=map(str,input().split())
+    if beginstr==endstr:
+        print(0)
+        exit()
+    strlist=[]
+    for i in range(n):
+        strlist.append(input())
+    
+    # use bfs
+    visit=[False for i in range(n)]
+    queue=[[beginstr,1]]
+    while queue:
+        str,step=queue.pop(0)
+        if judge(str,endstr):
+            print(step+1)
+            exit()
+        for i in range(n):
+            if visit[i]==False and judge(strlist[i],str):
+                visit[i]=True
+                queue.append([strlist[i],step+1])
+    print(0)
 ```
 
 
-##  Count Sink close islands
- [Cousrse Link](https://www.programmercarl.com/kamacoder/0102.%E6%B2%89%E6%B2%A1%E5%AD%A4%E5%B2%9B.html#%E6%80%9D%E8%B7%AF)
-- Step 1: Use DFS/BFS to traverse the boundary of the grid and change all the 1s (land) on the edges to 2 (a special marker).
-- Step 2: Change all the remaining 1s (land) surrounded by water to 0 (water).
-- Step 3: Convert the previously marked 2s back to 1s (land).
+##  105.有向图的完全可达性
+ [Cousrse Link](https://www.programmercarl.com/kamacoder/0105.%E6%9C%89%E5%90%91%E5%9B%BE%E7%9A%84%E5%AE%8C%E5%85%A8%E5%8F%AF%E8%BE%BE%E6%80%A7.html)
+- No backtracking here since we only care about if this is accessble or not
+  - backtracking is helpful when there are multiple options at each step, and we want to explore different combinations to find the best solution
+- 
 ```python
-# solution 1: dfs
-def dfs(grid, x, y):
-    grid[x][y] = 2 # MARK IT AS SPECIAL 
-    directions = [(-1, 0), (0, -1), (1, 0), (0, 1)]  # 四个方向
-    for dx, dy in directions:
-        nextx, nexty = x + dx, y + dy
-        # 超过边界
-        if nextx < 0 or nextx >= len(grid) or nexty < 0 or nexty >= len(grid[0]):
-            continue
-        # 不符合条件，不继续遍历
-        if grid[nextx][nexty] == 0 or grid[nextx][nexty] == 2:
-            continue
-        dfs(grid, nextx, nexty)
+import collections
+
+path = set()  # 纪录 BFS 所经过之节点
+
+def bfs(root, graph):
+    global path
+    
+    que = collections.deque([root])
+    while que:
+        cur = que.popleft()
+        path.add(cur)
+        
+        for nei in graph[cur]:
+            que.append(nei)
+        graph[cur] = []
+    return
 
 def main():
-    n, m = map(int, input().split())
-    grid = [[int(x) for x in input().split()] for _ in range(n)]
-
-    # 步骤一：
-    # 从左侧边，和右侧边 向中间遍历
-    for i in range(n):
-        if grid[i][0] == 1:
-            dfs(grid, i, 0)
-        if grid[i][m - 1] == 1:
-            dfs(grid, i, m - 1)
-
-    # 从上边和下边 向中间遍历
-    for j in range(m):
-        if grid[0][j] == 1:
-            dfs(grid, 0, j)
-        if grid[n - 1][j] == 1:
-            dfs(grid, n - 1, j)
-
-    # 步骤二、步骤三
-    for i in range(n):
-        for j in range(m):
-            if grid[i][j] == 1:
-                grid[i][j] = 0
-            if grid[i][j] == 2:
-                grid[i][j] = 1
-
-    # 打印结果
-    for row in grid:
-        print(' '.join(map(str, row)))
+    N, K = map(int, input().strip().split())
+    graph = collections.defaultdict(list)
+    for _ in range(K):
+        src, dest = map(int, input().strip().split())
+        graph[src].append(dest)
+    
+    bfs(1, graph)
+    if path == {i for i in range(1, N + 1)}:
+        return 1
+    return -1
+        
 
 if __name__ == "__main__":
-    main()
-
-#########################
-# solution2 : bfs
-from collections import deque
-
-n, m = list(map(int, input().split()))
-g = []
-for _ in range(n):
-    row = list(map(int,input().split()))
-    g.append(row)
-    
-directions = [(1,0),(-1,0),(0,1),(0,-1)]
-count = 0
-
-def bfs(r,c,mode):
-    global count 
-    q = deque()
-    q.append((r,c))
-    count += 1
-    
-    while q:
-        r, c = q.popleft()
-        if mode:
-            g[r][c] = 2
-            
-        for di in directions:
-            next_r = r + di[0]
-            next_c = c + di[1]
-            if next_c < 0 or next_c >= m or next_r < 0 or next_r >= n:
-                continue
-            if g[next_r][next_c] == 1:
-                q.append((next_r,next_c))
-                if mode:
-                    g[r][c] = 2
-                    
-                count += 1
-    
-
-for i in range(n):
-    if g[i][0] == 1: bfs(i,0,True)
-    if g[i][m-1] == 1: bfs(i, m-1,True)
-    
-for j in range(m):
-    if g[0][j] == 1: bfs(0,j,1)
-    if g[n-1][j] == 1: bfs(n-1,j,1)
-
-for i in range(n):
-    for j in range(m):
-        if g[i][j] == 2:
-            g[i][j] = 1
-        else:
-            g[i][j] = 0
-            
-for row in g:
-    print(" ".join(map(str, row)))
+    print(main())
 
 ```
 
@@ -235,82 +142,46 @@ if __name__ == "__main__":
 ```
 Time Complexity: **O(2*m*n+m*n)**
 
-## LC 827 making-a-large-island
-[Link](https://leetcode.com/problems/making-a-large-island/description/)      
-[Cousrse Link](https://www.programmercarl.com/kamacoder/0104.%E5%BB%BA%E9%80%A0%E6%9C%80%E5%A4%A7%E5%B2%9B%E5%B1%BF.html)
-- First Step: Traverse the grid and calculate the area of each island. During this process, assign a unique identifier (or label) to each island. You can use a map (or dictionary) where the keys are the island identifiers and the values are the respective island areas.
-- Second Step: Traverse the grid again, this time focusing on the 0 cells (since these are water cells that can be flipped to 1). For each 0, check the islands around it and sum up the areas of these neighboring islands. After calculating the possible new island size for all 0s, the largest possible area can be found by selecting the optimal 0 to flip to 1
+## 106. 岛屿的周长
+[Cousrse Link](https://www.programmercarl.com/kamacoder/0106.%E5%B2%9B%E5%B1%BF%E7%9A%84%E5%91%A8%E9%95%BF.html)
+- not use dfs or bfs
+- premeter = # of islands  - 2 * #neighbor aread
 ```python
-#  dfs
-import collections
-
-directions = [[-1, 0], [0, 1], [0, -1], [1, 0]]
-area = 0
-
-def dfs(i, j, grid, visited, num):
-    global area
-    
-    if visited[i][j]:
-        return
-
-    visited[i][j] = True
-    grid[i][j] = num  # 标记岛屿号码
-    area += 1
-    
-    for x, y in directions:
-        new_x = i + x
-        new_y = j + y
-        if (
-            0 <= new_x < len(grid)
-            and 0 <= new_y < len(grid[0])
-            and grid[new_x][new_y] == "1"
-        ):
-            dfs(new_x, new_y, grid, visited, num)
-    
-
 def main():
-    global area
+    import sys
+    input = sys.stdin.read
+    data = input().split()
     
-    N, M = map(int, input().strip().split())
+    # 读取 n 和 m
+    n = int(data[0])
+    m = int(data[1])
+    
+    # 初始化 grid
     grid = []
-    for i in range(N):
-        grid.append(input().strip().split())
-    visited = [[False] * M for _ in range(N)]
-    rec = collections.defaultdict(int)
+    index = 2
+    for i in range(n):
+        grid.append([int(data[index + j]) for j in range(m)])
+        index += m
     
-    cnt = 2
-    for i in range(N):
-        for j in range(M):
-            if grid[i][j] == "1":
-                area = 0
-                dfs(i, j, grid, visited, cnt)
-                rec[cnt] = area  # 纪录岛屿面积
-                cnt += 1
-    
-    res = 0
-    for i in range(N):
-        for j in range(M):
-            if grid[i][j] == "0":
-                max_island = 1  # 将水变为陆地，故从1开始计数
-                v = set()
-                for x, y in directions:
-                    new_x = i + x
-                    new_y = j + y
-                    if (
-                        0 <= new_x < len(grid)
-                        and 0 <= new_y < len(grid[0])
-                        and grid[new_x][new_y] != "0"
-                        and grid[new_x][new_y] not in v  # 岛屿不可重复
-                    ):
-                        max_island += rec[grid[new_x][new_y]]
-                        v.add(grid[new_x][new_y])
-                res = max(res, max_island)
+    sum_land = 0    # 陆地数量
+    cover = 0       # 相邻数量
 
-    if res == 0:
-        return max(rec.values())  # 无水的情况
-    return res
+    for i in range(n):
+        for j in range(m):
+            if grid[i][j] == 1:
+                sum_land += 1
+                # 统计上边相邻陆地
+                if i - 1 >= 0 and grid[i - 1][j] == 1:
+                    cover += 1
+                # 统计左边相邻陆地
+                if j - 1 >= 0 and grid[i][j - 1] == 1:
+                    cover += 1
+                # 不统计下边和右边，避免重复计算
     
+    result = sum_land * 4 - cover * 2
+    print(result)
+
 if __name__ == "__main__":
-    print(main())
+    main()
 ```
-Time Complexity: **O(2*m*n)**
+
