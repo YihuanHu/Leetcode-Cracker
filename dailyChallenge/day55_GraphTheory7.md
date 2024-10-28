@@ -114,4 +114,75 @@ Time Complexity: **O(n^2)**
 
 ##   Kruskal's algo
 [Cousrse Link](https://www.programmercarl.com/kamacoder/0053.%E5%AF%BB%E5%AE%9D-Kruskal.html#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF)
-- more stricky to handle
+- Steps:
+  - Sort the edges by their weights, as we prioritize adding the smallest edges
+  - iterate over the sorted edges:
+    - If the two nodes at the ends of an edge belong to the same set, adding this edge would create a cycle in the graph, so we skip it
+    - If the two nodes are in different sets, add the edge to the MST, and then unite the two nodes into the same set
+```python
+class Edge:
+    def __init__(self, l, r, val):
+        self.l = l
+        self.r = r
+        self.val = val
+
+n = 10001
+father = list(range(n))
+
+def init():
+    global father
+    father = list(range(n))
+
+def find(u):
+    if u != father[u]:
+        father[u] = find(father[u])
+    return father[u]
+
+def join(u, v):
+    u = find(u)
+    v = find(v)
+    if u != v:
+        father[v] = u
+
+def kruskal(v, edges):
+    edges.sort(key=lambda edge: edge.val)
+    init()
+    result_val = 0
+
+    for edge in edges:
+        x = find(edge.l)
+        y = find(edge.r)
+        if x != y:
+            result_val += edge.val
+            join(x, y)
+
+    return result_val
+
+if __name__ == "__main__":
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+
+    v = int(data[0])
+    e = int(data[1])
+
+    edges = []
+    index = 2
+    for _ in range(e):
+        v1 = int(data[index])
+        v2 = int(data[index + 1])
+        val = int(data[index + 2])
+        edges.append(Edge(v1, v2, val))
+        index += 3
+
+    result_val = kruskal(v, edges)
+    print(result_val)
+```
+Time Complexity **(logn*n)**  
+
+## Adds On
+- Kruskal is handling the edge while Prim is handling node
+  - With a fixed number of nodes, the fewer the edges in the graph, the fewer edges Kruskal's algorithm needs to check. Conversely, Prim’s algorithm operates on nodes directly, so its efficiency increases with fewer nodes
+  - Time Complexity:
+    - Kruskal’s algorithm is preferable for sparse graphs, where the number of edges is low **O(logn*n)** 
+    - Prim’s algorithm performs better on dense graphs, close to or equivalent to a complete graph (where all nodes are interconnected) **O(n^2)**
