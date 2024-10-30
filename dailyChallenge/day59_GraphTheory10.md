@@ -3,8 +3,8 @@
 [Course Link](https://www.programmercarl.com/kamacoder/0047.%E5%8F%82%E4%BC%9Adijkstra%E5%A0%86.html)      
 
 
-## Bellman_ford
-[Cousrse Link](https://www.programmercarl.com/kamacoder/0094.%E5%9F%8E%E5%B8%82%E9%97%B4%E8%B4%A7%E7%89%A9%E8%BF%90%E8%BE%93I.html#%E6%80%9D%E8%B7%AF)       
+## Queue-Optimized Bellman-Ford Algorithm  [Shortest Path Faster Algorithm] (SPFA)
+[Cousrse Link](https://www.programmercarl.com/kamacoder/0094.%E5%9F%8E%E5%B8%82%E9%97%B4%E8%B4%A7%E7%89%A9%E8%BF%90%E8%BE%93I-SPFA.html)       
 - The **Bellman-Ford algorithm** is used to find the shortest paths from a single source vertex to all other vertices in a weighted graph. Unlike Dijkstra's algorithm, which only works with graphs that have non-negative edge weights, Bellman-Ford can handle **negative edge weights**. This feature allows it to detect negative weight cycles, where the total weight is negative, potentially leading to infinitely decreasing path weights.
 - Key Properties
   - **Single Source Shortest Path**: Finds the shortest path from a single source to all other vertices.
@@ -54,3 +54,9 @@ if __name__ == "__main__":
 ```
 **Time Complexity**: \( O(V \cdot E) \), where \( V \) is the number of vertices and \( E \) is the number of edges.
 **Space Complexity**: \( O(V) \) for storing distances.
+
+## Detecting Negative Weight Cycles with Bellman-Ford
+[Cousrse Link](https://www.programmercarl.com/kamacoder/0095.%E5%9F%8E%E5%B8%82%E9%97%B4%E8%B4%A7%E7%89%A9%E8%BF%90%E8%BE%93II.html)   
+
+## Single-Source Shortest Path with Bellman-Ford
+[Cousrse Link](https://www.programmercarl.com/kamacoder/0096.%E5%9F%8E%E5%B8%82%E9%97%B4%E8%B4%A7%E7%89%A9%E8%BF%90%E8%BE%93III.html)   
