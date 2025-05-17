@@ -73,7 +73,7 @@ Time: **O(n^2)**
 Space: **O(n^2)**
 
 
-## LC 303 squares-of-a-sorted-array
+## LC 303 Range Sum Query - Immutable
 [LC Link](https://leetcode.com/problems/range-sum-query-immutable/description/)   
 [Cousrse Link](https://labuladong.online/algo/data-structure/prefix-sum/)  
 - **be careful about index P[i,j] =P[j+1] - P[i] where P[i] is the prefix sum of all the elements < i**
