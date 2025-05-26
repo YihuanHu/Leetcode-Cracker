@@ -51,7 +51,7 @@ Time: **O(m*n)**
 Space: **O(m*n)** for solution 1 and **O(n)** for solution 2
 
 
-##  LC unique-paths-ii
+##  LC 63 unique-paths-ii
 [Link](https://leetcode.com/problems/unique-paths-ii/description/)   
 [Cousrse Link](https://programmercarl.com/0063.%E4%B8%8D%E5%90%8C%E8%B7%AF%E5%BE%84II.html)
 - Steps for DP:
