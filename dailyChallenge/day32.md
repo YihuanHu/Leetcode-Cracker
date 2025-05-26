@@ -1,6 +1,6 @@
 # Day32 Dynamic Programming Part1
 ## DP
--  DP VS Greedu Algo
+-  DP VS Greedy Algo
     - DP: each state is derived from the previous state
     - Greedy:  directly select the optimal choice from local information
 - Steps for DP:
